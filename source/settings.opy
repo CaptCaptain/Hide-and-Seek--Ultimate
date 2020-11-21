@@ -79,6 +79,7 @@ globalvar WORKSHOP_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCE
 globalvar WORKSHOP_SET_ADV_WB_GRAPPLE_RAW = createWorkshopSetting(enum["Allow when in Line Of Sight of Seeker (No Cooldown)", "Allow when in Line Of Sight of Seeker (Cooldown)", "Disabled when in Line Of Sight of Seeker"], "Advanced Settings", "Wrecking Ball Grapple Player Accessibility", 0, 2)
 globalvar WORKSHOP_SET_ADV_WB_GRAPPLE = [ACCESSIBILITY.WB_GRAPPLE_ALLOW, ACCESSIBILITY.WB_GRAPPLE_ALLOW_COOLDOWN, ACCESSIBILITY.WB_GRAPPLE_DISABLED][WORKSHOP_SET_ADV_WB_GRAPPLE_RAW]
 globalvar WORKSHOP_SET_ADV_USEPRERELEASE = createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
+globalvar WORKSHOP_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
 
 #!include "game.opy"
 #!include "player.opy"

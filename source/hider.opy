@@ -16,11 +16,9 @@ rule "Hider Setup":
     switch WORKSHOP_SET_MODE:
         case STYLE.MERCY_REIN:
             eventPlayer.setAllowedHeroes(Hero.MERCY)
-            eventPlayer.BaseMoveSpeed = 150
-            eventPlayer.BaseJumpHeight = 150
             eventPlayer.HiderSlowFactor = 1.5
-            eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed)
-            eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight)
+            eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed * 1.5)
+            eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight * 1.5)
             break
         default:
             break

@@ -11,10 +11,8 @@ rule "Seeker Setup":
     switch WORKSHOP_SET_MODE:
         case STYLE.MERCY_REIN:
             eventPlayer.setAllowedHeroes(Hero.REINHARDT)
-            eventPlayer.BaseMoveSpeed = 200
-            eventPlayer.BaseJumpHeight = 175
-            eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed)
-            eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight)
+            eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed * 2)
+            eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight * 1.75)
             eventPlayer.setSecondaryFireEnabled(false)
             break
         default:
@@ -43,6 +41,7 @@ rule "Respawn Seeker if they leave Spawn Room":
 rule "Seeker Noclip Barrier":
     @Event eachPlayer
     @Team 2
+    @Condition WORKSHOP_SET_MODE != STYLE.GLITCH
     @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.isMoving()
     @Condition isInLoS(eventPlayer, worldVector(eventPlayer.getThrottle(), eventPlayer, Transform.ROTATION_AND_TRANSLATION), BarrierLos.PASS_THROUGH_BARRIERS)

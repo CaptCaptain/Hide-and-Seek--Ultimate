@@ -2,8 +2,8 @@
 
 globalvar Hud_GameInfo
 globalvar globalHudIndex = 0
-playervar BaseMoveSpeed = 100
-playervar BaseJumpHeight = 100
+playervar BaseMoveSpeed = 100 * WORKSHOP_SET_ADV_BASESPEED
+playervar BaseJumpHeight = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar HiderSlowFactor = 2
 
 rule "Player Huds":
@@ -47,6 +47,9 @@ rule "Global Huds":
     hudSubtext(getAllPlayers(), "PLAYER SIZE: {}x".format(WORKSHOP_SET_ADV_SCALE), HudPosition.LEFT, 4, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
+    hudSubtext(getAllPlayers(), "PLAYER SPEED: {}x".format(WORKSHOP_SET_ADV_BASESPEED), HudPosition.LEFT, 4, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    Hud_GameInfo.append(getLastCreatedText())
+
     hudSubheader(getAllPlayers(), "TO CUSTOMIZE RULESET (HOST ONLY):\nGO TO LOBBY > SETTINGS > WORKSHOP SETTINGS\nFOR MORE INFORMATION ON RULESET:\nGO TO LOBBY > RIGHT CLICK MAP PICTURE > SCROLL DOWN TO WORKSHOP", HudPosition.LEFT, 5, Color.TURQUOISE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
@@ -72,6 +75,10 @@ rule "Player Setup":
     eventPlayer.disableRespawn()
     eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed)
     eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight)
+    
+    # Glitch Mode
+    if WORKSHOP_SET_MODE == STYLE.GLITCH:
+        eventPlayer.disableEnvironmentCollision(false)
 
 rule "Reset Ammo":
     @Event eachPlayer
