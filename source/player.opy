@@ -8,11 +8,50 @@ playervar BaseJumpHeight = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
 
+subroutine RestrictAbilities
+
+def RestrictAbilities():
+    eventPlayer.setAbility1Enabled(true)
+    eventPlayer.setAbility2Enabled(true)
+    eventPlayer.setSecondaryFireEnabled(true)
+    if WORKSHOP_SET_MODE == STYLE.MERCY_REIN: goto skip_evaluation
+    switch eventPlayer.getTeam():
+        case Team.1:
+            switch eventPlayer.getCurrentHero():
+                case Hero.MERCY:
+                    eventPlayer.setAbility2Enabled(false)
+                    break
+            break
+        case Team.2:
+            switch eventPlayer.getCurrentHero():
+                case Hero.ORISA:
+                    eventPlayer.setSecondaryFireEnabled(false)
+                    break
+                case Hero.HANZO:
+                    eventPlayer.setAbility1Enabled(false)
+                    break
+                case Hero.SYMMETRA:
+                    eventPlayer.setAbility1Enabled(false)
+                    break
+                case Hero.TORBJORN:
+                    eventPlayer.setAbility1Enabled(false)
+                    break
+                case Hero.WIDOWMAKER:
+                    eventPlayer.setAbility2Enabled(false)
+                    break
+                case Hero.JUNKRAT:
+                    eventPlayer.setAbility2Enabled(false)
+                    break
+            break
+    skip_evaluation:
+
 rule "Player Huds":
     @Event eachPlayer
 
     # Creates the Objective Hud
     hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), "HIDER" if eventPlayer.getTeam() == Team.1 else "SEEKER"), "PHASE: {}".format(CurrentGameState), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.BLUE if eventPlayer.getTeam() == Team.1 else Color.RED, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
+
+    wait(9999)
 
 rule "Title Hud":
     Hud_GameTitle.append(getLastCreatedText())
@@ -108,6 +147,7 @@ rule "Player Setup":
 
     # Teleport to Objective
     waitUntil(eventPlayer.hasSpawned(), 9999)
+    eventPlayer.DvaMechPosition = eventPlayer.getPosition()
     if CurrentGameState == GAME_STATE.WAITING:
         eventPlayer.teleport(nearestWalkablePosition(getObjectivePosition(getCurrentObjective())))
 
@@ -132,16 +172,16 @@ rule "Resurrect":
     eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, "BE CAREFUL!")
 
-# Accessibility Rules
-rule "D.va: Set Mech Position":
+rule "Disable Certain Abilities":
     @Event eachPlayer
-    @Hero dva
-    @Condition eventPlayer.hasSpawned()
-    
-    eventPlayer.DvaMechPosition = eventPlayer.getPosition()
+    @Condition eventPlayer.isInSpawnRoom()
 
+    RestrictAbilities()
+
+# Accessibility Rules
 rule "D.va: TP to Mech Position (Hider)":
     @Event eachPlayer
+    @Team 1
     @Hero dva
     @Condition CurrentGameState == GAME_STATE.HIDING
     
@@ -149,6 +189,7 @@ rule "D.va: TP to Mech Position (Hider)":
 
 rule "D.va: TP to Mech Position (Seeker)":
     @Event eachPlayer
+    @Team 2
     @Hero dva
     @Condition CurrentGameState == GAME_STATE.HIDING
     @Condition not eventPlayer.isInSpawnRoom()
@@ -168,7 +209,7 @@ rule "D.va: Enable De-mech":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isHoldingButton(Button.ULTIMATE)
 
-    if not eventPlayer.isInAlternateForm() and WORKSHOP_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH:
+    if not eventPlayer.isInAlternateForm() and (WORKSHOP_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH or WORKSHOP_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_BOTH):
         eventPlayer.setUltCharge(0)
         kill(eventPlayer, null)
         if WORKSHOP_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_BOTH:

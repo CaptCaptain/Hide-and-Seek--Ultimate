@@ -116,6 +116,7 @@ rule "Slow Hider":
     eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight)
     eventPlayer.setAbility1Enabled(true)
     eventPlayer.setAbility2Enabled(true)
+    RestrictAbilities()
     destroyHudText(eventPlayer.Hud_Detection)
     eventPlayer.Hud_Detection = null
 

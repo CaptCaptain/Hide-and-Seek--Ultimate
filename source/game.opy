@@ -35,7 +35,7 @@ rule "Hiding Phase":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
     printLog("Game Phase: Hiding")
-    [player for player in getPlayers(Team.ALL) if player.hasSpawned() and not player.isInSpawnRoom()].respawn()
+    [player for player in getPlayers(Team.ALL).exclude(getPlayersOnHero(Hero.DVA, Team.ALL)) if player.hasSpawned() and not player.isInSpawnRoom()].respawn()
 
     CurrentRound += 1 
     bigMessage(getAllPlayers() if WORKSHOP_SET_ADV_WINS > 1 else null, "Round {}".format(CurrentRound)) 
