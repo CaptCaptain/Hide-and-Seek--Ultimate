@@ -26,7 +26,17 @@ settings {
     "heroes": {
         "allTeams": {
             "general": {
-                "enableUlt": false
+                "enableUlt": false,
+                "combatUltGen%": 0,
+                "passiveUltGen%": 0
+            },
+            "dva": {
+                "enableSpawningWithUlt": true
+            }
+        },
+        "team2": {
+            "general": {
+                "abilityCooldown%": 50
             }
         }
     }

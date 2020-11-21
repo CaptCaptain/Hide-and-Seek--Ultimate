@@ -149,8 +149,6 @@ rule "Kill Hiders Who Joined Late":
     # Set JoinedLate to false so the spawn room kill rule can run
     eventPlayer.JoinedLate = false
     eventPlayer.enableHeroHud()
-    
-# Accessibility Rules
 
 # Mercy V. Rein Specific Rules
 rule "Refresh Resurrect Cooldown":

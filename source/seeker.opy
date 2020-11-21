@@ -52,3 +52,31 @@ rule "Seeker Noclip Barrier":
     if RULE_CONDITION:
         goto RULE_START
     eventPlayer.enableEnvironmentCollision()
+rule "Disable Certain Abilities for Seeker":
+    @Event eachPlayer
+    @Team 2
+    @Condition eventPlayer.isInSpawnRoom()
+
+
+    eventPlayer.setAbility1Enabled(true)
+    eventPlayer.setAbility2Enabled(true)
+    eventPlayer.setSecondaryFireEnabled(true)
+    switch eventPlayer.getCurrentHero():
+        case Hero.ORISA:
+            eventPlayer.setSecondaryFireEnabled(false)
+            break
+        case Hero.HANZO:
+            eventPlayer.setAbility1Enabled(false)
+            break
+        case Hero.SYMMETRA:
+            eventPlayer.setAbility1Enabled(false)
+            break
+        case Hero.TORBJORN:
+            eventPlayer.setAbility1Enabled(false)
+            break
+        case Hero.WIDOWMAKER:
+            eventPlayer.setAbility2Enabled(false)
+            break
+        case Hero.JUNKRAT:
+            eventPlayer.setAbility2Enabled(false)
+            break

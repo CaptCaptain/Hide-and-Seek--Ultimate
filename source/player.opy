@@ -1,16 +1,38 @@
 #!mainFile "settings.opy"
 
 globalvar Hud_GameInfo
+globalvar Hud_GameTitle
 globalvar globalHudIndex = 0
 playervar BaseMoveSpeed = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar BaseJumpHeight = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar HiderSlowFactor = 2
+playervar DvaMechPosition
 
 rule "Player Huds":
     @Event eachPlayer
 
     # Creates the Objective Hud
     hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), "HIDER" if eventPlayer.getTeam() == Team.1 else "SEEKER"), "PHASE: {}".format(CurrentGameState), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
+
+rule "Title Hud":
+    Hud_GameTitle.append(getLastCreatedText())
+    createInWorldText(getAllPlayers(), "HIDE & SEEK", getObjectivePosition(getCurrentObjective()) + vect(0, 5, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
+    Hud_GameTitle.append(getLastCreatedText())
+    createInWorldText(getAllPlayers(), "ULTIMATE", getObjectivePosition(getCurrentObjective()) + vect(0, 4.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
+    Hud_GameTitle.append(getLastCreatedText())
+    createInWorldText(getAllPlayers(), "STYLE: {}".format(WORKSHOP_SET_MODE), getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
+    Hud_GameTitle.append(getLastCreatedText())
+    createInWorldText(getAllPlayers(), "WAITING FOR PLAYERS".format(RequiredHiders), getObjectivePosition(getCurrentObjective()) + vect(0, 3.25, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.WHITE, SpecVisibility.NEVER)
+    Hud_GameTitle.append(getLastCreatedText())
+    createEffect(getAllPlayers(), Effect.SPHERE, Color.TURQUOISE, getObjectivePosition(getCurrentObjective()), 20, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    Hud_GameTitle.append(getLastCreatedEntity())
+
+    waitUntil(CurrentGameState != GAME_STATE.WAITING, 9999)
+
+    for globalHudIndex in range(0, len(Hud_GameTitle)):
+        destroyInWorldText(Hud_GameTitle[globalHudIndex])
+        destroyEffect(Hud_GameTitle[globalHudIndex])
+    Hud_GameTitle = null
 
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
@@ -55,7 +77,7 @@ rule "Global Huds":
 
 rule "Remove Global Huds":
     @Condition CurrentGameState == GAME_STATE.SEEKING
-    for globalHudIndex in range(len(Hud_GameInfo)):
+    for globalHudIndex in range(0, len(Hud_GameInfo)):
         destroyHudText(Hud_GameInfo[globalHudIndex])
     Hud_GameInfo = null
 
@@ -80,6 +102,10 @@ rule "Player Setup":
     if WORKSHOP_SET_MODE == STYLE.GLITCH:
         eventPlayer.disableEnvironmentCollision(false)
 
+    # Teleport to Objective
+    waitUntil(eventPlayer.hasSpawned(), 9999)
+    eventPlayer.teleport(nearestWalkablePosition(getObjectivePosition(getCurrentObjective())))
+
 rule "Reset Ammo":
     @Event eachPlayer
     @Condition not eventPlayer.isFiringPrimaryFire() and not eventPlayer.isFiringSecondaryFire()
@@ -101,7 +127,52 @@ rule "Resurrect":
     eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, "BE CAREFUL!")
 
+# Accessibility Rules
+rule "D.va: Set Mech Position":
+    @Event eachPlayer
+    @Hero dva
+    @Condition eventPlayer.hasSpawned()
+    
+    eventPlayer.DvaMechPosition = eventPlayer.getPosition()
 
+rule "D.va: TP to Mech Position (Hider)":
+    @Event eachPlayer
+    @Hero dva
+    @Condition CurrentGameState == GAME_STATE.HIDING
+    
+    eventPlayer.teleport(eventPlayer.DvaMechPosition)
+
+rule "D.va: TP to Mech Position (Seeker)":
+    @Event eachPlayer
+    @Hero dva
+    @Condition CurrentGameState == GAME_STATE.HIDING
+    @Condition not eventPlayer.isInSpawnRoom()
+    
+    eventPlayer.teleport(eventPlayer.DvaMechPosition)
+
+rule "D.va: Ult":
+    @Event eachPlayer
+    @Hero dva
+
+    eventPlayer.setUltEnabled(true)
+    eventPlayer.disallowButton(Button.ULTIMATE)
+
+rule "D.va: Enable De-mech":
+    @Event eachPlayer
+    @Hero dva
+    @Condition eventPlayer.hasSpawned()
+    @Condition eventPlayer.isHoldingButton(Button.ULTIMATE)
+
+    if not eventPlayer.isInAlternateForm() and WORKSHOP_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH:
+        eventPlayer.setUltCharge(0)
+        kill(eventPlayer, null)
+        if WORKSHOP_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_BOTH:
+            waitUntil(eventPlayer.isInAlternateForm(), 9999)
+            eventPlayer.allowButton(Button.ULTIMATE)
+            eventPlayer.setUltCharge(100)
+    elif eventPlayer.isInAlternateForm() and WORKSHOP_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_BOTH:
+        waitUntil(not eventPlayer.isInAlternateForm(), 9999)
+        eventPlayer.disallowButton(Button.ULTIMATE)
 
 #!include "hider.opy"
 #!include "seeker.opy"
