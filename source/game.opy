@@ -13,11 +13,26 @@ globalvar CurrentRound = 0
 globalvar HiderTeamScore = 0
 globalvar SeekerTeamScore = 0
 
+subroutine PLAYSOUND_DEBUFF
+subroutine PLAYSOUND_RINGEXPLOSION
+subroutine PLAYSOUND_BUFF
+globalvar playerIndex
+def PLAYSOUND_RINGEXPLOSION():
+    for playerIndex in range(0, len(getAllPlayers())):
+        playEffect(getAllPlayers()[playerIndex], DynamicEffect.RING_EXPLOSION_SOUND, Color.WHITE, getAllPlayers()[playerIndex], 100)
+def PLAYSOUND_DEBUFF():
+    for playerIndex in range(0, len(getAllPlayers())):
+        playEffect(getAllPlayers()[playerIndex], DynamicEffect.DEBUFF_IMPACT_SOUND, Color.WHITE, getAllPlayers()[playerIndex], 100)
+def PLAYSOUND_BUFF():
+    for playerIndex in range(0, len(getAllPlayers())):
+        playEffect(getAllPlayers()[playerIndex], DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, getAllPlayers()[playerIndex], 100)
+
 rule "Stop Skirmish Clock":
     pauseMatchTime()
 
 rule "Waiting Phase":
     @Condition CurrentGameState == GAME_STATE.WAITING
+    @Condition getNumberOfPlayers(Team.1) > 0 and getNumberOfPlayers(Team.2) > 0
 
     printLog("Game Phase: Waiting")
 
@@ -35,6 +50,7 @@ rule "Hiding Phase":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
     printLog("Game Phase: Hiding")
+    PLAYSOUND_RINGEXPLOSION()
     [player for player in getPlayers(Team.ALL).exclude(getPlayersOnHero(Hero.DVA, Team.ALL)) if player.hasSpawned() and not player.isInSpawnRoom()].respawn()
 
     CurrentRound += 1 
@@ -52,6 +68,7 @@ rule "Seeking Phase":
     @Condition CurrentGameState == GAME_STATE.SEEKING
 
     printLog("Game Phase: Seeking")
+    PLAYSOUND_RINGEXPLOSION()
 
     #!define HidersExist (len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy() and player.isAlive() and not player.isInSpawnRoom()]) > 0)
     
@@ -68,6 +85,8 @@ rule "Results":
     @Condition CurrentGameState == GAME_STATE.RESULTS
 
     printLog("Game Phase: Results")
+
+    PLAYSOUND_BUFF()
 
     #!define HidersExist (len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy() and player.isAlive() and not player.isInSpawnRoom()]) > 0)
 
@@ -91,6 +110,16 @@ rule "Results":
         wait(1)
         CurrentGameState = GAME_STATE.HIDING
         setSlowMotion(100)
+
+rule "Countdown":
+    @Condition CurrentTime < 10
+
+    PLAYSOUND_DEBUFF()
+
+    wait(1)
+
+    if RULE_CONDITION:
+        goto RULE_START
 
 rule "End Game":
     @Condition CurrentGameState == GAME_STATE.END

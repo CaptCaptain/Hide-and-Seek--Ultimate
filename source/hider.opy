@@ -99,6 +99,7 @@ rule "Slow Hider":
     eventPlayer.setAbility1Enabled(false)
     eventPlayer.setAbility2Enabled(false)
     eventPlayer.setSecondaryFireEnabled(true if eventPlayer.getCurrentHero() == Hero.HAMMOND else false)
+    playEffect(eventPlayer, DynamicEffect.EXPLOSION_SOUND, Color.WHITE, eventPlayer, 250)
     # Destroy Sombra's Translocator
     if eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2():
         eventPlayer.forceButtonPress(Button.INTERACT)
