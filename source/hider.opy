@@ -98,11 +98,13 @@ rule "Slow Hider":
     eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight / eventPlayer.HiderSlowFactor)
     eventPlayer.setAbility1Enabled(false)
     eventPlayer.setAbility2Enabled(false)
-    eventPlayer.setSecondaryFireEnabled(false if eventPlayer.getCurrentHero() != Hero.HAMMOND else true)
-    eventPlayer.cancelPrimaryAction()
+    eventPlayer.setSecondaryFireEnabled(true if eventPlayer.getCurrentHero() == Hero.HAMMOND else false)
     # Destroy Sombra's Translocator
     if eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2():
         eventPlayer.forceButtonPress(Button.INTERACT)
+    # Prevent Wrecking Ball from losing grapple
+    if not eventPlayer.getCurrentHero() == Hero.HAMMOND:
+        eventPlayer.cancelPrimaryAction()
     hudSubtext(eventPlayer, "{0} YOU ARE WITHIN LINE OF SIGHT OF A SEEKER {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_Detection = getLastCreatedText()
 
