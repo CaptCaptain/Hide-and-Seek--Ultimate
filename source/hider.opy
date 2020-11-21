@@ -47,23 +47,12 @@ rule "Refresh Cooldown for Hiders":
     eventPlayer.setAbilityCooldown(Button.ABILITY_2, 0.2 if eventPlayer.getAbilityCooldown(Button.ABILITY_2) > 0 else 0)
     eventPlayer.setAbilityCooldown(Button.SECONDARY_FIRE, 0.2 if eventPlayer.getAbilityCooldown(Button.SECONDARY_FIRE) > 0 else 0)
 
-    if eventPlayer.getAbilityCooldown(Button.ABILITY_1) > 0.2 or eventPlayer.getAbilityCooldown(Button.ABILITY_2) > 0.2 or eventPlayer.getAbilityCooldown(Button.SECONDARY_FIRE) > 0.2:
-        wait()
-        goto RULE_START
-
-rule "Refresh Charges for Hiders":
-    @Event eachPlayer
-    @Team 1
-    @Condition CurrentGameState != GAME_STATE.SEEKING
-    @Condition eventPlayer.isOnGround()
-    @Condition any([resource <= 2 and resource != 0 for resource in [eventPlayer.getAbilityResource(Button.ABILITY_1), eventPlayer.getAbilityResource(Button.ABILITY_2)]])
-
     eventPlayer.setAbilityCharge(Button.ABILITY_1, 3)
     eventPlayer.setAbilityCharge(Button.ABILITY_2, 3)
     eventPlayer.setAbilityCharge(Button.SECONDARY_FIRE, 3)
 
-    wait()
-    if RULE_CONDITION:
+    if eventPlayer.getAbilityCooldown(Button.ABILITY_1) > 0.2 or eventPlayer.getAbilityCooldown(Button.ABILITY_2) > 0.2 or eventPlayer.getAbilityCooldown(Button.SECONDARY_FIRE) > 0.2:
+        wait()
         goto RULE_START
 
 rule "Kill Hider in Spawn Room":
