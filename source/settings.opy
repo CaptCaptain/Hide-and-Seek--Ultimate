@@ -71,8 +71,8 @@ globalvar WORKSHOP_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30",
 globalvar WORKSHOP_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 120][WORKSHOP_SET_SEEKTIME_RAW]
 globalvar WORKSHOP_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Noclip)", "Mercy V. Reinhardt"], "Ruleset", "Style", 0, 0)
 globalvar WORKSHOP_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.MERCY_REIN][WORKSHOP_SET_MODE_RAW]
-globalvar WORKSHOP_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1", "None"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
-globalvar WORKSHOP_SET_REQUIRED_HIDERS = [3, 2, 1, 0][WORKSHOP_SET_REQUIRED_RATIO]
+globalvar WORKSHOP_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
+globalvar WORKSHOP_SET_REQUIRED_HIDERS = [3, 2, 1][WORKSHOP_SET_REQUIRED_RATIO]
 globalvar WORKSHOP_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 1, 1)
 globalvar WORKSHOP_SET_WAITING_MAXTIME = [0, 25, 9999][WORKSHOP_SET_WAITING_MAXTIME_RAW]
 globalvar WORKSHOP_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow Hider When In Line Of Sight Of Seeker", true, 4)
@@ -88,7 +88,7 @@ globalvar WORKSHOP_SET_ADV_DVA_MECH_RAW = createWorkshopSetting(enum["Allow De-m
 globalvar WORKSHOP_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCESSIBILITY.DVA_MECH_ALLOW_BOTH, ACCESSIBILITY.DVA_MECH_DISABLED][WORKSHOP_SET_ADV_DVA_MECH_RAW]
 #globalvar WORKSHOP_SET_ADV_WB_GRAPPLE_RAW = createWorkshopSetting(enum["Allow when in Line Of Sight of Seeker (No Cooldown)", "Allow when in Line Of Sight of Seeker (Cooldown)", "Disabled when in Line Of Sight of Seeker"], "Advanced Settings", "Wrecking Ball Grapple Player Accessibility", 0, 2)
 #globalvar WORKSHOP_SET_ADV_WB_GRAPPLE = [ACCESSIBILITY.WB_GRAPPLE_ALLOW, ACCESSIBILITY.WB_GRAPPLE_ALLOW_COOLDOWN, ACCESSIBILITY.WB_GRAPPLE_DISABLED][WORKSHOP_SET_ADV_WB_GRAPPLE_RAW]
-globalvar WORKSHOP_SET_ADV_USEPRERELEASE = createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
+globalvar WORKSHOP_SET_ADV_USEPRERELEASE = false #createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
 globalvar WORKSHOP_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
 
 #!include "game.opy"

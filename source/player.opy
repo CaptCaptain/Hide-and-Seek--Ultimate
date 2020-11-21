@@ -217,6 +217,8 @@ rule "D.va: Enable De-mech":
             eventPlayer.allowButton(Button.ULTIMATE)
             eventPlayer.setUltCharge(100)
     elif eventPlayer.isInAlternateForm() and WORKSHOP_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_BOTH:
+        eventPlayer.allowButton(Button.ULTIMATE)
+        eventPlayer.forceButtonPress(Button.ULTIMATE)
         waitUntil(not eventPlayer.isInAlternateForm(), 9999)
         eventPlayer.disallowButton(Button.ULTIMATE)
 
