@@ -5,7 +5,6 @@ globalvar globalHudIndex = 0
 playervar BaseMoveSpeed = 100
 playervar BaseJumpHeight = 100
 playervar HiderSlowFactor = 2
-playervar JoinedLate = true if CurrentGameState == GAME_STATE.SEEKING else false
 
 rule "Player Huds":
     @Event eachPlayer
@@ -22,7 +21,7 @@ rule "Global Huds":
     hudSubheader(getAllPlayers(), "Version: {} ({})\n".format(CURRENT_VERSION, CURRENT_CODE), HudPosition.LEFT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "{} Hide & Seek: Ultimate by CaptCaptain#11502".format(abilityIconString(random.choice(getAllHeroes()), Button.ULTIMATE)), HudPosition.LEFT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "{} Hide & Seek: Ultimate by CaptCaptain#11421".format(abilityIconString(random.choice(getAllHeroes()), Button.ULTIMATE)), HudPosition.LEFT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     hudHeader(getAllPlayers(), "{} RULESET:".format(abilityIconString(Hero.TORBJORN, Button.ABILITY_2)), HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR, SpecVisibility.DEFAULT)

@@ -1,6 +1,6 @@
 settings {
     "main": {
-        "description": "A new and improved Hide & Seek game!"
+        "description": 'The classic Hide & Seek game has returned as a new and improved workshop gamemode! A new additional level of customization is offered to hosts through Workshop Settings; make everyone small, change the time for each phase, or even how the game plays with styles such as "Glitch" or "Mercy V. Reinhardt"\n[Created by CaptCaptain#11421]'
     },
     "lobby": {
         "enableMatchVoiceChat": true,
@@ -32,6 +32,8 @@ settings {
     }
 }
 
+##!obfuscate noInspectorObfuscation noStringObfuscation
+
 enum STYLE:
     DEFAULT = "DEFAULT",
     CLASSIC = "CLASSIC",
@@ -47,7 +49,7 @@ enum ACCESSIBILITY:
     WB_GRAPPLE_ALLOW_COOLDOWN,
     WB_GRAPPLE_DISABLED
 
-globalvar CURRENT_VERSION = "0.2.0 beta"
+globalvar CURRENT_VERSION = "0.2.1 beta"
 globalvar CURRENT_CODE = "N/A"
 globalvar CURRENT_PATCHNOTES # = "Latest Patch Notes\n* Initial Release\n(For previous patch notes, visit: N/A)"
 
@@ -63,6 +65,7 @@ globalvar WORKSHOP_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2",
 globalvar WORKSHOP_SET_REQUIRED_HIDERS = [3, 2, 1, 0][WORKSHOP_SET_REQUIRED_RATIO]
 globalvar WORKSHOP_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 1, 1)
 globalvar WORKSHOP_SET_WAITING_MAXTIME = [0, 25, 9999][WORKSHOP_SET_WAITING_MAXTIME_RAW]
+globalvar WORKSHOP_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow Hider When In Line Of Sight Of Seeker", true, 4)
 
 # Advanced Settings
 globalvar WORKSHOP_SET_ADV_WINS_RAW = createWorkshopSetting(enum["1 win", "2 wins", "3 wins"], "Advanced Settings", "FIRST TEAM TO", 0, 0)

@@ -4,6 +4,7 @@ playervar Hud_Detection
 playervar Hud_InSpawn
 playervar Huds_JoinedLate
 playervar playerHudIndex = 0
+playervar JoinedLate
 
 rule "Hider Setup":
     @Event eachPlayer
@@ -96,6 +97,7 @@ rule "Show Warning to Hider While In Spawn Room":
 rule "Slow Hider":
     @Event eachPlayer
     @Team 1
+    @Condition WORKSHOP_SET_SLOWHIDER
     @Condition getClosestPlayer(eventPlayer, Team.2) != null
     @Condition any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)])
 
@@ -122,6 +124,14 @@ rule "Slow Hider":
 
     printLog("{} is no longer in line of sight".format(eventPlayer))
 
+rule "Hiders Joined Late":
+    @Event eachPlayer
+    @Team 1
+    @Condition CurrentGameState == GAME_STATE.SEEKING
+    @Condition not eventPlayer.hasSpawned()
+
+    eventPlayer.JoinedLate = true
+
 rule "Kill Hiders Who Joined Late":
     @Event eachPlayer
     @Team 1
@@ -131,6 +141,7 @@ rule "Kill Hiders Who Joined Late":
 
     eventPlayer.disableHeroHUD()
 
+    # Create hud
     createInWorldText(eventPlayer, "YOU JOINED LATE!", updateEveryTick(eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1)), 5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
     eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
 
@@ -144,9 +155,11 @@ rule "Kill Hiders Who Joined Late":
 
     wait(5)
 
+    # Destroy all hud text
     for eventPlayer.playerHudIndex in range(len(eventPlayer.Huds_JoinedLate)):
         destroyInWorldText(eventPlayer.Huds_JoinedLate[eventPlayer.playerHudIndex])
     eventPlayer.Huds_JoinedLate = null
+    # Set JoinedLate to false so the spawn room kill rule can run
     eventPlayer.JoinedLate = false
     eventPlayer.enableHeroHud()
     
