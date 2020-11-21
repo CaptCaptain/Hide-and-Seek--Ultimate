@@ -1,4 +1,9 @@
-#!mainFile "player.opy"
+#!mainFile "settings.opy"
+
+playervar Hud_Detection
+playervar Hud_InSpawn
+playervar Huds_JoinedLate
+playervar playerHudIndex = 0
 
 rule "Hider Setup":
     @Event eachPlayer
@@ -120,8 +125,30 @@ rule "Slow Hider":
 rule "Kill Hiders Who Joined Late":
     @Event eachPlayer
     @Team 1
-    @Condition CurrentGameState == GAME_STATE.SEEKING
-    @Condition eventPlayer.JoinedLate == true
+    #@Condition CurrentGameState == GAME_STATE.SEEKING
+    #@Condition eventPlayer.JoinedLate == true
+    @Condition eventPlayer.hasSpawned()
+
+    eventPlayer.disableHeroHUD()
+
+    createInWorldText(eventPlayer, "YOU JOINED LATE!", updateEveryTick(eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1)), 5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
+    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
+
+    createInWorldText(eventPlayer, "YOU WILL BE PUT INTO SPECTATOR", updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.1, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
+    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
+
+    createInWorldText(eventPlayer, "PLEASE WAIT FOR THE NEXT ROUND", updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.2, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
+    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
+
+    eventPlayer.setStatusEffect(null, Status.ROOTED, 5)
+
+    wait(5)
+
+    for eventPlayer.playerHudIndex in range(len(eventPlayer.Huds_JoinedLate)):
+        destroyInWorldText(eventPlayer.Huds_JoinedLate[eventPlayer.playerHudIndex])
+    eventPlayer.Huds_JoinedLate = null
+    eventPlayer.JoinedLate = false
+    eventPlayer.enableHeroHud()
 
 # Accessibility Rules
 

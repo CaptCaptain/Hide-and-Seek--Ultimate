@@ -1,10 +1,7 @@
 #!mainFile "settings.opy"
 
-playervar Hud_Detection
-playervar Hud_InSpawn
-playervar Hud_JoinedLate
 globalvar Hud_GameInfo
-globalvar hudIndex
+globalvar globalHudIndex = 0
 playervar BaseMoveSpeed = 100
 playervar BaseJumpHeight = 100
 playervar HiderSlowFactor = 2
@@ -54,8 +51,8 @@ rule "Global Huds":
 
 rule "Remove Global Huds":
     @Condition CurrentGameState == GAME_STATE.SEEKING
-    for hudIndex in range(len(Hud_GameInfo)):
-        destroyHudText(Hud_GameInfo[hudIndex])
+    for globalHudIndex in range(len(Hud_GameInfo)):
+        destroyHudText(Hud_GameInfo[globalHudIndex])
     Hud_GameInfo = null
 
 rule "Player Scaling":
@@ -72,6 +69,8 @@ rule "Player Setup":
 
     eventPlayer.disableGamemodeHud()
     eventPlayer.disableRespawn()
+    eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed)
+    eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight)
 
 rule "Reset Ammo":
     @Event eachPlayer
@@ -93,6 +92,8 @@ rule "Resurrect":
     eventPlayer.setStatusEffect(null, Status.STUNNED, 2)
     eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, "BE CAREFUL!")
+
+
 
 #!include "hider.opy"
 #!include "seeker.opy"

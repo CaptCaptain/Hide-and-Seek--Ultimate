@@ -1,4 +1,4 @@
-#!mainFile "player.opy"
+#!mainFile "settings.opy"
 
 rule "Seeker Setup":
     @Event eachPlayer
