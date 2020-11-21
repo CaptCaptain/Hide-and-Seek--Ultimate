@@ -3,6 +3,7 @@
 playervar Hud_Detection
 playervar Hud_InSpawn
 playervar Huds_JoinedLate
+playervar Effects_SombraInvis
 playervar playerHudIndex = 0
 playervar JoinedLate
 
@@ -95,6 +96,8 @@ rule "Slow Hider":
     eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight / eventPlayer.HiderSlowFactor)
     eventPlayer.setAbility1Enabled(false)
     eventPlayer.setAbility2Enabled(false)
+    eventPlayer.setSecondaryFireEnabled(false if eventPlayer.getCurrentHero() != Hero.HAMMOND else true)
+    eventPlayer.cancelPrimaryAction()
     hudSubtext(eventPlayer, "{0} YOU ARE WITHIN LINE OF SIGHT OF A SEEKER {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_Detection = getLastCreatedText()
 
@@ -143,13 +146,36 @@ rule "Kill Hiders Who Joined Late":
     wait(5)
 
     # Destroy all hud text
-    for eventPlayer.playerHudIndex in range(len(eventPlayer.Huds_JoinedLate)):
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Huds_JoinedLate)):
         destroyInWorldText(eventPlayer.Huds_JoinedLate[eventPlayer.playerHudIndex])
     eventPlayer.Huds_JoinedLate = null
     # Set JoinedLate to false so the spawn room kill rule can run
     eventPlayer.JoinedLate = false
     eventPlayer.enableHeroHud()
 
+rule "Sombra Invisibility Tracker":
+    @Event eachPlayer
+    @Team 1
+    @Hero sombra
+    @Condition eventPlayer.hasSpawned()
+    @Condition eventPlayer.isUsingAbility1()
+    
+    createEffect(getAllPlayers(), Effect.BAD_AURA, Color.TEAM_1, updateEveryTick(eventPlayer.getPosition() + Vector.UP), 1, EffectReeval.VISIBILITY_POSITION_RADIUS_AND_COLOR)
+    eventPlayer.Effects_SombraInvis.append(getLastCreatedEntity())
+    createInWorldText(getPlayers(Team.2), eventPlayer, eventPlayer, 1, Clip.SURFACES, WorldTextReeval.VISIBILITY_POSITION_AND_STRING, Color.TEAM_1, SpecVisibility.DEFAULT)
+    eventPlayer.Effects_SombraInvis.append(getLastCreatedText())
+    hudSubtext(eventPlayer, "{0} YOU ARE VISIBLE TO SEEKERS {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.PURPLE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    eventPlayer.Effects_SombraInvis.append(getLastCreatedText())
+
+    waitUntil(not eventPlayer.isUsingAbility1(), 9999)
+
+    # Destroy all hud text and effects
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Effects_SombraInvis)):
+        destroyInWorldText(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
+        destroyHudText(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
+        destroyEffect(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
+    eventPlayer.Effects_SombraInvis = null
+    
 # Mercy V. Rein Specific Rules
 rule "Refresh Resurrect Cooldown":
     @Event eachPlayer
