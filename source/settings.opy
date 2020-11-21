@@ -47,8 +47,8 @@ enum ACCESSIBILITY:
     WB_GRAPPLE_ALLOW_COOLDOWN,
     WB_GRAPPLE_DISABLED
 
-globalvar CURRENT_VERSION = "0.1.0 pre-release"
-globalvar CURRENT_CODE = ""
+globalvar CURRENT_VERSION = "0.2.0 beta"
+globalvar CURRENT_CODE = "N/A"
 globalvar CURRENT_PATCHNOTES # = "Latest Patch Notes\n* Initial Release\n(For previous patch notes, visit: N/A)"
 
 # Default settings
@@ -75,6 +75,7 @@ globalvar WORKSHOP_SET_ADV_DVA_MECH_RAW = createWorkshopSetting(enum["Allow De-m
 globalvar WORKSHOP_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCESSIBILITY.DVA_MECH_ALLOW_BOTH, ACCESSIBILITY.DVA_MECH_DISABLED][WORKSHOP_SET_ADV_DVA_MECH_RAW]
 globalvar WORKSHOP_SET_ADV_WB_GRAPPLE_RAW = createWorkshopSetting(enum["Allow when in Line Of Sight of Seeker (No Cooldown)", "Allow when in Line Of Sight of Seeker (Cooldown)", "Disabled when in Line Of Sight of Seeker"], "Advanced Settings", "Wrecking Ball Grapple Player Accessibility", 0, 2)
 globalvar WORKSHOP_SET_ADV_WB_GRAPPLE = [ACCESSIBILITY.WB_GRAPPLE_ALLOW, ACCESSIBILITY.WB_GRAPPLE_ALLOW_COOLDOWN, ACCESSIBILITY.WB_GRAPPLE_DISABLED][WORKSHOP_SET_ADV_WB_GRAPPLE_RAW]
+globalvar WORKSHOP_SET_ADV_USEPRERELEASE = createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
 
 #!include "game.opy"
 #!include "player.opy"

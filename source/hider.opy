@@ -125,8 +125,8 @@ rule "Slow Hider":
 rule "Kill Hiders Who Joined Late":
     @Event eachPlayer
     @Team 1
-    #@Condition CurrentGameState == GAME_STATE.SEEKING
-    #@Condition eventPlayer.JoinedLate == true
+    @Condition CurrentGameState == GAME_STATE.SEEKING
+    @Condition eventPlayer.JoinedLate == true
     @Condition eventPlayer.hasSpawned()
 
     eventPlayer.disableHeroHUD()
@@ -149,7 +149,7 @@ rule "Kill Hiders Who Joined Late":
     eventPlayer.Huds_JoinedLate = null
     eventPlayer.JoinedLate = false
     eventPlayer.enableHeroHud()
-
+    
 # Accessibility Rules
 
 # Mercy V. Rein Specific Rules
