@@ -4,6 +4,7 @@ playervar Hud_Detection
 playervar Hud_InSpawn
 playervar Huds_JoinedLate
 playervar Effects_SombraInvis
+playervar Hud_SombraTrans
 playervar playerHudIndex = 0
 playervar JoinedLate
 
@@ -86,6 +87,7 @@ rule "Slow Hider":
     @Event eachPlayer
     @Team 1
     @Condition WORKSHOP_SET_SLOWHIDER
+    @Condition CurrentGameState != GAME_STATE.WAITING
     @Condition getClosestPlayer(eventPlayer, Team.2) != null
     @Condition any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)])
 
@@ -98,6 +100,9 @@ rule "Slow Hider":
     eventPlayer.setAbility2Enabled(false)
     eventPlayer.setSecondaryFireEnabled(false if eventPlayer.getCurrentHero() != Hero.HAMMOND else true)
     eventPlayer.cancelPrimaryAction()
+    # Destroy Sombra's Translocator
+    if eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2():
+        eventPlayer.forceButtonPress(Button.INTERACT)
     hudSubtext(eventPlayer, "{0} YOU ARE WITHIN LINE OF SIGHT OF A SEEKER {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_Detection = getLastCreatedText()
 
@@ -164,7 +169,7 @@ rule "Sombra Invisibility Tracker":
     eventPlayer.Effects_SombraInvis.append(getLastCreatedEntity())
     createInWorldText(getPlayers(Team.2), eventPlayer, eventPlayer, 1, Clip.SURFACES, WorldTextReeval.VISIBILITY_POSITION_AND_STRING, Color.TEAM_1, SpecVisibility.DEFAULT)
     eventPlayer.Effects_SombraInvis.append(getLastCreatedText())
-    hudSubtext(eventPlayer, "{0} YOU ARE VISIBLE TO SEEKERS {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.PURPLE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    hudSubtext(eventPlayer, "{0} YOU ARE VISIBLE TO SEEKERS {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Effects_SombraInvis.append(getLastCreatedText())
 
     waitUntil(not eventPlayer.isUsingAbility1(), 9999)
@@ -175,6 +180,23 @@ rule "Sombra Invisibility Tracker":
         destroyHudText(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
         destroyEffect(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
     eventPlayer.Effects_SombraInvis = null
+    
+rule "Sombra: Destroy Translocator":
+    @Event eachPlayer
+    @Team 1
+    @Hero sombra
+    @Condition eventPlayer.hasSpawned()
+    @Condition eventPlayer.isUsingAbility2()
+
+    hudSubtext(eventPlayer, "{0} YOUR TRANSLOCATOR WILL BE DESTROYED IN {1} SECONDS {0}".format(iconString(Icon.WARNING), eventPlayer.getAbilityCooldown(Button.ABILITY_2)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    eventPlayer.Hud_SombraTrans = getLastCreatedText()
+
+    waitUntil(eventPlayer.getAbilityCooldown(Button.ABILITY_2) == 0 or not eventPlayer.isUsingAbility2(), 6)
+    eventPlayer.forceButtonPress(Button.INTERACT)
+
+    # Destroy all hud text and effects
+    destroyHudText(eventPlayer.Hud_SombraTrans)
+    eventPlayer.Hud_SombraTrans = null
     
 # Mercy V. Rein Specific Rules
 rule "Refresh Resurrect Cooldown":
