@@ -49,7 +49,7 @@ enum ACCESSIBILITY:
     WB_GRAPPLE_ALLOW_COOLDOWN,
     WB_GRAPPLE_DISABLED
 
-globalvar CURRENT_VERSION = "0.2.1 beta"
+globalvar CURRENT_VERSION = "0.3.0 beta"
 globalvar CURRENT_CODE = "N/A"
 globalvar CURRENT_PATCHNOTES # = "Latest Patch Notes\n* Initial Release\n(For previous patch notes, visit: N/A)"
 
