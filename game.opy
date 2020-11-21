@@ -1,0 +1,104 @@
+#!mainFile "settings.opy"
+
+enum GAME_STATE:
+    WAITING = "Waiting For Players",
+    HIDING = "Hiding",
+    SEEKING = "Seeking",
+    RESULTS = "Results",
+    END = "End Game"
+
+globalvar CurrentGameState = GAME_STATE.WAITING
+globalvar CurrentTime = 1800
+globalvar CurrentRound = 0
+globalvar HiderTeamScore = 0
+globalvar SeekerTeamScore = 0
+
+rule "Stop Skirmish Clock":
+    pauseMatchTime()
+
+rule "Waiting Phase":
+    @Condition CurrentGameState == GAME_STATE.WAITING
+
+    printLog("Game Phase: Waiting")
+
+    #!define RequiredHiders WORKSHOP_SET_REQUIRED_HIDERS * getNumberOfLivingPlayers(Team.2)
+
+    # Wait until everyone spawns in
+    waitUntil(all([player.hasSpawned() for player in getAllPlayers()]), WORKSHOP_SET_WAITING_MAXTIME)
+
+    # Wait until player count meets the required ratio of seekers to hiders
+    waitUntil(len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy()]) >= RequiredHiders and len([player for player in getPlayers(Team.2) if player.hasSpawned() and not player.isDummy()]) > 0, WORKSHOP_SET_WAITING_MAXTIME)
+
+    CurrentGameState = GAME_STATE.HIDING
+
+rule "Hiding Phase":
+    @Condition CurrentGameState == GAME_STATE.HIDING
+
+    printLog("Game Phase: Hiding")
+    [player for player in getPlayers(Team.ALL) if player.hasSpawned() and not player.isInSpawnRoom()].respawn()
+
+    CurrentRound += 1 
+    bigMessage(getAllPlayers() if WORKSHOP_SET_ADV_WINS > 1 else null, "Round {}".format(CurrentRound)) 
+    CurrentTime = WORKSHOP_SET_HIDETIME
+    chase(CurrentTime, 0, rate = 1, ChaseReeval.DESTINATION_AND_RATE)
+
+    waitUntil(CurrentTime == 0, 9999)
+
+    stopChasingVariable(CurrentTime)
+
+    CurrentGameState = GAME_STATE.SEEKING
+
+rule "Seeking Phase":
+    @Condition CurrentGameState == GAME_STATE.SEEKING
+
+    printLog("Game Phase: Seeking")
+
+    #!define HidersExist (len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy() and player.isAlive() and not player.isInSpawnRoom()]) > 0)
+    
+    CurrentTime = WORKSHOP_SET_SEEKTIME
+    chase(CurrentTime, 0, rate = 1, ChaseReeval.DESTINATION_AND_RATE)
+
+    waitUntil(CurrentTime == 0 or not HidersExist, 9999)
+
+    stopChasingVariable(CurrentTime)
+
+    CurrentGameState = GAME_STATE.RESULTS
+
+rule "Results":
+    @Condition CurrentGameState == GAME_STATE.RESULTS
+
+    printLog("Game Phase: Results")
+
+    #!define HidersExist (len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy() and player.isAlive() and not player.isInSpawnRoom()]) > 0)
+
+    # Add score to winning team
+    if HidersExist:
+        HiderTeamScore += 1
+        bigMessage(getAllPlayers() if WORKSHOP_SET_ADV_WINS > 1 else null, "Hiders Win!")
+    else:
+        SeekerTeamScore += 1
+        bigMessage(getAllPlayers() if WORKSHOP_SET_ADV_WINS > 1 else null, "Seekers Win!")
+    
+    # If team score reaches required wins, then declare victory. Otherwise, start another round
+    if HiderTeamScore >= WORKSHOP_SET_ADV_WINS:
+        declareTeamVictory(Team.1)
+        CurrentGameState = GAME_STATE.END
+    elif SeekerTeamScore >= WORKSHOP_SET_ADV_WINS:
+        declareTeamVictory(Team.2)
+        CurrentGameState = GAME_STATE.END
+    else:
+        setSlowMotion(25)
+        wait(1)
+        CurrentGameState = GAME_STATE.HIDING
+        setSlowMotion(100)
+
+rule "End Game":
+    @Condition CurrentGameState == GAME_STATE.END
+
+    printLog("Game Phase: End")
+
+    wait(WORKSHOP_SET_ADV_END)
+
+    setMatchTime(0)
+    unpauseMatchTime()
+    
