@@ -113,6 +113,7 @@ rule "Results":
 
 rule "Countdown":
     @Condition CurrentTime < 10
+    @Condition CurrentTime > 0
 
     PLAYSOUND_DEBUFF()
 

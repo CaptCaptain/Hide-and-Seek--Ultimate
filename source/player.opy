@@ -177,7 +177,7 @@ rule "Resurrect":
     eventPlayer.resurrect()
     eventPlayer.teleport(eventPlayer.LastWalkablePosition if eventPlayer.LastWalkablePosition != null else nearestWalkablePosition(eventPlayer.getPosition()))
     eventPlayer.setStatusEffect(null, Status.STUNNED, 2)
-    eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
+    if attacker() == victim(): eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, "BE CAREFUL!")
 
 rule "Disable Certain Abilities":
@@ -247,7 +247,7 @@ rule "D.va: Enable De-mech":
 rule "Show Debug Stats":
     @Condition WORKSHOP_SET_ADV_DEBUGSTATS != SHOW_DEBUG_STATS.NONE
 
-    hudText(hostPlayer if WORKSHOP_SET_ADV_DEBUGSTATS == SHOW_DEBUG_STATS.HOST else getAllPlayers(), "Debug Stats", "SERVER LOAD: {}\nSERVER LOAD AVERAGE: {}\nSERVER LOAD PEAK: {}\n".format(getServerLoad(), getAverageServerLoad(), getPeakServerLoad()), "", HudPosition.RIGHT, 0, Color.WHITE, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudText(hostPlayer if WORKSHOP_SET_ADV_DEBUGSTATS == SHOW_DEBUG_STATS.HOST else getAllPlayers(), "Debug Stats", "SERVER LOAD: {}\nSERVER LOAD AVERAGE: {}\nSERVER LOAD PEAK: {}\n".format(getServerLoad(), getAverageServerLoad(), getPeakServerLoad()), "", HudPosition.RIGHT, -1, Color.WHITE, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
 #!include "hider.opy"
 #!include "seeker.opy"
