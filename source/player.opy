@@ -77,8 +77,11 @@ rule "Title Hud":
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
-    hudSubheader(getAllPlayers(), CURRENT_PATCHNOTES, HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-    Hud_GameInfo.append(getLastCreatedText())
+    if len(CURRENT_PATCHNOTES) == 0: goto skip_patch_note_creation
+    for globalHudIndex in range(0, len(CURRENT_PATCHNOTES)):
+        hudSubheader(getAllPlayers(), CURRENT_PATCHNOTES[globalHudIndex], HudPosition.RIGHT, globalHudIndex, Color.WHITE, HudReeval.VISIBILITY, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+    skip_patch_note_creation:
 
     hudSubheader(getAllPlayers(), "Version: {} ({})\n".format(CURRENT_VERSION, CURRENT_CODE), HudPosition.LEFT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
