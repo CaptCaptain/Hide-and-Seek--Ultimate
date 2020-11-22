@@ -65,6 +65,11 @@ enum ACCESSIBILITY:
     WB_GRAPPLE_ALLOW_COOLDOWN,
     WB_GRAPPLE_DISABLED
 
+enum SHOW_DEBUG_STATS:
+    ALL,
+    HOST,
+    NONE
+
 globalvar CURRENT_VERSION = "1.0.0"
 globalvar CURRENT_CODE = "Code: D0XT4"
 globalvar CURRENT_PATCHNOTES = "Latest Patch Notes\n* Initial Release\n(For previous patch notes, visit: N/A)"
@@ -96,6 +101,8 @@ globalvar WORKSHOP_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCE
 #globalvar WORKSHOP_SET_ADV_WB_GRAPPLE = [ACCESSIBILITY.WB_GRAPPLE_ALLOW, ACCESSIBILITY.WB_GRAPPLE_ALLOW_COOLDOWN, ACCESSIBILITY.WB_GRAPPLE_DISABLED][WORKSHOP_SET_ADV_WB_GRAPPLE_RAW]
 globalvar WORKSHOP_SET_ADV_USEPRERELEASE = false #createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
 globalvar WORKSHOP_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
+globalvar WORKSHOP_SET_ADV_DEBUGSTATS_RAW = createWorkshopSetting(enum["HOST ONLY", "ALL PLAYERS", "NONE"], "Advanced Settings", "Show Debug Stats", 2, 6)
+globalvar WORKSHOP_SET_ADV_DEBUGSTATS = [SHOW_DEBUG_STATS.HOST, SHOW_DEBUG_STATS.ALL, SHOW_DEBUG_STATS.NONE][WORKSHOP_SET_ADV_DEBUGSTATS_RAW]
 
 #!include "game.opy"
 #!include "player.opy"
