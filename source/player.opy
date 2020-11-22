@@ -7,6 +7,7 @@ playervar BaseMoveSpeed = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar BaseJumpHeight = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
+playervar LastWalkablePosition
 
 subroutine RestrictAbilities
 
@@ -171,7 +172,7 @@ rule "Resurrect":
 
     # If the player dies to the environment or self-destructs.
     eventPlayer.resurrect()
-    eventPlayer.teleport(nearestWalkablePosition(eventPlayer.getPosition()))
+    eventPlayer.teleport(eventPlayer.LastWalkablePosition if eventPlayer.LastWalkablePosition != null else nearestWalkablePosition(eventPlayer.getPosition()))
     eventPlayer.setStatusEffect(null, Status.STUNNED, 2)
     eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, "BE CAREFUL!")
@@ -188,6 +189,13 @@ rule "Disable Certain Abilities":
 
     RestrictAbilities()
 
+rule "Set Last Walkable Position":
+    @Event eachPlayer
+    @Condition eventPlayer.isInAir()
+
+    eventPlayer.LastWalkablePosition = nearestWalkablePosition(eventPlayer.getPosition())
+
+    waitUntil(eventPlayer.isOnGround(), 9999)
 
 # Accessibility Rules
 rule "D.va: TP to Mech Position (Hider)":
