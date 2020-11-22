@@ -151,6 +151,7 @@ rule "Player Setup":
     # Teleport to Objective
     waitUntil(eventPlayer.hasSpawned(), 9999)
     eventPlayer.DvaMechPosition = eventPlayer.getPosition()
+    RestrictAbilities()
     if CurrentGameState == GAME_STATE.WAITING:
         eventPlayer.teleport(nearestWalkablePosition(getObjectivePosition(getCurrentObjective())))
 
