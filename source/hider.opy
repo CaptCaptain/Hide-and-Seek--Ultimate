@@ -104,7 +104,7 @@ rule "Slow Hider":
     if eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2():
         eventPlayer.forceButtonPress(Button.INTERACT)
     # Prevent Wrecking Ball from losing grapple
-    if not eventPlayer.getCurrentHero() == Hero.HAMMOND:
+    if not eventPlayer.getCurrentHero() == Hero.HAMMOND and eventPlayer.isMoving():
         eventPlayer.cancelPrimaryAction()
     hudSubtext(eventPlayer, "{0} YOU ARE WITHIN LINE OF SIGHT OF A SEEKER {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_Detection = getLastCreatedText()
