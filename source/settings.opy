@@ -42,12 +42,6 @@ settings {
     }
 }
 
-# TODO Fix a bug where players cannot be killed while dying
-# TODO Fix issues with noclip
-# TODO Disable abilities in spawn room so players can't exploit
-# TODO Fix issues where a player can spawn in the enemy spawn
-# TODO Fix issues where a seeker cannot go through a spawn barrier
-
 #!obfuscate
 
 enum STYLE:

@@ -42,13 +42,14 @@ rule "Seeker Noclip Barrier":
     @Event eachPlayer
     @Team 2
     @Condition WORKSHOP_SET_MODE != STYLE.GLITCH
-    @Condition CurrentGameState == GAME_STATE.SEEKING
+    #@Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.isMoving()
-    @Condition isInLoS(eventPlayer, worldVector(eventPlayer.getThrottle(), eventPlayer, Transform.ROTATION_AND_TRANSLATION), BarrierLos.PASS_THROUGH_BARRIERS)
+    @Condition eventPlayer.isOnGround()
+    @Condition isInLoS(eventPlayer, worldVector(eventPlayer.getThrottle(), eventPlayer, Transform.ROTATION_AND_TRANSLATION) + vect(0, evalOnce(distance(eventPlayer.getEyePosition(), eventPlayer.getPosition()) / 2), 0), BarrierLos.PASS_THROUGH_BARRIERS)
 
     # Disable collision if the player is within line of sight of a point in the direction of throttle.
     eventPlayer.disableEnvironmentCollision(false)
-    wait()
+    wait(0.05)
     if RULE_CONDITION:
         goto RULE_START
     eventPlayer.enableEnvironmentCollision()
