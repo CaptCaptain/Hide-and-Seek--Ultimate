@@ -42,6 +42,13 @@ settings {
     }
 }
 
+# Fix bug where Symmetra can place turrets during waiting
+# Fix a bug where players cannot be killed while dying
+# Fix issues with noclip
+# Disable abilities in spawn room so players can't exploit
+# Fix issues where a player can spawn in the enemy spawn
+# Fix issues where a seeker cannot go through a spawn barrier
+
 #!obfuscate
 
 enum STYLE:
@@ -74,7 +81,7 @@ globalvar WORKSHOP_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.MERCY_REIN][WO
 globalvar WORKSHOP_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
 globalvar WORKSHOP_SET_REQUIRED_HIDERS = [3, 2, 1][WORKSHOP_SET_REQUIRED_RATIO]
 globalvar WORKSHOP_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 1, 1)
-globalvar WORKSHOP_SET_WAITING_MAXTIME = [0, 25, 9999][WORKSHOP_SET_WAITING_MAXTIME_RAW]
+globalvar WORKSHOP_SET_WAITING_MAXTIME = [0, 5, 9999][WORKSHOP_SET_WAITING_MAXTIME_RAW]
 globalvar WORKSHOP_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow Hider When In Line Of Sight Of Seeker", true, 4)
 
 # Advanced Settings
