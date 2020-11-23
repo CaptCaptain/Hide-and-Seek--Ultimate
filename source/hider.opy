@@ -87,7 +87,7 @@ rule "Slow Hider":
     @Event eachPlayer
     @Team 1
     @Condition WORKSHOP_SET_SLOWHIDER
-    @Condition CurrentGameState != GAME_STATE.WAITING
+    @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition getClosestPlayer(eventPlayer, Team.2) != null
     @Condition any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)])
 
