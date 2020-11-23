@@ -6,6 +6,7 @@ playervar Hud_Objective
 globalvar globalHudIndex = 0
 playervar BaseMoveSpeed = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar BaseJumpHeight = 100 * WORKSHOP_SET_ADV_BASESPEED
+playervar BaseScaling = WORKSHOP_SET_ADV_SCALE
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
 playervar LastWalkablePosition
@@ -137,12 +138,26 @@ rule "Remove Global Huds":
 
 rule "Player Scaling":
     @Event eachPlayer
-    @Condition WORKSHOP_SET_ADV_SCALE > 1 or WORKSHOP_SET_ADV_SCALE < 1
+    @Condition (WORKSHOP_SET_ADV_SCALE > 1 or WORKSHOP_SET_ADV_SCALE < 1) or (WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL)
 
     # Scales the player
-    eventPlayer.startScalingSize(WORKSHOP_SET_ADV_SCALE, false)
-    eventPlayer.startScalingBarriers(WORKSHOP_SET_ADV_SCALE, false)
-    eventPlayer.startModifyingVoicelinePitch(2 - WORKSHOP_SET_ADV_SCALE, false)
+    eventPlayer.startScalingSize(eventPlayer.BaseScaling, true)
+    eventPlayer.startScalingBarriers(eventPlayer.BaseScaling, true)
+    if not (WORKSHOP_SET_ADV_SCALE > 1 or WORKSHOP_SET_ADV_SCALE < 1): goto skip_voice_modification
+    eventPlayer.startModifyingVoicelinePitch(2 - eventPlayer.BaseScaling, true)
+    skip_voice_modification:
+
+rule "Tank Scaling":
+    @Event eachPlayer
+    @Condition WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL
+    @Condition any([hero == eventPlayer.getCurrentHero() for hero in getTankHeroes()])
+    @Condition not eventPlayer.isInAlternateForm()
+
+    eventPlayer.BaseScaling /= 1 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else 1.12 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
+
+    waitUntil(not any([hero == eventPlayer.getCurrentHero() for hero in getTankHeroes()]) or eventPlayer.isInAlternateForm(), 9999)
+
+    eventPlayer.BaseScaling *= 1 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else 1.12 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
 
 rule "Player Setup":
     @Event eachPlayer

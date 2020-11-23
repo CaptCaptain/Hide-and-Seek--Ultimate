@@ -127,7 +127,7 @@ rule "End Game":
 
     printLog("Game Phase: End")
 
-    wait(WORKSHOP_SET_ADV_END)
+    wait(WORKSHOP_SET_END)
 
     setMatchTime(0)
     unpauseMatchTime()
