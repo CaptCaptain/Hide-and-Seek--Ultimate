@@ -28,6 +28,12 @@ rule "Seeker Setup":
 
     printLog("Seeker Setup finished for {}".format(eventPlayer))
 
+rule "Update Outline":
+    @Event playerJoined
+    @Team 1
+
+    eventPlayer.startForcingOutlineFor(getPlayers(Team.2), WORKSHOP_SET_USEOUTLINE, Color.TEAM_1, OutlineVisibility.DEFAULT)
+
 rule "Respawn Seeker if they leave Spawn Room":
     @Event eachPlayer
     @Team 2

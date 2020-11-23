@@ -2,6 +2,7 @@
 
 globalvar Hud_GameInfo
 globalvar Hud_GameTitle
+playervar Hud_Objective
 globalvar globalHudIndex = 0
 playervar BaseMoveSpeed = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar BaseJumpHeight = 100 * WORKSHOP_SET_ADV_BASESPEED
@@ -49,22 +50,25 @@ def RestrictAbilities():
 rule "Player Huds":
     @Event eachPlayer
 
+    destroyHudText(eventPlayer.Hud_Objective)
+
     # Creates the Objective Hud
     hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), "HIDER" if eventPlayer.getTeam() == Team.1 else "SEEKER"), "PHASE: {}".format(CurrentGameState), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.BLUE if eventPlayer.getTeam() == Team.1 else Color.RED, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
+    eventPlayer.Hud_Objective = getLastCreatedText()
 
     wait(9999)
 
 rule "Title Hud":
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "HIDE & SEEK", getObjectivePosition(getCurrentObjective()) + vect(0, 5, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), "HIDE & SEEK", getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "ULTIMATE", getObjectivePosition(getCurrentObjective()) + vect(0, 4.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), "ULTIMATE", getObjectivePosition(getCurrentObjective()) + vect(0, 3.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "STYLE: {}".format(WORKSHOP_SET_MODE), getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), "STYLE: {}".format(WORKSHOP_SET_MODE), getObjectivePosition(getCurrentObjective()) + vect(0, 3, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "WAITING FOR PLAYERS".format(RequiredHiders), getObjectivePosition(getCurrentObjective()) + vect(0, 3.25, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.WHITE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), "WAITING FOR PLAYERS".format(RequiredHiders), getObjectivePosition(getCurrentObjective()) + vect(0, 2.25, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.WHITE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createEffect(getAllPlayers(), Effect.SPHERE, Color.TURQUOISE, getObjectivePosition(getCurrentObjective()), 20, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createEffect(getAllPlayers(), Effect.RING, Color.TURQUOISE, getObjectivePosition(getCurrentObjective()), 10, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
     Hud_GameTitle.append(getLastCreatedEntity())
 
     waitUntil(CurrentGameState != GAME_STATE.WAITING, 9999)
@@ -157,7 +161,9 @@ rule "Player Setup":
     eventPlayer.DvaMechPosition = eventPlayer.getPosition()
     RestrictAbilities()
     if CurrentGameState == GAME_STATE.WAITING:
-        eventPlayer.teleport(nearestWalkablePosition(getObjectivePosition(getCurrentObjective())))
+        eventPlayer.teleport(nearestWalkablePosition(getObjectivePosition(getCurrentObjective()) + vect(random.randint(-10, 10), 0, random.randint(-10, 10))))
+        wait()
+        eventPlayer.setFacing(directionTowards(eventPlayer.getEyePosition(), getObjectivePosition(getCurrentObjective())) + vect(0, 0.5, 0), Relativity.TO_WORLD)
 
 rule "Reset Ammo":
     @Event eachPlayer

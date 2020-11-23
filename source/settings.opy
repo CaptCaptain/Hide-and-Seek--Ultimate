@@ -64,9 +64,9 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "1.0.1"
+globalvar CURRENT_VERSION = "1.1.0"
 globalvar CURRENT_CODE = "Code: D0XT4"
-globalvar CURRENT_PATCHNOTES = ["Latest Patch Notes", "* Fixed a bug where seekers could use their abilities while waiting for players", "* Fixed a bug where seekers could noclip when there was no spawn barrier", "* Fixed a bug where hiders could get into enemy spawn", "(For previous patch notes, visit: N/A)"]
+globalvar CURRENT_PATCHNOTES = ["Latest Patch Notes", "* Fixed a bug where seekers could use their abilities while waiting for players", "* Fixed a bug where seekers could noclip when there was no spawn barrier", "Fixed a bug where hider's outlines weren't being hidden if specified by workshop settings", "* Fixed a bug where hiders could get into enemy spawn", "(For previous patch notes, visit: N/A)"]
 
 # Default settings
 globalvar WORKSHOP_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
