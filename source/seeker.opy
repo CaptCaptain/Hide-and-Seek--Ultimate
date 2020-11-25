@@ -51,7 +51,7 @@ rule "Seeker Noclip Barrier":
     #@Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.isMoving()
     @Condition eventPlayer.isOnGround()
-    @Condition isInLoS(eventPlayer, worldVector(eventPlayer.getThrottle(), eventPlayer, Transform.ROTATION_AND_TRANSLATION) + vect(0, evalOnce(distance(eventPlayer.getEyePosition(), eventPlayer.getPosition()) / 2), 0), BarrierLos.PASS_THROUGH_BARRIERS)
+    @Condition isInLoS(eventPlayer.getEyePosition(), worldVector(eventPlayer.getThrottle(), eventPlayer, Transform.ROTATION_AND_TRANSLATION) + vect(0, evalOnce(distance(eventPlayer.getEyePosition(), eventPlayer.getPosition()) / 2), 0), BarrierLos.PASS_THROUGH_BARRIERS)
 
     # Disable collision if the player is within line of sight of a point in the direction of throttle.
     eventPlayer.disableEnvironmentCollision(false)

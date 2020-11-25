@@ -217,7 +217,7 @@ rule "Set Last Walkable Position":
     @Event eachPlayer
     @Condition eventPlayer.isInAir()
 
-    eventPlayer.LastWalkablePosition = nearestWalkablePosition(eventPlayer.getPosition())
+    eventPlayer.LastWalkablePosition = eventPlayer.getPosition()
 
     waitUntil(eventPlayer.isOnGround(), 9999)
 
