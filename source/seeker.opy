@@ -48,7 +48,7 @@ rule "Seeker Noclip Barrier":
     @Event eachPlayer
     @Team 2
     @Condition WORKSHOP_SET_MODE != STYLE.GLITCH
-    #@Condition CurrentGameState == GAME_STATE.SEEKING
+    @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.isMoving()
     @Condition eventPlayer.isOnGround()
     @Condition isInLoS(eventPlayer.getEyePosition(), worldVector(eventPlayer.getThrottle(), eventPlayer, Transform.ROTATION_AND_TRANSLATION) + vect(0, evalOnce(distance(eventPlayer.getEyePosition(), eventPlayer.getPosition()) / 2), 0), BarrierLos.PASS_THROUGH_BARRIERS)
