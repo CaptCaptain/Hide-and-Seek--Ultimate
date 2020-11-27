@@ -60,7 +60,6 @@ rule "Player Huds":
     wait(9999)
 
 rule "Title Hud":
-    Hud_GameTitle.append(getLastCreatedText())
     createInWorldText(getAllPlayers(), "HIDE & SEEK", getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
     createInWorldText(getAllPlayers(), "ULTIMATE", getObjectivePosition(getCurrentObjective()) + vect(0, 3.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
@@ -84,7 +83,7 @@ rule "Global Huds":
 
     if len(CURRENT_PATCHNOTES) == 0: goto skip_patch_note_creation
     for globalHudIndex in range(0, len(CURRENT_PATCHNOTES)):
-        hudSubheader(getAllPlayers(), CURRENT_PATCHNOTES[globalHudIndex], HudPosition.RIGHT, globalHudIndex, Color.WHITE, HudReeval.VISIBILITY, SpecVisibility.DEFAULT)
+        hudSubheader(getAllPlayers(), CURRENT_PATCHNOTES[globalHudIndex], HudPosition.RIGHT, globalHudIndex + 1, Color.WHITE, HudReeval.VISIBILITY, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     skip_patch_note_creation:
 
