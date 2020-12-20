@@ -81,16 +81,10 @@ rule "Title Hud":
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
-    if len(CURRENT_PATCHNOTES) == 0: goto skip_patch_note_creation
-    for globalHudIndex in range(0, len(CURRENT_PATCHNOTES)):
-        hudSubheader(getAllPlayers(), CURRENT_PATCHNOTES[globalHudIndex], HudPosition.RIGHT, globalHudIndex + 1, Color.WHITE, HudReeval.VISIBILITY, SpecVisibility.DEFAULT)
-        Hud_GameInfo.append(getLastCreatedText())
-    skip_patch_note_creation:
-
-    hudSubheader(getAllPlayers(), "Version: {} ({})\n".format(CURRENT_VERSION, CURRENT_CODE), HudPosition.LEFT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), "Version: {} ({})\n".format(CURRENT_VERSION, CURRENT_CODE), HudPosition.RIGHT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "{} Hide & Seek: Ultimate by CaptCaptain#11421".format(abilityIconString(random.choice(getAllHeroes()), Button.ULTIMATE)), HudPosition.LEFT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "{} Hide & Seek: Ultimate by CaptCaptain#11421".format(abilityIconString(random.choice(getAllHeroes()), Button.ULTIMATE)), HudPosition.RIGHT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     hudHeader(getAllPlayers(), "{} RULESET:".format(abilityIconString(Hero.TORBJORN, Button.ABILITY_2)), HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
@@ -101,31 +95,37 @@ rule "Global Huds":
         Hud_GameInfo.append(getLastCreatedText())
 
 
-    hudSubtext(getAllPlayers(), "STYLE: {}".format(WORKSHOP_SET_MODE), HudPosition.LEFT, 2, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "STYLE: {}".format(WORKSHOP_SET_MODE), HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "FIRST TEAM TO: {} WIN(S)".format(WORKSHOP_SET_ADV_WINS), HudPosition.LEFT, 3, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "FIRST TEAM TO: {} WIN(S)".format(WORKSHOP_SET_ADV_WINS), HudPosition.LEFT, 3, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "SEEK TIME: {}:{}".format(floor(((WORKSHOP_SET_SEEKTIME % 86400) % 3600) / 60), floor(((WORKSHOP_SET_SEEKTIME % 86400) % 3600) % 60)), HudPosition.LEFT, 4, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "SEEK TIME: {}:{}".format(floor(((WORKSHOP_SET_SEEKTIME % 86400) % 3600) / 60), floor(((WORKSHOP_SET_SEEKTIME % 86400) % 3600) % 60)), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "HIDING TIME: {}:{}".format(floor(((WORKSHOP_SET_HIDETIME % 86400) % 3600) / 60), floor(((WORKSHOP_SET_HIDETIME % 86400) % 3600) % 60)), HudPosition.LEFT, 4, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "HIDING TIME: {}:{}".format(floor(((WORKSHOP_SET_HIDETIME % 86400) % 3600) / 60), floor(((WORKSHOP_SET_HIDETIME % 86400) % 3600) % 60)), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "PLAYER SIZE: {}x".format(WORKSHOP_SET_ADV_SCALE), HudPosition.LEFT, 4, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "PLAYER SIZE: {}x".format(WORKSHOP_SET_ADV_SCALE), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "PLAYER SPEED: {}x".format(WORKSHOP_SET_ADV_BASESPEED), HudPosition.LEFT, 4, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "PLAYER SPEED: {}x".format(WORKSHOP_SET_ADV_BASESPEED), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "HIDER OUTLINES: {}".format("on" if WORKSHOP_SET_USEOUTLINE else "off"), HudPosition.LEFT, 4, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "HIDER OUTLINES: {}".format("on" if WORKSHOP_SET_USEOUTLINE else "off"), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), "TO CUSTOMIZE RULESET (HOST ONLY):\nGO TO LOBBY > SETTINGS > WORKSHOP SETTINGS", HudPosition.LEFT, 5, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), "FOR MORE INFORMATION ON RULESET:\nGO TO LOBBY > RIGHT CLICK MAP PICTURE > SCROLL DOWN TO WORKSHOP\n", HudPosition.LEFT, 6, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), "RESTRICT SEEKER HERO ROSTER: {}".format(not(WORKSHOP_SET_ADV_SEEK_ALLOWH)), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    Hud_GameInfo.append(getLastCreatedText())
+
+    hudSubheader(getAllPlayers(), "TO CUSTOMIZE RULESET (HOST ONLY):\nGO TO LOBBY > SETTINGS > WORKSHOP SETTINGS", HudPosition.LEFT, 6, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    Hud_GameInfo.append(getLastCreatedText())
+
+    hudSubheader(getAllPlayers(), "FOR MORE INFORMATION ON RULESET:\nGO TO LOBBY > RIGHT CLICK MAP PICTURE > SCROLL DOWN TO WORKSHOP\n", HudPosition.LEFT, 7, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     if WORKSHOP_SET_ADV_WINS > 1:
