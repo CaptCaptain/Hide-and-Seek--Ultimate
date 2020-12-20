@@ -1,6 +1,6 @@
 settings {
     "main": {
-        "description": 'The classic Hide & Seek game has returned as a new and improved workshop gamemode! A new additional level of customization is offered to hosts through Workshop Settings; make everyone small, change the time for each phase, or even how the game plays with styles such as "Glitch" or "Mercy V. Reinhardt"\n[Created by CaptCaptain#11421]'
+        "description": 'The classic Hide & Seek game has returned as a new and improved workshop gamemode! A new additional level of customization is offered to hosts through Workshop Settings; make everyone small, change the time for each phase, or even how the game plays with different game styles\n[Created by CaptCaptain#11421]'
     },
     "lobby": {
         "enableMatchVoiceChat": true,
@@ -41,6 +41,8 @@ settings {
         }
     }
 }
+
+#!obfuscate noConstantObfuscation
 
 enum STYLE:
     DEFAULT = "DEFAULT",
