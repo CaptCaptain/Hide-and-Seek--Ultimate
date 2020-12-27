@@ -7,6 +7,7 @@ The classic Hide & Seek game as a new and improved Overwatch workshop gamemode!
 To compile this gamemode, you'll need:
 * Visual Studio Code (https://code.visualstudio.com/)
 * The latest version of the OverPy extension (https://github.com/Zezombye/overpy)
+* Overwatch
 
 # Compiling
 1. Download this repository and put it somewhere on your computer.
