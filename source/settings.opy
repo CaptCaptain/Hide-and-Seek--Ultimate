@@ -68,7 +68,7 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "1.2.0"
+globalvar CURRENT_VERSION = "1.3.0"
 globalvar CURRENT_CODE = "Code: D0XT4"
 
 # Default settings
