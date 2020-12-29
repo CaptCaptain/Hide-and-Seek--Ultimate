@@ -41,6 +41,21 @@ rule "Hider Setup":
 
     printLog("Hider Setup finished for {}".format(eventPlayer))
 
+rule "Hider Tank Scaling":
+    @Event eachPlayer
+    @Team 1
+    @Condition WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL
+    @Condition any([hero == eventPlayer.getCurrentHero() for hero in getTankHeroes()])
+    @Condition not eventPlayer.isInAlternateForm()
+
+    #!define TankScaleDownFactor 1.15
+
+    eventPlayer.BaseScaling /= 1 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
+
+    waitUntil(not any([hero == eventPlayer.getCurrentHero() for hero in getTankHeroes()]) or eventPlayer.isInAlternateForm(), 9999)
+
+    eventPlayer.BaseScaling *= 1 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
+
 rule "Refresh Cooldown for Hiders":
     @Event eachPlayer
     @Team 1
