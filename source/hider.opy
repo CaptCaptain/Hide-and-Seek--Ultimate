@@ -172,6 +172,7 @@ rule "Sombra Invisibility Tracker":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isUsingAbility1()
     
+    # Create effects and hud
     createEffect(getAllPlayers(), Effect.BAD_AURA, Color.TEAM_1, updateEveryTick(eventPlayer.getPosition() + Vector.UP), 1, EffectReeval.VISIBILITY_POSITION_RADIUS_AND_COLOR)
     eventPlayer.Effects_SombraInvis.append(getLastCreatedEntity())
     createInWorldText(getPlayers(Team.2), eventPlayer, eventPlayer, 1, Clip.SURFACES, WorldTextReeval.VISIBILITY_POSITION_AND_STRING, Color.TEAM_1, SpecVisibility.DEFAULT)
