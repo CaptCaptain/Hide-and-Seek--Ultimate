@@ -49,7 +49,8 @@ enum STYLE:
     CLASSIC = "CLASSIC",
     RESTRICTED = "RESTRICTED",
     MERCY_REIN = "MERCY VS. REINHARDT",
-    GLITCH = "GLITCH"
+    GLITCH = "GLITCH",
+    TINY = "TINY"
 
 enum ACCESSIBILITY:
     DVA_MECH_ALLOW_BOTH,
@@ -76,8 +77,8 @@ globalvar WORKSHOP_SET_HIDETIME_RAW = createWorkshopSetting(enum["1:30", "1:00",
 globalvar WORKSHOP_SET_HIDETIME = [90, 60, 45][WORKSHOP_SET_HIDETIME_RAW]
 globalvar WORKSHOP_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30", "4:00", "3:30", "3:00", "2:30", "2:00"], "Ruleset", "Seeking Time", 2, 2)
 globalvar WORKSHOP_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 120][WORKSHOP_SET_SEEKTIME_RAW]
-globalvar WORKSHOP_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Noclip)", "Mercy V. Reinhardt"], "Ruleset", "Style", 0, 0)
-globalvar WORKSHOP_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.MERCY_REIN][WORKSHOP_SET_MODE_RAW]
+globalvar WORKSHOP_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Noclip)", "TINY", "Mercy V. Reinhardt"], "Ruleset", "Style", 0, 0)
+globalvar WORKSHOP_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.TINY, STYLE.MERCY_REIN][WORKSHOP_SET_MODE_RAW]
 globalvar WORKSHOP_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
 globalvar WORKSHOP_SET_REQUIRED_HIDERS = [3, 2, 1][WORKSHOP_SET_REQUIRED_RATIO]
 globalvar WORKSHOP_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 1, 1)

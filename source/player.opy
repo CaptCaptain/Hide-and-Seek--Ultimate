@@ -140,7 +140,7 @@ rule "Remove Global Huds":
 
 rule "Player Scaling":
     @Event eachPlayer
-    @Condition (WORKSHOP_SET_ADV_SCALE > 1 or WORKSHOP_SET_ADV_SCALE < 1) or (WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL)
+    @Condition (eventPlayer.BaseScaling > 1 or eventPlayer.BaseScaling < 1) or (WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL)
 
     # Scales the player
     eventPlayer.startScalingSize(eventPlayer.BaseScaling, true)

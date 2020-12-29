@@ -22,6 +22,9 @@ rule "Hider Setup":
             eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed * 1.5)
             eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight * 1.5)
             break
+        case STYLE.TINY:
+            eventPlayer.BaseScaling = WORKSHOP_SET_ADV_SCALE / 2
+            break
         default:
             break
 
