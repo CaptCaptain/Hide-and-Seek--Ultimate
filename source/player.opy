@@ -10,6 +10,7 @@ playervar BaseScaling = WORKSHOP_SET_ADV_SCALE
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
 playervar LastWalkablePosition
+playervar ThirdPersonCameraEnabled = false
 
 subroutine RestrictAbilities
 
@@ -56,6 +57,10 @@ rule "Player Huds":
     # Creates the Objective Hud
     hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), "HIDER" if eventPlayer.getTeam() == Team.1 else "SEEKER"), "PHASE: {}".format(CurrentGameState), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.BLUE if eventPlayer.getTeam() == Team.1 else Color.RED, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
     eventPlayer.Hud_Objective = getLastCreatedText()
+
+    # Camera Hud Instructions
+    if WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
+        hudSubtext(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
 
     wait(9999)
 
@@ -256,6 +261,37 @@ rule "D.va: Enable De-mech":
         eventPlayer.forceButtonPress(Button.ULTIMATE)
         waitUntil(not eventPlayer.isInAlternateForm(), 9999)
         eventPlayer.disallowButton(Button.ULTIMATE)
+
+rule "Start Third Person Camera":
+    @Event eachPlayer
+    @Condition eventPlayer.ThirdPersonCameraEnabled == true
+
+    # Smooth transition to third person camera
+    eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
+    wait()
+    eventPlayer.startCamera(updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + worldVector(vect(1 * (min(-2.5 / 2.5, -0.75)), 0, 0), eventPlayer, Transform.ROTATION) + eventPlayer.getFacingDirection() * -2.5, getAllPlayers(), eventPlayer, false).getHitPosition()), updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + eventPlayer.getFacingDirection() * 200, getAllPlayers(), eventPlayer, false).getHitPosition()), 60)
+
+rule "Stop Third Person Camera":
+    @Event eachPlayer
+    @Condition eventPlayer.ThirdPersonCameraEnabled == false
+
+    # Smooth transition to first person camera
+    eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
+    wait(0.08)
+    eventPlayer.stopCamera()
+
+rule "Enable Start Third Person Camera":
+    @Event eachPlayer
+    @Condition WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON
+
+    eventPlayer.ThirdPersonCameraEnabled = true
+
+rule "Toggle Third Person Camera":
+    @Event eachPlayer
+    @Condition WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE
+    @Condition eventPlayer.isHoldingButton(Button.RELOAD) and eventPlayer.getAmmo(0) == eventPlayer.getMaxAmmo(0)
+
+    eventPlayer.ThirdPersonCameraEnabled = not eventPlayer.ThirdPersonCameraEnabled
 
 rule "Show Debug Stats":
     @Condition WORKSHOP_SET_ADV_DEBUGSTATS != SHOW_DEBUG_STATS.NONE
