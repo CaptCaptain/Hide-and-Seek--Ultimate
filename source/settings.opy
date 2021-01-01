@@ -76,8 +76,8 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "1.3.0"
-globalvar CURRENT_CODE = "Code: D0XT4"
+globalvar CURRENT_VERSION = "1.4.0"
+globalvar CURRENT_CODE = "Latest Code: D0XT4"
 
 # Default settings
 globalvar WORKSHOP_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)

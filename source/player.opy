@@ -61,6 +61,7 @@ rule "Player Huds":
     # Camera Hud Instructions
     if WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
         hudSubtext(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        eventPlayer.Hud_Objective = getLastCreatedText()
 
     wait(9999)
 
@@ -144,7 +145,7 @@ rule "Global Huds":
     Hud_GameInfo.append(getLastCreatedText())
 
     if WORKSHOP_SET_ADV_WINS > 1:
-        hudText(getAllPlayers(), "TEAM SCORE:", "", "HIDERS: {}\nSEEKERS: {}".format(HiderTeamScore, SeekerTeamScore), HudPosition.LEFT, 6, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudText(getAllPlayers(), "TEAM SCORE:", "", "HIDERS: {}\nSEEKERS: {}".format(HiderTeamScore, SeekerTeamScore), HudPosition.LEFT, 8, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
 rule "Remove Global Huds":
