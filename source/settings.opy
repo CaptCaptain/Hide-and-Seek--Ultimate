@@ -61,7 +61,10 @@ enum ACCESSIBILITY:
     WB_GRAPPLE_DISABLED,
     TANKS_SCALE_ALL,
     TANKS_SCALE,
-    TANKS_NOSCALE
+    TANKS_NOSCALE,
+    3RD_CAMERA_ON,
+    3RD_CAMERA_OFF,
+    3RD_CAMERA_TOGGLE
 
 enum SHOW_DEBUG_STATS:
     ALL,
@@ -102,6 +105,9 @@ globalvar WORKSHOP_SET_ADV_USEPRERELEASE = false #createWorkshopSetting(bool, "A
 globalvar WORKSHOP_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
 globalvar WORKSHOP_SET_ADV_DEBUGSTATS_RAW = createWorkshopSetting(enum["HOST ONLY", "ALL PLAYERS", "NONE"], "Advanced Settings", "Show Debug Stats", 2, 6)
 globalvar WORKSHOP_SET_ADV_DEBUGSTATS = [SHOW_DEBUG_STATS.HOST, SHOW_DEBUG_STATS.ALL, SHOW_DEBUG_STATS.NONE][WORKSHOP_SET_ADV_DEBUGSTATS_RAW]
+
+globalvar WORKSHOP_SET_ADV_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Advanced Settings", "Camera Mode", 0, 4)
+globalvar WORKSHOP_SET_ADV_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WORKSHOP_SET_ADV_3RD_CAM_RAW]
 
 #!include "game.opy"
 #!include "player.opy"
