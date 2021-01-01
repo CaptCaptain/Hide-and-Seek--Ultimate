@@ -85,10 +85,13 @@ rule "Seeker Assistance":
     @Condition eventPlayer.hasSpawned()
     @Condition len(getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF)) > 0
 
+    # Create hud text
     hudSubtext(eventPlayer, "{0} THERE ARE HIDERS IN THIS AREA {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_Seeker_Assistance = getLastCreatedText()
 
+    # Wait until there are no hiders in range
     waitUntil(len(getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF)) == 0, 9999)
 
+    # Remove hud text
     destroyHudText(eventPlayer.Hud_Seeker_Assistance)
     eventPlayer.Hud_Seeker_Assistance = null
