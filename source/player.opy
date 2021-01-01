@@ -120,8 +120,16 @@ rule "Global Huds":
     hudSubtext(getAllPlayers(), "PLAYER SPEED: {}x".format(WORKSHOP_SET_ADV_BASESPEED), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
+    if WORKSHOP_SET_SEEKER_OUTLINES != ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT:
+        hudSubtext(getAllPlayers(), "SEEKER OUTLINES: {}".format(WORKSHOP_SET_SEEKER_OUTLINES), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+
     hudSubtext(getAllPlayers(), "HIDER OUTLINES: {}".format("on" if WORKSHOP_SET_USEOUTLINE else "off"), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
+
+    if WORKSHOP_SET_SEEKER_ASSIST:
+        hudSubtext(getAllPlayers(), "SEEKER ASSISTANCE: {}".format(WORKSHOP_SET_SEEKER_ASSIST), HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
