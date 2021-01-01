@@ -1,6 +1,7 @@
 #!mainFile "settings.opy"
 
 playervar Hud_Seeker_Name
+playervar Hud_Seeker_Assistance
 
 rule "Seeker Setup":
     @Event eachPlayer
@@ -76,3 +77,18 @@ rule "Clear Seeker Name":
     @Team 2
 
     destroyInWorldText(eventPlayer.Hud_Seeker_Name)
+
+rule "Seeker Assistance":
+    @Event eachPlayer
+    @Team 2
+    @Condition WORKSHOP_SET_SEEKER_ASSIST == true
+    @Condition eventPlayer.hasSpawned()
+    @Condition len(getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF)) > 0
+
+    hudSubtext(eventPlayer, "{0} THERE ARE HIDERS IN THIS AREA {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    eventPlayer.Hud_Seeker_Assistance = getLastCreatedText()
+
+    waitUntil(len(getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF)) == 0, 9999)
+
+    destroyHudText(eventPlayer.Hud_Seeker_Assistance)
+    eventPlayer.Hud_Seeker_Assistance = null
