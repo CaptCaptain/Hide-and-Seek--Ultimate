@@ -220,6 +220,18 @@ rule "Sombra: Destroy Translocator":
     # Destroy all hud text and effects
     destroyHudText(eventPlayer.Hud_SombraTrans)
     eventPlayer.Hud_SombraTrans = null
+
+rule "Sombra: Clear Effects When Switching Heroes":
+    @Event eachPlayer
+    @Team 1
+    @Condition eventPlayer.getCurrentHero() != Hero.SOMBRA
+
+    # Destroy all hud text and effects
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Effects_SombraInvis)):
+        destroyInWorldText(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
+        destroyHudText(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
+        destroyEffect(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
+    eventPlayer.Effects_SombraInvis = null
     
 # Mercy V. Rein Specific Rules
 rule "Refresh Resurrect Cooldown":
