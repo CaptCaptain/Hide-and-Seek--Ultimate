@@ -31,6 +31,15 @@ rule "Hider Setup":
     # Wait for Player to Spawn
     waitUntil(eventPlayer.hasSpawned(), 9999)
 
+    # Seeker Outlines
+    switch WORKSHOP_SET_SEEKER_OUTLINES:
+        case ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS:
+            getPlayers(Team.2).startForcingOutlineFor(eventPlayer, true, Color.TEAM_2, OutlineVisibility.ALWAYS)
+            break
+        case ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED:
+            getPlayers(Team.2).startForcingOutlineFor(eventPlayer, true, Color.TEAM_2, OutlineVisibility.OCCLUDED)
+            break
+
     eventPlayer.setMaxHealth(abs(0))
     eventPlayer.enableDeathSpectateAllPlayers()
     eventPlayer.enableDeathSpectateTargetHud()
@@ -55,6 +64,18 @@ rule "Hider Tank Scaling":
     waitUntil(not any([hero == eventPlayer.getCurrentHero() for hero in getTankHeroes()]) or eventPlayer.isInAlternateForm(), 9999)
 
     eventPlayer.BaseScaling *= 1 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
+
+rule "Update Seeker Outline":
+    @Event playerJoined
+    @Team 2
+
+    switch WORKSHOP_SET_SEEKER_OUTLINES:
+        case ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS:
+            eventPlayer.startForcingOutlineFor(getPlayers(Team.1), true, Color.TEAM_2, OutlineVisibility.ALWAYS)
+            break
+        case ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED:
+            eventPlayer.startForcingOutlineFor(getPlayers(Team.1), true, Color.TEAM_2, OutlineVisibility.OCCLUDED)
+            break
 
 rule "Refresh Cooldown for Hiders":
     @Event eachPlayer

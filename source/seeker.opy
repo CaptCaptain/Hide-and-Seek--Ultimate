@@ -1,5 +1,7 @@
 #!mainFile "settings.opy"
 
+playervar Hud_Seeker_Name
+
 rule "Seeker Setup":
     @Event eachPlayer
     @Team 2
@@ -20,6 +22,15 @@ rule "Seeker Setup":
     
     waitUntil(eventPlayer.hasSpawned(), 9999)
 
+    # Create Seeker Name
+    switch WORKSHOP_SET_SEEKER_OUTLINES:
+        case ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT:
+            break
+        default:
+            createInWorldText(getPlayers(Team.1), eventPlayer, eventPlayer, 1, Clip.SURFACES, WorldTextReeval.VISIBILITY_POSITION_AND_STRING, Color.TEAM_2, SpecVisibility.DEFAULT)
+            break
+
+    # Hider Outlines
     getPlayers(Team.1).startForcingOutlineFor(eventPlayer, WORKSHOP_SET_USEOUTLINE, Color.TEAM_1, OutlineVisibility.DEFAULT)
 
     waitUntil(not eventPlayer.isInSpawnRoom(), 9999)
@@ -28,7 +39,7 @@ rule "Seeker Setup":
 
     printLog("Seeker Setup finished for {}".format(eventPlayer))
 
-rule "Update Outline":
+rule "Update Hider Outline":
     @Event playerJoined
     @Team 1
 
@@ -59,3 +70,9 @@ rule "Seeker Noclip Barrier":
     if RULE_CONDITION:
         goto RULE_START
     eventPlayer.enableEnvironmentCollision()
+
+rule "Clear Seeker Name":
+    @Event playerLeft
+    @Team 2
+
+    destroyInWorldText(eventPlayer.Hud_Seeker_Name)
