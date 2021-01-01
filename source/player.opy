@@ -10,7 +10,7 @@ playervar BaseScaling = WORKSHOP_SET_ADV_SCALE
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
 playervar LastWalkablePosition
-playervar ThirdPersonCameraEnabled = false
+playervar ThirdPersonCameraEnabled = true if WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
 
 subroutine RestrictAbilities
 
@@ -287,12 +287,6 @@ rule "Stop Third Person Camera":
     eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
     wait(0.08)
     eventPlayer.stopCamera()
-
-rule "Enable Start Third Person Camera":
-    @Event eachPlayer
-    @Condition WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON
-
-    eventPlayer.ThirdPersonCameraEnabled = true
 
 rule "Toggle Third Person Camera":
     @Event eachPlayer
