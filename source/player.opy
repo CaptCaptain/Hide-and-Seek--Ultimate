@@ -10,7 +10,7 @@ playervar BaseScaling = WORKSHOP_SET_ADV_SCALE
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
 playervar LastWalkablePosition
-playervar ThirdPersonCameraEnabled = false
+playervar ThirdPersonCameraEnabled = true if WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
 
 subroutine StartThirdPersonCamera
 
@@ -66,6 +66,7 @@ rule "Player Huds":
     # Camera Hud Instructions
     if WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
         hudSubtext(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        eventPlayer.Hud_Objective = getLastCreatedText()
 
     wait(9999)
 
@@ -125,8 +126,16 @@ rule "Global Huds":
     hudSubtext(getAllPlayers(), "PLAYER SPEED: {}x".format(WORKSHOP_SET_ADV_BASESPEED), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
+    if WORKSHOP_SET_SEEKER_OUTLINES != ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT:
+        hudSubtext(getAllPlayers(), "SEEKER OUTLINES: {}".format(WORKSHOP_SET_SEEKER_OUTLINES), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+
     hudSubtext(getAllPlayers(), "HIDER OUTLINES: {}".format("on" if WORKSHOP_SET_USEOUTLINE else "off"), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
+
+    if WORKSHOP_SET_SEEKER_ASSIST:
+        hudSubtext(getAllPlayers(), "SEEKER ASSISTANCE: {}".format(WORKSHOP_SET_SEEKER_ASSIST), HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
@@ -141,7 +150,7 @@ rule "Global Huds":
     Hud_GameInfo.append(getLastCreatedText())
 
     if WORKSHOP_SET_ADV_WINS > 1:
-        hudText(getAllPlayers(), "TEAM SCORE:", "", "HIDERS: {}\nSEEKERS: {}".format(HiderTeamScore, SeekerTeamScore), HudPosition.LEFT, 6, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudText(getAllPlayers(), "TEAM SCORE:", "", "HIDERS: {}\nSEEKERS: {}".format(HiderTeamScore, SeekerTeamScore), HudPosition.LEFT, 8, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
 rule "Remove Global Huds":
@@ -310,12 +319,6 @@ rule "Stop Third Person Camera":
     eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
     wait(0.08)
     eventPlayer.stopCamera()
-
-rule "Enable Start Third Person Camera":
-    @Event eachPlayer
-    @Condition WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON
-
-    eventPlayer.ThirdPersonCameraEnabled = true
 
 rule "Toggle Third Person Camera":
     @Event eachPlayer

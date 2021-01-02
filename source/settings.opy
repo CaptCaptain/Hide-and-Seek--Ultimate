@@ -64,15 +64,20 @@ enum ACCESSIBILITY:
     TANKS_NOSCALE,
     3RD_CAMERA_ON,
     3RD_CAMERA_OFF,
-    3RD_CAMERA_TOGGLE
+    3RD_CAMERA_TOGGLE,
+    SEEKER_ASSIST_ON,
+    SEEKER_ASSIST_OFF,
+    SEEKER_OUTLINES_DEFAULT = "Default",
+    SEEKER_OUTLINES_OCCLUDED = "Occluded",
+    SEEKER_OUTLINES_ALWAYS = "Always"
 
 enum SHOW_DEBUG_STATS:
     ALL,
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "1.3.0"
-globalvar CURRENT_CODE = "Code: D0XT4"
+globalvar CURRENT_VERSION = "1.4.0"
+globalvar CURRENT_CODE = "Latest Code: D0XT4"
 
 # Default settings
 globalvar WORKSHOP_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
