@@ -12,6 +12,11 @@ playervar DvaMechPosition
 playervar LastWalkablePosition
 playervar ThirdPersonCameraEnabled = false
 
+subroutine StartThirdPersonCamera
+
+def StartThirdPersonCamera():
+    eventPlayer.startCamera(updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + worldVector(vect(1 * -1, 0, 0), eventPlayer, Transform.ROTATION) + eventPlayer.getFacingDirection() * -2.5, getAllPlayers(), eventPlayer, false).getHitPosition()), updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + eventPlayer.getFacingDirection() * 200, getAllPlayers(), eventPlayer, false).getHitPosition()), 60)
+
 subroutine RestrictAbilities
 
 def RestrictAbilities():
@@ -218,6 +223,32 @@ rule "Set Last Walkable Position":
 
     waitUntil(eventPlayer.isOnGround(), 9999)
 
+rule "Show Last Hider":
+    @Event eachPlayer
+    @Condition eventPlayer.ShowLastHider == true
+
+    # Smooth camera transition
+    eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 5)
+    wait()
+    eventPlayer.startCamera(evalOnce(eventPlayer.getPosition() + (Vector.UP * 200) + Vector.BACKWARD), eventPlayer.getPosition(), 5)
+    wait(1.5)
+    eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[0].getPosition(), getLivingPlayers(Team.1)[0].getPosition() + (Vector.UP * 5) + Vector.BACKWARD, null, getLivingPlayers(Team.1)[0], false).getHitPosition(), getLivingPlayers(Team.1)[0].getPosition(), 10)
+
+    waitUntil(eventPlayer.ShowLastHider == false, 9999)
+
+    if eventPlayer.ThirdPersonCameraEnabled == true:
+        StartThirdPersonCamera()
+    else:
+        eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 10)
+        wait(1)
+        eventPlayer.stopCamera()
+
+rule "Test Feature":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicating(Comms.READY)
+
+    eventPlayer.ShowLastHider = not eventPlayer.ShowLastHider
+
 # Accessibility Rules
 rule "D.va: TP to Mech Position (Hider)":
     @Event eachPlayer
@@ -269,7 +300,7 @@ rule "Start Third Person Camera":
     # Smooth transition to third person camera
     eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
     wait()
-    eventPlayer.startCamera(updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + worldVector(vect(1 * (min(-2.5 / 2.5, -0.75)), 0, 0), eventPlayer, Transform.ROTATION) + eventPlayer.getFacingDirection() * -2.5, getAllPlayers(), eventPlayer, false).getHitPosition()), updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + eventPlayer.getFacingDirection() * 200, getAllPlayers(), eventPlayer, false).getHitPosition()), 60)
+    StartThirdPersonCamera()
 
 rule "Stop Third Person Camera":
     @Event eachPlayer
@@ -289,6 +320,7 @@ rule "Enable Start Third Person Camera":
 rule "Toggle Third Person Camera":
     @Event eachPlayer
     @Condition WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE
+    @Condition eventPlayer.ShowLastHider == false
     @Condition eventPlayer.isHoldingButton(Button.RELOAD) and eventPlayer.getAmmo(0) == eventPlayer.getMaxAmmo(0)
 
     eventPlayer.ThirdPersonCameraEnabled = not eventPlayer.ThirdPersonCameraEnabled

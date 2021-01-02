@@ -87,6 +87,10 @@ globalvar WORKSHOP_SET_REQUIRED_HIDERS = [3, 2, 1][WORKSHOP_SET_REQUIRED_RATIO]
 globalvar WORKSHOP_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 1, 1)
 globalvar WORKSHOP_SET_WAITING_MAXTIME = [0, 5, 9999][WORKSHOP_SET_WAITING_MAXTIME_RAW]
 globalvar WORKSHOP_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow Hider When In Line Of Sight Of Seeker", true, 4)
+globalvar WORKSHOP_SET_SEEKER_OUTLINES_RAW = createWorkshopSetting(enum["Default", "Occluded", "Always"], "Ruleset", "Seeker Outlines", 0, 4)
+globalvar WORKSHOP_SET_SEEKER_OUTLINES = [ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT, ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED, ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS][WORKSHOP_SET_SEEKER_OUTLINES_RAW]
+globalvar WORKSHOP_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Ruleset", "Seeker Assistance", false, 5)
+globalvar WORKSHOP_SET_SHOW_LAST_HIDER = createWorkshopSetting(bool, "Ruleset", "Show Last Hider When Round Ends", false, 5)
 globalvar WORKSHOP_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 5)
 globalvar WORKSHOP_SET_END = [25.9, 8, 9999][WORKSHOP_SET_END_RAW]
 

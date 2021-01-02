@@ -12,6 +12,8 @@ globalvar CurrentTime = 1800
 globalvar CurrentRound = 0
 globalvar HiderTeamScore = 0
 globalvar SeekerTeamScore = 0
+globalvar LastHiderHud
+playervar ShowLastHider = false
 
 subroutine PLAYSOUND_DEBUFF
 subroutine PLAYSOUND_RINGEXPLOSION
@@ -97,6 +99,13 @@ rule "Results":
     else:
         SeekerTeamScore += 1
         bigMessage(getAllPlayers() if WORKSHOP_SET_ADV_WINS > 1 else null, "Seekers Win!")
+    
+    # Show the last hider if workshop setting is enabled
+    if WORKSHOP_SET_SHOW_LAST_HIDER and len(getLivingPlayers(Team.1)) == 1:
+        getPlayers(Team.2).ShowLastHider = true
+        wait(6)
+        getPlayers(Team.2).ShowLastHider = false
+        wait(1)
     
     # If team score reaches required wins, then declare victory. Otherwise, start another round
     if HiderTeamScore >= WORKSHOP_SET_ADV_WINS:
