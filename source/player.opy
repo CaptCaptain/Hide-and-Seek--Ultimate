@@ -257,9 +257,9 @@ rule "Disable Certain Abilities":
 
 rule "Set Last Walkable Position":
     @Event eachPlayer
-    @Condition eventPlayer.isInAir()
+    @Condition eventPlayer.isMoving() and eventPlayer.isOnGround()
 
-    eventPlayer.LastWalkablePosition = eventPlayer.getPosition()
+    eventPlayer.LastWalkablePosition = nearestWalkablePosition(eventPlayer.getPosition())
 
     waitUntil(eventPlayer.isOnGround(), 9999)
 
