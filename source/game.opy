@@ -102,10 +102,10 @@ rule "Results":
     
     # Show the last hider if workshop setting is enabled
     if WORKSHOP_SET_SHOW_LAST_HIDER and len(getLivingPlayers(Team.1)) == 1:
+        smallMessage(getAllPlayers(), "Showing seekers the last hider")
         getPlayers(Team.2).ShowLastHider = true
         wait(6)
         getPlayers(Team.2).ShowLastHider = false
-        wait(1)
     
     # If team score reaches required wins, then declare victory. Otherwise, start another round
     if HiderTeamScore >= WORKSHOP_SET_ADV_WINS:

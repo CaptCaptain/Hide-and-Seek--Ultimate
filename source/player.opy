@@ -1,23 +1,36 @@
 #!mainFile "settings.opy"
 
+enum CAMERA_STATE:
+    FIRST_PERSON,
+    LAYING_DOWN,
+    THIRD_PERSON,
+    LAST_HIDER
+
 globalvar Hud_GameInfo
 globalvar Hud_GameTitle
-playervar Hud_Objective
+playervar Hud_Player
 globalvar globalHudIndex = 0
+playervar playerHudIndex = 0
 playervar BaseMoveSpeed = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar BaseJumpHeight = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar BaseScaling = WORKSHOP_SET_ADV_SCALE
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
 playervar LastWalkablePosition
-playervar ThirdPersonCameraEnabled = true if WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
+playervar ThirdPersonCameraEnabled = true if WORKSHOP_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
+playervar LayingDownCameraEnabled = false
+playervar CameraState = CAMERA_STATE.THIRD_PERSON if WORKSHOP_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else CAMERA_STATE.FIRST_PERSON
 
 subroutine StartThirdPersonCamera
+subroutine StartCamera
+subroutine RestrictAbilities
+
+def StartCamera():
+    eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
+    wait()
 
 def StartThirdPersonCamera():
     eventPlayer.startCamera(updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + worldVector(vect(1 * -1, 0, 0), eventPlayer, Transform.ROTATION) + eventPlayer.getFacingDirection() * -2.5, getAllPlayers(), eventPlayer, false).getHitPosition()), updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + eventPlayer.getFacingDirection() * 200, getAllPlayers(), eventPlayer, false).getHitPosition()), 60)
-
-subroutine RestrictAbilities
 
 def RestrictAbilities():
     eventPlayer.setAbility1Enabled(true)
@@ -54,21 +67,27 @@ def RestrictAbilities():
             break
     skip_evaluation:
 
-rule "Player Huds":
+rule "Create Player Huds":
     @Event eachPlayer
 
-    destroyHudText(eventPlayer.Hud_Objective)
+    # Destroy player huds
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Hud_Player)):
+        destroyHudText(eventPlayer.Hud_Player[eventPlayer.playerHudIndex])
+    eventPlayer.Hud_Player = []
+
+    waitUntil(eventPlayer.hasSpawned(), 9999)
 
     # Creates the Objective Hud
     hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), "HIDER" if eventPlayer.getTeam() == Team.1 else "SEEKER"), "PHASE: {}".format(CurrentGameState), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.BLUE if eventPlayer.getTeam() == Team.1 else Color.RED, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
-    eventPlayer.Hud_Objective = getLastCreatedText()
+    eventPlayer.Hud_Player.append(getLastCreatedText())
 
     # Camera Hud Instructions
-    if WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
+    if WORKSHOP_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
         hudSubtext(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-        eventPlayer.Hud_Objective = getLastCreatedText()
-
-    wait(9999)
+        eventPlayer.Hud_Player.append(getLastCreatedText())
+    if WORKSHOP_SET_LAYING_DOWN == true and eventPlayer.getTeam() == Team.1:
+        hudSubtext(eventPlayer, "Emote and press {} to lay down / Press any key to stand up".format(buttonString(Button.CROUCH)), HudPosition.TOP, 1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        eventPlayer.Hud_Player.append(getLastCreatedText())
 
 rule "Title Hud":
     createInWorldText(getAllPlayers(), "HIDE & SEEK", getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
@@ -139,9 +158,10 @@ rule "Global Huds":
 
     hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
-
-    hudSubtext(getAllPlayers(), "RESTRICT SEEKER HERO ROSTER: {}".format(not(WORKSHOP_SET_ADV_SEEK_ALLOWH)), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-    Hud_GameInfo.append(getLastCreatedText())
+    
+    if WORKSHOP_SET_ADV_SEEK_ALLOWH == true:
+        hudSubtext(getAllPlayers(), "RESTRICT SEEKER HERO ROSTER: {}".format(not(WORKSHOP_SET_ADV_SEEK_ALLOWH)), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
 
     hudSubheader(getAllPlayers(), "TO CUSTOMIZE RULESET (HOST ONLY):\nGO TO LOBBY > SETTINGS > WORKSHOP SETTINGS", HudPosition.LEFT, 6, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
@@ -236,27 +256,24 @@ rule "Show Last Hider":
     @Event eachPlayer
     @Condition eventPlayer.ShowLastHider == true
 
-    # Smooth camera transition
-    eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 5)
-    wait()
+    if eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON:
+        # Smooth camera transition
+        eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 5)
+        wait()
+    eventPlayer.CameraState = CAMERA_STATE.LAST_HIDER
     eventPlayer.startCamera(evalOnce(eventPlayer.getPosition() + (Vector.UP * 200) + Vector.BACKWARD), eventPlayer.getPosition(), 5)
     wait(1.5)
-    eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[0].getPosition(), getLivingPlayers(Team.1)[0].getPosition() + (Vector.UP * 5) + Vector.BACKWARD, null, getLivingPlayers(Team.1)[0], false).getHitPosition(), getLivingPlayers(Team.1)[0].getPosition(), 10)
+    eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[0].getPosition(), getLivingPlayers(Team.1)[0].getPosition() + (Vector.UP * 5) + vect(0.001, 0, 0), null, getLivingPlayers(Team.1)[0], false).getHitPosition(), getLivingPlayers(Team.1)[0].getPosition(), 10)
 
     waitUntil(eventPlayer.ShowLastHider == false, 9999)
 
-    if eventPlayer.ThirdPersonCameraEnabled == true:
-        StartThirdPersonCamera()
+    # Return to previous camera state
+    if eventPlayer.LayingDownCameraEnabled == true:
+        eventPlayer.CameraState = CAMERA_STATE.LAYING_DOWN
+    elif eventPlayer.ThirdPersonCameraEnabled == true:
+        eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON
     else:
-        eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 10)
-        wait(1)
-        eventPlayer.stopCamera()
-
-rule "Test Feature":
-    @Event eachPlayer
-    @Condition eventPlayer.isCommunicating(Comms.READY)
-
-    eventPlayer.ShowLastHider = not eventPlayer.ShowLastHider
+        eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
 
 # Accessibility Rules
 rule "D.va: TP to Mech Position (Hider)":
@@ -304,16 +321,23 @@ rule "D.va: Enable De-mech":
 
 rule "Start Third Person Camera":
     @Event eachPlayer
-    @Condition eventPlayer.ThirdPersonCameraEnabled == true
+    @Condition eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
 
     # Smooth transition to third person camera
-    eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
-    wait()
+    StartCamera()
     StartThirdPersonCamera()
 
-rule "Stop Third Person Camera":
+rule "Start Laying Down Camera":
     @Event eachPlayer
-    @Condition eventPlayer.ThirdPersonCameraEnabled == false
+    @Condition eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN
+
+    # Smooth transition to third person camera
+    StartCamera()
+    eventPlayer.startCamera(raycast(eventPlayer.getPosition(), eventPlayer.getPosition() + (Vector.UP * 10) + vect(0.001, 0, 0), null, eventPlayer, false).getHitPosition(), eventPlayer.getPosition(), 10)
+
+rule "Stop Camera":
+    @Event eachPlayer
+    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON
 
     # Smooth transition to first person camera
     eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
@@ -322,11 +346,12 @@ rule "Stop Third Person Camera":
 
 rule "Toggle Third Person Camera":
     @Event eachPlayer
-    @Condition WORKSHOP_SET_ADV_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE
-    @Condition eventPlayer.ShowLastHider == false
+    @Condition WORKSHOP_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE
+    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
     @Condition eventPlayer.isHoldingButton(Button.RELOAD) and eventPlayer.getAmmo(0) == eventPlayer.getMaxAmmo(0)
 
     eventPlayer.ThirdPersonCameraEnabled = not eventPlayer.ThirdPersonCameraEnabled
+    eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON if eventPlayer.ThirdPersonCameraEnabled else CAMERA_STATE.FIRST_PERSON
 
 rule "Show Debug Stats":
     @Condition WORKSHOP_SET_ADV_DEBUGSTATS != SHOW_DEBUG_STATS.NONE

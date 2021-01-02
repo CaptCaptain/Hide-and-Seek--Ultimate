@@ -93,8 +93,11 @@ globalvar WORKSHOP_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow 
 globalvar WORKSHOP_SET_SEEKER_OUTLINES_RAW = createWorkshopSetting(enum["Default", "Occluded", "Always"], "Ruleset", "Seeker Outlines", 0, 4)
 globalvar WORKSHOP_SET_SEEKER_OUTLINES = [ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT, ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED, ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS][WORKSHOP_SET_SEEKER_OUTLINES_RAW]
 globalvar WORKSHOP_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Ruleset", "Seeker Assistance", false, 5)
+globalvar WORKSHOP_SET_LAYING_DOWN = createWorkshopSetting(bool, "Ruleset", "Allow Hiders to Lay Down", false, 5)
 globalvar WORKSHOP_SET_SHOW_LAST_HIDER = createWorkshopSetting(bool, "Ruleset", "Show Last Hider When Round Ends", false, 5)
-globalvar WORKSHOP_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 5)
+globalvar WORKSHOP_SET_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Ruleset", "Camera Mode", 0, 6)
+globalvar WORKSHOP_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WORKSHOP_SET_3RD_CAM_RAW]
+globalvar WORKSHOP_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 7)
 globalvar WORKSHOP_SET_END = [25.9, 8, 9999][WORKSHOP_SET_END_RAW]
 
 # Advanced Settings
@@ -112,9 +115,6 @@ globalvar WORKSHOP_SET_ADV_USEPRERELEASE = false #createWorkshopSetting(bool, "A
 globalvar WORKSHOP_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
 globalvar WORKSHOP_SET_ADV_DEBUGSTATS_RAW = createWorkshopSetting(enum["HOST ONLY", "ALL PLAYERS", "NONE"], "Advanced Settings", "Show Debug Stats", 2, 6)
 globalvar WORKSHOP_SET_ADV_DEBUGSTATS = [SHOW_DEBUG_STATS.HOST, SHOW_DEBUG_STATS.ALL, SHOW_DEBUG_STATS.NONE][WORKSHOP_SET_ADV_DEBUGSTATS_RAW]
-
-globalvar WORKSHOP_SET_ADV_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Advanced Settings", "Camera Mode", 0, 4)
-globalvar WORKSHOP_SET_ADV_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WORKSHOP_SET_ADV_3RD_CAM_RAW]
 
 #!include "game.opy"
 #!include "player.opy"

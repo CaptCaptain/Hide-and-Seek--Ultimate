@@ -5,7 +5,6 @@ playervar Hud_InSpawn
 playervar Huds_JoinedLate
 playervar Effects_SombraInvis
 playervar Hud_SombraTrans
-playervar playerHudIndex = 0
 playervar JoinedLate
 
 rule "Hider Setup":
@@ -64,6 +63,31 @@ rule "Hider Tank Scaling":
     waitUntil(not any([hero == eventPlayer.getCurrentHero() for hero in getTankHeroes()]) or eventPlayer.isInAlternateForm(), 9999)
 
     eventPlayer.BaseScaling *= 1 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
+
+rule "Hider Laying Down":
+    @Event eachPlayer
+    @Team 1
+    @Condition WORKSHOP_SET_LAYING_DOWN == true
+    @Condition eventPlayer.isCommunicatingEmote()
+    @Condition eventPlayer.isHoldingButton(Button.CROUCH)
+    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
+
+    eventPlayer.LayingDownCameraEnabled = true
+
+    eventPlayer.CameraState = CAMERA_STATE.LAYING_DOWN
+    eventPlayer.setStatusEffect(null, Status.KNOCKED_DOWN, 9999)
+    wait(1)
+    waitUntil(eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN and any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE, Button.PRIMARY_FIRE, Button.RELOAD, Button.SECONDARY_FIRE, Button.ULTIMATE]]), 9999)
+    eventPlayer.clearStatusEffect(Status.KNOCKED_DOWN)
+
+    eventPlayer.LayingDownCameraEnabled = false
+
+    # Return to previous camera state
+    if eventPlayer.ThirdPersonCameraEnabled == true:
+        eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON
+        StartThirdPersonCamera()
+    else:
+        eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
 
 rule "Update Seeker Outline":
     @Event playerJoined
