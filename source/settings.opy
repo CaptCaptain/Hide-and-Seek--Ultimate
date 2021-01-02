@@ -42,8 +42,6 @@ settings {
     }
 }
 
-#!obfuscate noConstantObfuscation
-
 enum STYLE:
     DEFAULT = "DEFAULT",
     CLASSIC = "CLASSIC",
