@@ -69,6 +69,11 @@ enum ACCESSIBILITY:
     SEEKER_OUTLINES_OCCLUDED = "Occluded",
     SEEKER_OUTLINES_ALWAYS = "Always"
 
+enum SHOW_HIDERS:
+    LAST_HIDER = "Last Hider Only",
+    ALL_HIDERS = "On",
+    OFF = "Off"
+
 enum SHOW_DEBUG_STATS:
     ALL,
     HOST,
@@ -81,7 +86,7 @@ globalvar WORKSHOP_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hide
 globalvar WORKSHOP_SET_HIDETIME_RAW = createWorkshopSetting(enum["1:30", "1:00", "0:45"], "Ruleset", "Hiding Time", 1, 2)
 globalvar WORKSHOP_SET_HIDETIME = [90, 60, 45][WORKSHOP_SET_HIDETIME_RAW]
 globalvar WORKSHOP_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30", "4:00", "3:30", "3:00", "2:30", "2:00"], "Ruleset", "Seeking Time", 2, 2)
-globalvar WORKSHOP_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 120][WORKSHOP_SET_SEEKTIME_RAW]
+globalvar WORKSHOP_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 10][WORKSHOP_SET_SEEKTIME_RAW]
 globalvar WORKSHOP_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Noclip)", "TINY", "Mercy V. Reinhardt"], "Ruleset", "Style", 0, 0)
 globalvar WORKSHOP_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.TINY, STYLE.MERCY_REIN][WORKSHOP_SET_MODE_RAW]
 globalvar WORKSHOP_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
@@ -93,7 +98,8 @@ globalvar WORKSHOP_SET_SEEKER_OUTLINES_RAW = createWorkshopSetting(enum["Default
 globalvar WORKSHOP_SET_SEEKER_OUTLINES = [ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT, ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED, ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS][WORKSHOP_SET_SEEKER_OUTLINES_RAW]
 globalvar WORKSHOP_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Ruleset", "Seeker Assistance", false, 5)
 globalvar WORKSHOP_SET_LAYING_DOWN = createWorkshopSetting(bool, "Ruleset", "Allow Hiders to Lay Down", false, 5)
-globalvar WORKSHOP_SET_SHOW_LAST_HIDER = createWorkshopSetting(bool, "Ruleset", "Show Last Hider When Round Ends", false, 5)
+globalvar WORKSHOP_SET_SHOW_HIDERS_RAW = createWorkshopSetting(enum["Last Hider Only", "On", "Off"], "Ruleset", "Show Remaining Hiders When Round Ends", 2, 5)
+globalvar WORKSHOP_SET_SHOW_HIDERS = [SHOW_HIDERS.LAST_HIDER, SHOW_HIDERS.ALL_HIDERS, SHOW_HIDERS.OFF][WORKSHOP_SET_SHOW_HIDERS_RAW]
 globalvar WORKSHOP_SET_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Ruleset", "Camera Mode", 0, 6)
 globalvar WORKSHOP_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WORKSHOP_SET_3RD_CAM_RAW]
 globalvar WORKSHOP_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 7)

@@ -68,9 +68,10 @@ rule "Hider Laying Down":
     @Event eachPlayer
     @Team 1
     @Condition WORKSHOP_SET_LAYING_DOWN == true
+    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
+    @Condition not eventPlayer.isInSpawnRoom()
     @Condition eventPlayer.isCommunicatingEmote()
     @Condition eventPlayer.isHoldingButton(Button.CROUCH)
-    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
 
     eventPlayer.LayingDownCameraEnabled = true
 

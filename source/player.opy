@@ -11,6 +11,7 @@ globalvar Hud_GameTitle
 playervar Hud_Player
 globalvar globalHudIndex = 0
 playervar playerHudIndex = 0
+playervar playerIndex = 0
 playervar BaseMoveSpeed = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar BaseJumpHeight = 100 * WORKSHOP_SET_ADV_BASESPEED
 playervar BaseScaling = WORKSHOP_SET_ADV_SCALE
@@ -86,7 +87,7 @@ rule "Create Player Huds":
         hudSubtext(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
     if WORKSHOP_SET_LAYING_DOWN == true and eventPlayer.getTeam() == Team.1:
-        hudSubtext(eventPlayer, "Emote and press {} to lay down / Press any key to stand up".format(buttonString(Button.CROUCH)), HudPosition.TOP, 1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubtext(eventPlayer, "Emote and press {} to lay down / Press {} to stand up".format(buttonString(Button.CROUCH), buttonString(Button.JUMP)), HudPosition.TOP, 1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
 
 rule "Title Hud":
@@ -166,8 +167,8 @@ rule "Global Huds":
         hudSubtext(getAllPlayers(), "ALLOW HIDERS TO LAY DOWN: {}".format("On" if WORKSHOP_SET_LAYING_DOWN else "Off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
-    if WORKSHOP_SET_SHOW_LAST_HIDER:
-        hudSubtext(getAllPlayers(), "SHOW LAST HIDER: {}".format(WORKSHOP_SET_SHOW_LAST_HIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    if WORKSHOP_SET_SHOW_HIDERS != SHOW_HIDERS.OFF:
+        hudSubtext(getAllPlayers(), "SHOW REMAINING HIDERS AFTER ROUND: {}".format(WORKSHOP_SET_SHOW_HIDERS), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WORKSHOP_SET_ADV_SEEK_ALLOWH == true:
@@ -263,9 +264,9 @@ rule "Set Last Walkable Position":
 
     waitUntil(eventPlayer.isOnGround(), 9999)
 
-rule "Show Last Hider":
+rule "Show Remaining Hiders":
     @Event eachPlayer
-    @Condition eventPlayer.ShowLastHider == true
+    @Condition eventPlayer.ShowHiders == true
 
     if eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON:
         # Smooth camera transition
@@ -273,11 +274,17 @@ rule "Show Last Hider":
         wait()
     eventPlayer.CameraState = CAMERA_STATE.LAST_HIDER
     eventPlayer.disableHeroHUD()
-    eventPlayer.startCamera(evalOnce(eventPlayer.getPosition() + (Vector.UP * 200) + Vector.BACKWARD), eventPlayer.getPosition(), 5)
-    wait(1.5)
-    eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[0].getPosition(), getLivingPlayers(Team.1)[0].getPosition() + (Vector.UP * 5) + vect(0.001, 0, 0), null, getLivingPlayers(Team.1)[0], false).getHitPosition(), getLivingPlayers(Team.1)[0].getPosition(), 10)
-
-    waitUntil(eventPlayer.ShowLastHider == false, 9999)
+    eventPlayer.startCamera(evalOnce(eventPlayer.getPosition() + (Vector.UP * 100) + Vector.BACKWARD), evalOnce(eventPlayer.getPosition()), 5)
+    wait(1)
+    if WORKSHOP_SET_SHOW_HIDERS == SHOW_HIDERS.ALL_HIDERS:
+        for eventPlayer.playerIndex in range(0, len(getLivingPlayers(Team.1))):
+            eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition(), getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition() + (Vector.UP * 5) + vect(0.001, 0, 0), null, getLivingPlayers(Team.1)[eventPlayer.playerIndex], false).getHitPosition(), getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition(), 10)
+            wait(2)
+            eventPlayer.startCamera(evalOnce(getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition() + (Vector.UP * 100) + Vector.BACKWARD), evalOnce(getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition()), 5)
+            wait(1)
+    else:
+        eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[0].getPosition(), getLivingPlayers(Team.1)[0].getPosition() + (Vector.UP * 5) + vect(0.001, 0, 0), null, getLivingPlayers(Team.1)[0], false).getHitPosition(), getLivingPlayers(Team.1)[0].getPosition(), 10)
+        wait(2)
     eventPlayer.enableHeroHud()
 
     # Return to previous camera state
@@ -287,6 +294,8 @@ rule "Show Last Hider":
         eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON
     else:
         eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
+    
+    eventPlayer.ShowHiders = false
 
 # Accessibility Rules
 rule "D.va: TP to Mech Position (Hider)":
