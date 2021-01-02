@@ -111,10 +111,10 @@ rule "Title Hud":
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
-    hudSubheader(getAllPlayers(), "Version: {} ({})\n".format(CURRENT_VERSION, CURRENT_CODE), HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), "Current Version: {}\n".format(CURRENT_VERSION), HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), "https://workshop.codes/hide-and-seek-ult", HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), "For Latest Version, head to: https://workshop.codes/hide-and-seek-ult", HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), "{} Hide & Seek: Ultimate by CaptCaptain#11421".format(abilityIconString(random.choice(getAllHeroes()), Button.ULTIMATE)), HudPosition.RIGHT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
@@ -155,9 +155,20 @@ rule "Global Huds":
     if WORKSHOP_SET_SEEKER_ASSIST:
         hudSubtext(getAllPlayers(), "SEEKER ASSISTANCE: {}".format(WORKSHOP_SET_SEEKER_ASSIST), HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
-
+    
     hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
+
+    hudSubtext(getAllPlayers(), "SLOW HIDERS WHEN IN LOS OF SEEKER: {}".format(WORKSHOP_SET_SLOWHIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    Hud_GameInfo.append(getLastCreatedText())
+
+    if WORKSHOP_SET_LAYING_DOWN:
+        hudSubtext(getAllPlayers(), "ALLOW HIDERS TO LAY DOWN: {}".format("On" if WORKSHOP_SET_LAYING_DOWN else "Off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+
+    if WORKSHOP_SET_SHOW_LAST_HIDER:
+        hudSubtext(getAllPlayers(), "SHOW LAST HIDER: {}".format(WORKSHOP_SET_SHOW_LAST_HIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
     
     if WORKSHOP_SET_ADV_SEEK_ALLOWH == true:
         hudSubtext(getAllPlayers(), "RESTRICT SEEKER HERO ROSTER: {}".format(not(WORKSHOP_SET_ADV_SEEK_ALLOWH)), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
@@ -261,11 +272,13 @@ rule "Show Last Hider":
         eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 5)
         wait()
     eventPlayer.CameraState = CAMERA_STATE.LAST_HIDER
+    eventPlayer.disableHeroHUD()
     eventPlayer.startCamera(evalOnce(eventPlayer.getPosition() + (Vector.UP * 200) + Vector.BACKWARD), eventPlayer.getPosition(), 5)
     wait(1.5)
     eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[0].getPosition(), getLivingPlayers(Team.1)[0].getPosition() + (Vector.UP * 5) + vect(0.001, 0, 0), null, getLivingPlayers(Team.1)[0], false).getHitPosition(), getLivingPlayers(Team.1)[0].getPosition(), 10)
 
     waitUntil(eventPlayer.ShowLastHider == false, 9999)
+    eventPlayer.enableHeroHud()
 
     # Return to previous camera state
     if eventPlayer.LayingDownCameraEnabled == true:
