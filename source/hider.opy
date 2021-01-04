@@ -7,6 +7,10 @@ playervar Effects_SombraInvis
 playervar Hud_SombraTrans
 playervar JoinedLate
 
+#!define refreshAbility(button) if not eventPlayer.isOnGround(): return\
+eventPlayer.setAbilityCooldown(button, 0.2 if eventPlayer.getAbilityCooldown(button) > 0 else 0)\
+eventPlayer.setAbilityCharge(button, 3)
+
 rule "Hider Setup":
     @Event eachPlayer
     @Team 1
@@ -102,24 +106,32 @@ rule "Update Seeker Outline":
             eventPlayer.startForcingOutlineFor(getPlayers(Team.1), true, Color.TEAM_2, OutlineVisibility.OCCLUDED)
             break
 
-rule "Refresh Cooldown for Hiders":
+rule "Refresh Ability 1 for Hiders":
     @Event eachPlayer
     @Team 1
     @Condition CurrentGameState != GAME_STATE.SEEKING
     @Condition eventPlayer.isOnGround()
-    @Condition all([usedAbility for usedAbility in [not eventPlayer.isUsingAbility1(), not eventPlayer.isUsingAbility2(), not eventPlayer.isFiringSecondaryFire()]])
+    @Condition not eventPlayer.isUsingAbility1()
 
-    eventPlayer.setAbilityCooldown(Button.ABILITY_1, 0.2 if eventPlayer.getAbilityCooldown(Button.ABILITY_1) > 0 else 0)
-    eventPlayer.setAbilityCooldown(Button.ABILITY_2, 0.2 if eventPlayer.getAbilityCooldown(Button.ABILITY_2) > 0 else 0)
-    eventPlayer.setAbilityCooldown(Button.SECONDARY_FIRE, 0.2 if eventPlayer.getAbilityCooldown(Button.SECONDARY_FIRE) > 0 else 0)
+    refreshAbility(Button.ABILITY_1)
 
-    eventPlayer.setAbilityCharge(Button.ABILITY_1, 3)
-    eventPlayer.setAbilityCharge(Button.ABILITY_2, 3)
-    eventPlayer.setAbilityCharge(Button.SECONDARY_FIRE, 3)
+rule "Refresh Ability 2 for Hiders":
+    @Event eachPlayer
+    @Team 1
+    @Condition CurrentGameState != GAME_STATE.SEEKING
+    @Condition eventPlayer.isOnGround()
+    @Condition not eventPlayer.isUsingAbility2()
 
-    if eventPlayer.getAbilityCooldown(Button.ABILITY_1) > 0.2 or eventPlayer.getAbilityCooldown(Button.ABILITY_2) > 0.2 or eventPlayer.getAbilityCooldown(Button.SECONDARY_FIRE) > 0.2:
-        wait()
-        goto RULE_START
+    refreshAbility(Button.ABILITY_2)
+
+rule "Refresh Secondary Fire for Hiders":
+    @Event eachPlayer
+    @Team 1
+    @Condition CurrentGameState != GAME_STATE.SEEKING
+    @Condition eventPlayer.isOnGround()
+    @Condition not eventPlayer.isFiringSecondaryFire()
+
+    refreshAbility(Button.SECONDARY_FIRE)
 
 rule "Kill Hider in Spawn Room":
     @Event eachPlayer
