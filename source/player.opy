@@ -225,8 +225,8 @@ rule "Player Setup":
 
 rule "Reset Ammo":
     @Event eachPlayer
-    @Condition not eventPlayer.isFiringPrimaryFire() and not eventPlayer.isFiringSecondaryFire()
     @Condition eventPlayer.getAmmo(0) > 0
+    @Condition not eventPlayer.isFiringPrimaryFire() and not eventPlayer.isFiringSecondaryFire()
 
     # Reset ammo when player has not fired for more than a second
     wait(1, Wait.ABORT_WHEN_FALSE)
@@ -234,8 +234,8 @@ rule "Reset Ammo":
 
 rule "Resurrect":
     @Event playerDied
-    @Condition not eventPlayer.isInSpawnRoom()
     @Condition eventWasEnvironment or attacker() == victim()
+    @Condition not eventPlayer.isInSpawnRoom()
 
     # If the player dies to the environment or self-destructs.
     eventPlayer.resurrect()
