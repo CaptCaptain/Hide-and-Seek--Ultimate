@@ -78,7 +78,7 @@ rule "Hider Laying Down":
     eventPlayer.CameraState = CAMERA_STATE.LAYING_DOWN
     eventPlayer.setStatusEffect(null, Status.KNOCKED_DOWN, 9999)
     wait(1)
-    waitUntil(eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN and any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE, Button.PRIMARY_FIRE, Button.RELOAD, Button.SECONDARY_FIRE, Button.ULTIMATE]]), 9999)
+    waitUntil(eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN and any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE, Button.PRIMARY_FIRE, Button.SECONDARY_FIRE, Button.ULTIMATE]]), 9999)
     eventPlayer.clearStatusEffect(Status.KNOCKED_DOWN)
 
     eventPlayer.LayingDownCameraEnabled = false
