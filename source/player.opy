@@ -244,13 +244,14 @@ rule "Resurrect":
     if attacker() == victim(): eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, "BE CAREFUL!")
 
-rule "Disable Certain Abilities":
+rule "Disable Abilities In Spawn":
     @Event eachPlayer
     @Condition eventPlayer.isInSpawnRoom()
 
     eventPlayer.setAbility1Enabled(false)
     eventPlayer.setAbility2Enabled(false)
     eventPlayer.setSecondaryFireEnabled(false)
+    eventPlayer.cancelPrimaryAction()
 
     waitUntil(not eventPlayer.isInSpawnRoom(), 9999)
 

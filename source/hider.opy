@@ -277,10 +277,10 @@ rule "Sombra: Destroy Translocator":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isUsingAbility2()
 
-    hudSubtext(eventPlayer, "{0} YOUR TRANSLOCATOR WILL BE DESTROYED IN {1} SECONDS {0}".format(iconString(Icon.WARNING), eventPlayer.getAbilityCooldown(Button.ABILITY_2)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    hudSubtext(eventPlayer, "{0} YOUR TRANSLOCATOR WILL BE DESTROYED IN {1} SECONDS OR WHEN IT IS OUT OF LOS {0}".format(iconString(Icon.WARNING), eventPlayer.getAbilityCooldown(Button.ABILITY_2)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_SombraTrans = getLastCreatedText()
 
-    waitUntil(eventPlayer.getAbilityCooldown(Button.ABILITY_2) == 0 or not eventPlayer.isUsingAbility2() or not isInLoS(eventPlayer.getEyePosition(), evalOnce(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 10), null, eventPlayer, false).getHitPosition()), BarrierLos.PASS_THROUGH_BARRIERS), 6)
+    waitUntil(eventPlayer.getAbilityCooldown(Button.ABILITY_2) == 0 or not eventPlayer.isUsingAbility2() or not isInLoS(eventPlayer.getEyePosition(), evalOnce(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 100), null, eventPlayer, false).getHitPosition()), BarrierLos.PASS_THROUGH_BARRIERS), 6)
     eventPlayer.forceButtonPress(Button.INTERACT)
 
     # Destroy all hud text and effects
