@@ -8,10 +8,10 @@ rule "Seeker Setup":
     @Team 2
     
     # Seeker Setup
-    eventPlayer.setAllowedHeroes(getAllHeroes().exclude([Hero.MOIRA, Hero.ZENYATTA, Hero.SOMBRA]) if not WORKSHOP_SET_ADV_SEEK_ALLOWH else getAllHeroes())
+    eventPlayer.setAllowedHeroes(getAllHeroes().exclude([Hero.MOIRA, Hero.ZENYATTA, Hero.SOMBRA]) if not WS_SET_ADV_SEEK_ALLOWH else getAllHeroes())
 
     # Mercy V. Rein
-    switch WORKSHOP_SET_MODE:
+    switch WS_SET_MODE:
         case STYLE.MERCY_REIN:
             eventPlayer.setAllowedHeroes(Hero.REINHARDT)
             eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed * 2)
@@ -24,7 +24,7 @@ rule "Seeker Setup":
     waitUntil(eventPlayer.hasSpawned(), 9999)
 
     # Create Seeker Name
-    switch WORKSHOP_SET_SEEKER_OUTLINES:
+    switch WS_SET_SEEKER_OUTLINES:
         case ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT:
             break
         default:
@@ -32,7 +32,7 @@ rule "Seeker Setup":
             break
 
     # Hider Outlines
-    getPlayers(Team.1).startForcingOutlineFor(eventPlayer, WORKSHOP_SET_USEOUTLINE, Color.TEAM_1, OutlineVisibility.DEFAULT)
+    getPlayers(Team.1).startForcingOutlineFor(eventPlayer, WS_SET_USEOUTLINE, Color.TEAM_1, OutlineVisibility.DEFAULT)
 
     waitUntil(not eventPlayer.isInSpawnRoom(), 9999)
 
@@ -44,7 +44,7 @@ rule "Update Hider Outline":
     @Event playerJoined
     @Team 1
 
-    eventPlayer.startForcingOutlineFor(getPlayers(Team.2), WORKSHOP_SET_USEOUTLINE, Color.TEAM_1, OutlineVisibility.DEFAULT)
+    eventPlayer.startForcingOutlineFor(getPlayers(Team.2), WS_SET_USEOUTLINE, Color.TEAM_1, OutlineVisibility.DEFAULT)
 
 rule "Respawn Seeker if they leave Spawn Room":
     @Event eachPlayer
@@ -59,7 +59,7 @@ rule "Respawn Seeker if they leave Spawn Room":
 rule "Seeker Noclip Barrier":
     @Event eachPlayer
     @Team 2
-    @Condition WORKSHOP_SET_MODE != STYLE.GLITCH
+    @Condition WS_SET_MODE != STYLE.GLITCH
     @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.isMoving()
     @Condition eventPlayer.isOnGround()
@@ -81,7 +81,7 @@ rule "Clear Seeker Name":
 rule "Seeker Assistance":
     @Event eachPlayer
     @Team 2
-    @Condition WORKSHOP_SET_SEEKER_ASSIST == true
+    @Condition WS_SET_SEEKER_ASSIST == true
     @Condition eventPlayer.hasSpawned()
     @Condition len(getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF)) > 0
 

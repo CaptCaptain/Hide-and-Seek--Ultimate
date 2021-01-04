@@ -7,8 +7,7 @@ playervar Effects_SombraInvis
 playervar Hud_SombraTrans
 playervar JoinedLate
 
-#!define refreshAbility(button) if not eventPlayer.isOnGround(): return\
-eventPlayer.setAbilityCooldown(button, 0.2 if eventPlayer.getAbilityCooldown(button) > 0 else 0)\
+#!define refreshAbility(button) eventPlayer.setAbilityCooldown(button, 0.2 if eventPlayer.getAbilityCooldown(button) > 0 else 0)\
 eventPlayer.setAbilityCharge(button, 3)
 
 rule "Hider Setup":
@@ -18,7 +17,7 @@ rule "Hider Setup":
     # Hider Setup
 
     # Mercy V. Rein
-    switch WORKSHOP_SET_MODE:
+    switch WS_SET_MODE:
         case STYLE.MERCY_REIN:
             eventPlayer.setAllowedHeroes(Hero.MERCY)
             eventPlayer.HiderSlowFactor = 1.5
@@ -26,7 +25,7 @@ rule "Hider Setup":
             eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight * 1.5)
             break
         case STYLE.TINY:
-            eventPlayer.BaseScaling = WORKSHOP_SET_ADV_SCALE / 2
+            eventPlayer.BaseScaling = WS_SET_ADV_SCALE / 2
             break
         default:
             break
@@ -35,7 +34,7 @@ rule "Hider Setup":
     waitUntil(eventPlayer.hasSpawned(), 9999)
 
     # Seeker Outlines
-    switch WORKSHOP_SET_SEEKER_OUTLINES:
+    switch WS_SET_SEEKER_OUTLINES:
         case ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS:
             getPlayers(Team.2).startForcingOutlineFor(eventPlayer, true, Color.TEAM_2, OutlineVisibility.ALWAYS)
             break
@@ -56,22 +55,22 @@ rule "Hider Setup":
 rule "Hider Tank Scaling":
     @Event eachPlayer
     @Team 1
-    @Condition WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL
+    @Condition WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL
     @Condition any([hero == eventPlayer.getCurrentHero() for hero in getTankHeroes()])
     @Condition not eventPlayer.isInAlternateForm()
 
     #!define TankScaleDownFactor 1.15
 
-    eventPlayer.BaseScaling /= 1 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
+    eventPlayer.BaseScaling /= 1 if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
 
     waitUntil(not any([hero == eventPlayer.getCurrentHero() for hero in getTankHeroes()]) or eventPlayer.isInAlternateForm(), 9999)
 
-    eventPlayer.BaseScaling *= 1 if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WORKSHOP_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
+    eventPlayer.BaseScaling *= 1 if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
 
 rule "Hider Laying Down":
     @Event eachPlayer
     @Team 1
-    @Condition WORKSHOP_SET_LAYING_DOWN == true
+    @Condition WS_SET_LAYING_DOWN == true
     @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
     @Condition not eventPlayer.isInSpawnRoom()
     @Condition eventPlayer.isCommunicatingEmote()
@@ -98,7 +97,7 @@ rule "Update Seeker Outline":
     @Event playerJoined
     @Team 2
 
-    switch WORKSHOP_SET_SEEKER_OUTLINES:
+    switch WS_SET_SEEKER_OUTLINES:
         case ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS:
             eventPlayer.startForcingOutlineFor(getPlayers(Team.1), true, Color.TEAM_2, OutlineVisibility.ALWAYS)
             break
@@ -133,6 +132,15 @@ rule "Refresh Secondary Fire for Hiders":
 
     refreshAbility(Button.SECONDARY_FIRE)
 
+rule "Refresh Secondary Fire for Wrecking Ball":
+    @Event eachPlayer
+    @Team 1
+    @Hero hammond
+    @Condition WS_SET_ADV_INF_HAMMOND_GRAPPLE == true
+    @Condition not eventPlayer.isFiringSecondaryFire()
+
+    refreshAbility(Button.SECONDARY_FIRE)
+
 rule "Kill Hider in Spawn Room":
     @Event eachPlayer
     @Team 1
@@ -162,7 +170,7 @@ rule "Show Warning to Hider While In Spawn Room":
 rule "Slow Hider":
     @Event eachPlayer
     @Team 1
-    @Condition WORKSHOP_SET_SLOWHIDER
+    @Condition WS_SET_SLOWHIDER
     @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition getClosestPlayer(eventPlayer, Team.2) != null
     @Condition any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)])
@@ -296,7 +304,7 @@ rule "Refresh Resurrect Cooldown":
     @Event eachPlayer
     @Hero mercy
     @Team 1
-    @Condition WORKSHOP_SET_MODE == STYLE.MERCY_REIN
+    @Condition WS_SET_MODE == STYLE.MERCY_REIN
     @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.isUsingAbility2()
 

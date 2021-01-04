@@ -82,44 +82,45 @@ enum SHOW_DEBUG_STATS:
 globalvar CURRENT_VERSION = "1.5.0"
 
 # Default settings
-globalvar WORKSHOP_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
-globalvar WORKSHOP_SET_HIDETIME_RAW = createWorkshopSetting(enum["1:30", "1:00", "0:45"], "Ruleset", "Hiding Time", 1, 2)
-globalvar WORKSHOP_SET_HIDETIME = [90, 60, 45][WORKSHOP_SET_HIDETIME_RAW]
-globalvar WORKSHOP_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30", "4:00", "3:30", "3:00", "2:30", "2:00"], "Ruleset", "Seeking Time", 2, 2)
-globalvar WORKSHOP_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 120][WORKSHOP_SET_SEEKTIME_RAW]
-globalvar WORKSHOP_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Noclip)", "TINY", "Mercy V. Reinhardt"], "Ruleset", "Style", 0, 0)
-globalvar WORKSHOP_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.TINY, STYLE.MERCY_REIN][WORKSHOP_SET_MODE_RAW]
-globalvar WORKSHOP_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
-globalvar WORKSHOP_SET_REQUIRED_HIDERS = [3, 2, 1][WORKSHOP_SET_REQUIRED_RATIO]
-globalvar WORKSHOP_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 1, 1)
-globalvar WORKSHOP_SET_WAITING_MAXTIME = [0, 5, 9999][WORKSHOP_SET_WAITING_MAXTIME_RAW]
-globalvar WORKSHOP_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow Hider When In Line Of Sight Of Seeker", true, 4)
-globalvar WORKSHOP_SET_SEEKER_OUTLINES_RAW = createWorkshopSetting(enum["Default", "Occluded", "Always"], "Ruleset", "Seeker Outlines", 0, 4)
-globalvar WORKSHOP_SET_SEEKER_OUTLINES = [ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT, ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED, ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS][WORKSHOP_SET_SEEKER_OUTLINES_RAW]
-globalvar WORKSHOP_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Ruleset", "Seeker Assistance", false, 5)
-globalvar WORKSHOP_SET_LAYING_DOWN = createWorkshopSetting(bool, "Ruleset", "Allow Hiders to Lay Down", false, 5)
-globalvar WORKSHOP_SET_SHOW_HIDERS_RAW = createWorkshopSetting(enum["Last Hider Only", "On", "Off"], "Ruleset", "Show Remaining Hiders When Round Ends", 2, 5)
-globalvar WORKSHOP_SET_SHOW_HIDERS = [SHOW_HIDERS.LAST_HIDER, SHOW_HIDERS.ALL_HIDERS, SHOW_HIDERS.OFF][WORKSHOP_SET_SHOW_HIDERS_RAW]
-globalvar WORKSHOP_SET_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Ruleset", "Camera Mode", 0, 6)
-globalvar WORKSHOP_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WORKSHOP_SET_3RD_CAM_RAW]
-globalvar WORKSHOP_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 7)
-globalvar WORKSHOP_SET_END = [25.9, 8, 9999][WORKSHOP_SET_END_RAW]
+globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
+globalvar WS_SET_HIDETIME_RAW = createWorkshopSetting(enum["1:30", "1:00", "0:45"], "Ruleset", "Hiding Time", 1, 2)
+globalvar WS_SET_HIDETIME = [90, 60, 45][WS_SET_HIDETIME_RAW]
+globalvar WS_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30", "4:00", "3:30", "3:00", "2:30", "2:00"], "Ruleset", "Seeking Time", 2, 2)
+globalvar WS_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 120][WS_SET_SEEKTIME_RAW]
+globalvar WS_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Noclip)", "TINY", "Mercy V. Reinhardt"], "Ruleset", "Style", 0, 0)
+globalvar WS_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.TINY, STYLE.MERCY_REIN][WS_SET_MODE_RAW]
+globalvar WS_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
+globalvar WS_SET_REQUIRED_HIDERS = [3, 2, 1][WS_SET_REQUIRED_RATIO]
+globalvar WS_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 1, 1)
+globalvar WS_SET_WAITING_MAXTIME = [0, 5, 9999][WS_SET_WAITING_MAXTIME_RAW]
+globalvar WS_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow Hider When In Line Of Sight Of Seeker", true, 4)
+globalvar WS_SET_SEEKER_OUTLINES_RAW = createWorkshopSetting(enum["Default", "Occluded", "Always"], "Ruleset", "Seeker Outlines", 0, 4)
+globalvar WS_SET_SEEKER_OUTLINES = [ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT, ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED, ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS][WS_SET_SEEKER_OUTLINES_RAW]
+globalvar WS_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Ruleset", "Seeker Assistance", false, 5)
+globalvar WS_SET_LAYING_DOWN = createWorkshopSetting(bool, "Ruleset", "Allow Hiders to Lay Down", false, 5)
+globalvar WS_SET_SHOW_HIDERS_RAW = createWorkshopSetting(enum["Last Hider Only", "On", "Off"], "Ruleset", "Show Remaining Hiders When Round Ends", 2, 5)
+globalvar WS_SET_SHOW_HIDERS = [SHOW_HIDERS.LAST_HIDER, SHOW_HIDERS.ALL_HIDERS, SHOW_HIDERS.OFF][WS_SET_SHOW_HIDERS_RAW]
+globalvar WS_SET_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Ruleset", "Camera Mode", 0, 6)
+globalvar WS_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WS_SET_3RD_CAM_RAW]
+globalvar WS_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 7)
+globalvar WS_SET_END = [25.9, 8, 9999][WS_SET_END_RAW]
 
 # Advanced Settings
-globalvar WORKSHOP_SET_ADV_WINS_RAW = createWorkshopSetting(enum["1 win", "2 wins", "3 wins"], "Advanced Settings", "FIRST TEAM TO", 0, 0)
-globalvar WORKSHOP_SET_ADV_WINS = [1, 2, 3][WORKSHOP_SET_ADV_WINS_RAW]
-globalvar WORKSHOP_SET_ADV_SCALE = createWorkshopSetting(float[0.1:1], "Advanced Settings", "Player Size Scalar", 1, 0)
-globalvar WORKSHOP_SET_ADV_SEEK_ALLOWH = createWorkshopSetting(bool, "Advanced Settings", "Allow Restricted Seeker Heroes (Moira, Zenyatta, Sombra)", false, 4)
-globalvar WORKSHOP_SET_ADV_DVA_MECH_RAW = createWorkshopSetting(enum["Allow De-mech Only", "Allow Re-mech and De-mech", "Off"], "Advanced Settings", "D.va Player Accessibility", 1, 2)
-globalvar WORKSHOP_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCESSIBILITY.DVA_MECH_ALLOW_BOTH, ACCESSIBILITY.DVA_MECH_DISABLED][WORKSHOP_SET_ADV_DVA_MECH_RAW]
-globalvar WORKSHOP_SET_ADV_TANKSCALING_RAW = createWorkshopSetting(enum["Scale Down All Tanks", "Scale Down Tanks Automatically", "Off"], "Advanced Settings", "Tank Hider Accessibility", 2, 2)
-globalvar WORKSHOP_SET_ADV_TANKSCALING = [ACCESSIBILITY.TANKS_SCALE_ALL, ACCESSIBILITY.TANKS_SCALE, ACCESSIBILITY.TANKS_NOSCALE][WORKSHOP_SET_ADV_TANKSCALING_RAW]
-#globalvar WORKSHOP_SET_ADV_WB_GRAPPLE_RAW = createWorkshopSetting(enum["Allow when in Line Of Sight of Seeker (No Cooldown)", "Allow when in Line Of Sight of Seeker (Cooldown)", "Disabled when in Line Of Sight of Seeker"], "Advanced Settings", "Wrecking Ball Grapple Player Accessibility", 0, 2)
-#globalvar WORKSHOP_SET_ADV_WB_GRAPPLE = [ACCESSIBILITY.WB_GRAPPLE_ALLOW, ACCESSIBILITY.WB_GRAPPLE_ALLOW_COOLDOWN, ACCESSIBILITY.WB_GRAPPLE_DISABLED][WORKSHOP_SET_ADV_WB_GRAPPLE_RAW]
-globalvar WORKSHOP_SET_ADV_USEPRERELEASE = false #createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
-globalvar WORKSHOP_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
-globalvar WORKSHOP_SET_ADV_DEBUGSTATS_RAW = createWorkshopSetting(enum["HOST ONLY", "ALL PLAYERS", "NONE"], "Advanced Settings", "Show Debug Stats", 2, 6)
-globalvar WORKSHOP_SET_ADV_DEBUGSTATS = [SHOW_DEBUG_STATS.HOST, SHOW_DEBUG_STATS.ALL, SHOW_DEBUG_STATS.NONE][WORKSHOP_SET_ADV_DEBUGSTATS_RAW]
+globalvar WS_SET_ADV_WINS_RAW = createWorkshopSetting(enum["1 win", "2 wins", "3 wins"], "Advanced Settings", "FIRST TEAM TO", 0, 0)
+globalvar WS_SET_ADV_WINS = [1, 2, 3][WS_SET_ADV_WINS_RAW]
+globalvar WS_SET_ADV_SCALE = createWorkshopSetting(float[0.1:1], "Advanced Settings", "Player Size Scalar", 1, 0)
+globalvar WS_SET_ADV_SEEK_ALLOWH = createWorkshopSetting(bool, "Advanced Settings", "Allow Restricted Seeker Heroes (Moira, Zenyatta, Sombra)", false, 4)
+globalvar WS_SET_ADV_DVA_MECH_RAW = createWorkshopSetting(enum["Allow De-mech Only", "Allow Re-mech and De-mech", "Off"], "Advanced Settings", "D.va Player Accessibility", 1, 2)
+globalvar WS_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCESSIBILITY.DVA_MECH_ALLOW_BOTH, ACCESSIBILITY.DVA_MECH_DISABLED][WS_SET_ADV_DVA_MECH_RAW]
+globalvar WS_SET_ADV_INF_HAMMOND_GRAPPLE = createWorkshopSetting(bool, "Advanced Settings", "Wrecking Ball Accessibility: Infinite Grapple", false, 2)
+globalvar WS_SET_ADV_TANKSCALING_RAW = createWorkshopSetting(enum["Scale Down All Tanks", "Scale Down Tanks Automatically", "Off"], "Advanced Settings", "Tank Hider Accessibility", 2, 2)
+globalvar WS_SET_ADV_TANKSCALING = [ACCESSIBILITY.TANKS_SCALE_ALL, ACCESSIBILITY.TANKS_SCALE, ACCESSIBILITY.TANKS_NOSCALE][WS_SET_ADV_TANKSCALING_RAW]
+#globalvar WS_SET_ADV_WB_GRAPPLE_RAW = createWorkshopSetting(enum["Allow when in Line Of Sight of Seeker (No Cooldown)", "Allow when in Line Of Sight of Seeker (Cooldown)", "Disabled when in Line Of Sight of Seeker"], "Advanced Settings", "Wrecking Ball Grapple Player Accessibility", 0, 2)
+#globalvar WS_SET_ADV_WB_GRAPPLE = [ACCESSIBILITY.WB_GRAPPLE_ALLOW, ACCESSIBILITY.WB_GRAPPLE_ALLOW_COOLDOWN, ACCESSIBILITY.WB_GRAPPLE_DISABLED][WS_SET_ADV_WB_GRAPPLE_RAW]
+globalvar WS_SET_ADV_USEPRERELEASE = false #createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
+globalvar WS_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
+globalvar WS_SET_ADV_DEBUGSTATS_RAW = createWorkshopSetting(enum["HOST ONLY", "ALL PLAYERS", "NONE"], "Advanced Settings", "Show Debug Stats", 2, 6)
+globalvar WS_SET_ADV_DEBUGSTATS = [SHOW_DEBUG_STATS.HOST, SHOW_DEBUG_STATS.ALL, SHOW_DEBUG_STATS.NONE][WS_SET_ADV_DEBUGSTATS_RAW]
 
 #!include "game.opy"
 #!include "player.opy"
