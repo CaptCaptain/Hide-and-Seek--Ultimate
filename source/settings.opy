@@ -105,18 +105,16 @@ globalvar WS_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAME
 globalvar WS_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 7)
 globalvar WS_SET_END = [25.9, 8, 9999][WS_SET_END_RAW]
 
-# Accessibility Settings
-globalvar WS_SET_ADV_DVA_MECH_RAW = createWorkshopSetting(enum["Allow De-mech Only", "Allow Re-mech and De-mech", "Off"], "Accessibility Settings", "D.va Player Accessibility", 1, 2)
-globalvar WS_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCESSIBILITY.DVA_MECH_ALLOW_BOTH, ACCESSIBILITY.DVA_MECH_DISABLED][WS_SET_ADV_DVA_MECH_RAW]
-globalvar WS_SET_ADV_INF_HAMMOND_GRAPPLE = createWorkshopSetting(bool, "Accessibility Settings", "Wrecking Ball Hider Accessibility: Infinite Grapple", false, 2)
-globalvar WS_SET_ADV_TANKSCALING_RAW = createWorkshopSetting(enum["Scale Down All Tanks", "Scale Down Tanks Automatically", "Off"], "Accessibility Settings", "Tank Hider Accessibility", 2, 2)
-globalvar WS_SET_ADV_TANKSCALING = [ACCESSIBILITY.TANKS_SCALE_ALL, ACCESSIBILITY.TANKS_SCALE, ACCESSIBILITY.TANKS_NOSCALE][WS_SET_ADV_TANKSCALING_RAW]
-
 # Advanced Settings
 globalvar WS_SET_ADV_WINS_RAW = createWorkshopSetting(enum["1 win", "2 wins", "3 wins"], "Advanced Settings", "FIRST TEAM TO", 0, 0)
 globalvar WS_SET_ADV_WINS = [1, 2, 3][WS_SET_ADV_WINS_RAW]
 globalvar WS_SET_ADV_SCALE = createWorkshopSetting(float[0.1:1], "Advanced Settings", "Player Size Scalar", 1, 0)
 globalvar WS_SET_ADV_SEEK_ALLOWH = createWorkshopSetting(bool, "Advanced Settings", "Allow Restricted Seeker Heroes (Moira, Zenyatta, Sombra)", false, 4)
+globalvar WS_SET_ADV_DVA_MECH_RAW = createWorkshopSetting(enum["Allow De-mech Only", "Allow Re-mech and De-mech", "Off"], "Advanced Settings", "D.va Player Accessibility", 1, 2)
+globalvar WS_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCESSIBILITY.DVA_MECH_ALLOW_BOTH, ACCESSIBILITY.DVA_MECH_DISABLED][WS_SET_ADV_DVA_MECH_RAW]
+globalvar WS_SET_ADV_INF_HAMMOND_GRAPPLE = createWorkshopSetting(bool, "Advanced Settings", "Wrecking Ball Player Accessibility: Infinite Grapple", false, 2)
+globalvar WS_SET_ADV_TANKSCALING_RAW = createWorkshopSetting(enum["Scale Down All Tanks", "Scale Down Tanks Automatically", "Off"], "Advanced Settings", "Tank Hider Accessibility", 2, 2)
+globalvar WS_SET_ADV_TANKSCALING = [ACCESSIBILITY.TANKS_SCALE_ALL, ACCESSIBILITY.TANKS_SCALE, ACCESSIBILITY.TANKS_NOSCALE][WS_SET_ADV_TANKSCALING_RAW]
 #globalvar WS_SET_ADV_WB_GRAPPLE_RAW = createWorkshopSetting(enum["Allow when in Line Of Sight of Seeker (No Cooldown)", "Allow when in Line Of Sight of Seeker (Cooldown)", "Disabled when in Line Of Sight of Seeker"], "Advanced Settings", "Wrecking Ball Grapple Player Accessibility", 0, 2)
 #globalvar WS_SET_ADV_WB_GRAPPLE = [ACCESSIBILITY.WB_GRAPPLE_ALLOW, ACCESSIBILITY.WB_GRAPPLE_ALLOW_COOLDOWN, ACCESSIBILITY.WB_GRAPPLE_DISABLED][WS_SET_ADV_WB_GRAPPLE_RAW]
 globalvar WS_SET_ADV_USEPRERELEASE = false #createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
