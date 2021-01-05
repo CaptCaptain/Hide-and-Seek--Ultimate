@@ -96,16 +96,16 @@ globalvar WS_SET_WAITING_MAXTIME = [0, 5, 9999][WS_SET_WAITING_MAXTIME_RAW]
 globalvar WS_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow Hider When In Line Of Sight Of Seeker", true, 4)
 globalvar WS_SET_SEEKER_OUTLINES_RAW = createWorkshopSetting(enum["Default", "Occluded", "Always"], "Ruleset", "Seeker Outlines", 0, 4)
 globalvar WS_SET_SEEKER_OUTLINES = [ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT, ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED, ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS][WS_SET_SEEKER_OUTLINES_RAW]
-globalvar WS_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Ruleset", "Seeker Assistance", false, 5)
-globalvar WS_SET_LAYING_DOWN = createWorkshopSetting(bool, "Ruleset", "Allow Hiders to Lay Down", false, 5)
 globalvar WS_SET_SHOW_HIDERS_RAW = createWorkshopSetting(enum["Last Hider Only", "On", "Off"], "Ruleset", "Show Remaining Hiders When Round Ends", 2, 5)
 globalvar WS_SET_SHOW_HIDERS = [SHOW_HIDERS.LAST_HIDER, SHOW_HIDERS.ALL_HIDERS, SHOW_HIDERS.OFF][WS_SET_SHOW_HIDERS_RAW]
-globalvar WS_SET_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Ruleset", "Camera Mode", 0, 6)
-globalvar WS_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WS_SET_3RD_CAM_RAW]
 globalvar WS_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 7)
 globalvar WS_SET_END = [25.9, 8, 9999][WS_SET_END_RAW]
 
 # Accessibility Settings
+globalvar WS_SET_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Accessibility Settings", "Camera Mode", 0, 6)
+globalvar WS_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WS_SET_3RD_CAM_RAW]
+globalvar WS_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Accessibility Settings", "Seeker Assistance", false, 5)
+globalvar WS_SET_LAYING_DOWN = createWorkshopSetting(bool, "Accessibility Settings", "Allow Hiders to Lay Down", false, 5)
 globalvar WS_SET_ADV_DVA_MECH_RAW = createWorkshopSetting(enum["Allow De-mech Only", "Allow Re-mech and De-mech", "Off"], "Accessibility Settings", "D.va Player Accessibility", 1, 2)
 globalvar WS_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCESSIBILITY.DVA_MECH_ALLOW_BOTH, ACCESSIBILITY.DVA_MECH_DISABLED][WS_SET_ADV_DVA_MECH_RAW]
 globalvar WS_SET_ADV_INF_HAMMOND_GRAPPLE = createWorkshopSetting(bool, "Accessibility Settings", "Wrecking Ball Hider Accessibility: Infinite Grapple", false, 2)
