@@ -125,10 +125,6 @@ rule "Global Huds":
     hudHeader(getAllPlayers(), "{} RULESET:".format(abilityIconString(Hero.TORBJORN, Button.ABILITY_2)), HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    if WS_SET_ADV_USEPRERELEASE:
-        hudSubtext(getAllPlayers(), "USE PRE-RELEASE UPDATE: {}".format(WS_SET_ADV_USEPRERELEASE), HudPosition.LEFT, 1.1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-        Hud_GameInfo.append(getLastCreatedText())
-
     hudSubtext(getAllPlayers(), "STYLE: {}".format(WS_SET_MODE), HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
@@ -161,16 +157,17 @@ rule "Global Huds":
     if WS_SET_ADV_TANKSCALING != ACCESSIBILITY.TANKS_NOSCALE:
         hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
-
-    hudSubtext(getAllPlayers(), "SLOW HIDERS WHEN IN LOS OF SEEKER: {}".format(WS_SET_SLOWHIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-    Hud_GameInfo.append(getLastCreatedText())
+    
+    if WS_SET_SLOWHIDER == true:
+        hudSubtext(getAllPlayers(), "SLOW HIDERS WHEN IN LOS OF SEEKER: {}".format(WS_SET_SLOWHIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_LAYING_DOWN:
         hudSubtext(getAllPlayers(), "ALLOW HIDERS TO LAY DOWN: {}".format("On" if WS_SET_LAYING_DOWN else "Off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SHOW_HIDERS != SHOW_HIDERS.OFF:
-        hudSubtext(getAllPlayers(), "SHOW REMAINING HIDERS AFTER ROUND: {}".format(WS_SET_SHOW_HIDERS), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), "SHOW REMAINING HIDERS AFTER ROUND: {}".format(WS_SET_SHOW_HIDERS), HudPosition.LEFT, 5.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_ADV_INF_HAMMOND_GRAPPLE == true:

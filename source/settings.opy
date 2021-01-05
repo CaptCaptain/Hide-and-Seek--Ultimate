@@ -54,9 +54,6 @@ enum ACCESSIBILITY:
     DVA_MECH_ALLOW_BOTH,
     DVA_MECH_ALLOW_DEMECH,
     DVA_MECH_DISABLED,
-    WB_GRAPPLE_ALLOW,
-    WB_GRAPPLE_ALLOW_COOLDOWN,
-    WB_GRAPPLE_DISABLED,
     TANKS_SCALE_ALL,
     TANKS_SCALE,
     TANKS_NOSCALE,
@@ -79,7 +76,7 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "1.5.0"
+globalvar CURRENT_VERSION = "1.5.1"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
@@ -117,9 +114,6 @@ globalvar WS_SET_ADV_WINS_RAW = createWorkshopSetting(enum["1 win", "2 wins", "3
 globalvar WS_SET_ADV_WINS = [1, 2, 3][WS_SET_ADV_WINS_RAW]
 globalvar WS_SET_ADV_SCALE = createWorkshopSetting(float[0.1:1], "Advanced Settings", "Player Size Scalar", 1, 0)
 globalvar WS_SET_ADV_SEEK_ALLOWH = createWorkshopSetting(bool, "Advanced Settings", "Allow Restricted Seeker Heroes (Moira, Zenyatta, Sombra)", false, 4)
-#globalvar WS_SET_ADV_WB_GRAPPLE_RAW = createWorkshopSetting(enum["Allow when in Line Of Sight of Seeker (No Cooldown)", "Allow when in Line Of Sight of Seeker (Cooldown)", "Disabled when in Line Of Sight of Seeker"], "Advanced Settings", "Wrecking Ball Grapple Player Accessibility", 0, 2)
-#globalvar WS_SET_ADV_WB_GRAPPLE = [ACCESSIBILITY.WB_GRAPPLE_ALLOW, ACCESSIBILITY.WB_GRAPPLE_ALLOW_COOLDOWN, ACCESSIBILITY.WB_GRAPPLE_DISABLED][WS_SET_ADV_WB_GRAPPLE_RAW]
-globalvar WS_SET_ADV_USEPRERELEASE = false #createWorkshopSetting(bool, "Advanced Settings", "Use Pre-release Update if Available", false, 6)
 globalvar WS_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
 globalvar WS_SET_ADV_DEBUGSTATS_RAW = createWorkshopSetting(enum["HOST ONLY", "ALL PLAYERS", "NONE"], "Advanced Settings", "Show Debug Stats", 2, 6)
 globalvar WS_SET_ADV_DEBUGSTATS = [SHOW_DEBUG_STATS.HOST, SHOW_DEBUG_STATS.ALL, SHOW_DEBUG_STATS.NONE][WS_SET_ADV_DEBUGSTATS_RAW]
