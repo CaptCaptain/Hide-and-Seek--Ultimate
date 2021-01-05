@@ -17,6 +17,7 @@ playervar BaseJumpHeight = 100 * WS_SET_ADV_BASESPEED
 playervar BaseScaling = WS_SET_ADV_SCALE
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
+playervar DvaHasTeleported
 playervar LastWalkablePosition
 playervar ThirdPersonCameraEnabled = true if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
 playervar LayingDownCameraEnabled = false
@@ -300,6 +301,9 @@ rule "D.va: TP to Mech Position (Hider)":
     @Team 1
     @Hero dva
     @Condition CurrentGameState == GAME_STATE.HIDING
+    @Condition eventPlayer.DvaHasTeleported == false
+
+    eventPlayer.DvaHasTeleported = true
     
     eventPlayer.teleport(eventPlayer.DvaMechPosition)
 
@@ -310,6 +314,7 @@ rule "D.va: TP to Mech Position (Seeker)":
     @Condition CurrentGameState == GAME_STATE.HIDING
     @Condition not eventPlayer.isInSpawnRoom()
     
+    wait(0.25, Wait.ABORT_WHEN_FALSE)
     eventPlayer.teleport(eventPlayer.DvaMechPosition)
 
 rule "D.va: Ult":

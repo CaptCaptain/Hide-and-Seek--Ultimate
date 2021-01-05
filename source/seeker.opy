@@ -52,7 +52,9 @@ rule "Respawn Seeker if they leave Spawn Room":
     @Condition CurrentGameState == GAME_STATE.HIDING
     @Condition not eventPlayer.isInSpawnRoom()
 
+    if eventPlayer.getCurrentHero() == Hero.DVA: goto skip_respawn:
     eventPlayer.respawn()
+    skip_respawn:
     smallMessage(eventPlayer, "Wait until Seeking Phase to Leave")
     printLog("{} left spawn room during hiding phase, respawning".format(eventPlayer))
 
