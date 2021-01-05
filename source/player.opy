@@ -150,7 +150,7 @@ rule "Global Huds":
     if WS_SET_SEEKER_OUTLINES != ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT:
         hudSubtext(getAllPlayers(), "SEEKER OUTLINES: {}".format(WS_SET_SEEKER_OUTLINES), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
-
+        
     hudSubtext(getAllPlayers(), "HIDER OUTLINES: {}".format("on" if WS_SET_USEOUTLINE else "off"), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
@@ -158,8 +158,9 @@ rule "Global Huds":
         hudSubtext(getAllPlayers(), "SEEKER ASSISTANCE: {}".format(WS_SET_SEEKER_ASSIST), HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
-    hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-    Hud_GameInfo.append(getLastCreatedText())
+    if WS_SET_ADV_TANKSCALING != ACCESSIBILITY.TANKS_NOSCALE:
+        hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), "SLOW HIDERS WHEN IN LOS OF SEEKER: {}".format(WS_SET_SLOWHIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
@@ -170,6 +171,10 @@ rule "Global Huds":
 
     if WS_SET_SHOW_HIDERS != SHOW_HIDERS.OFF:
         hudSubtext(getAllPlayers(), "SHOW REMAINING HIDERS AFTER ROUND: {}".format(WS_SET_SHOW_HIDERS), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+
+    if WS_SET_ADV_INF_HAMMOND_GRAPPLE == true:
+        hudSubtext(getAllPlayers(), "WRECKING HIDER INFINITE GRAPPLE: {}".format(WS_SET_ADV_INF_HAMMOND_GRAPPLE), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_ADV_SEEK_ALLOWH == true:
