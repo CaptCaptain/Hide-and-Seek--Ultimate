@@ -324,6 +324,13 @@ rule "D.va: Ult":
     eventPlayer.setUltEnabled(true)
     eventPlayer.disallowButton(Button.ULTIMATE)
 
+rule "D.va: Get Ult In Spawn":
+    @Event eachPlayer
+    @Hero dva
+    @Condition eventPlayer.isInSpawnRoom()
+
+    eventPlayer.setUltCharge(100)
+
 rule "D.va: Enable De-mech":
     @Event eachPlayer
     @Hero dva
