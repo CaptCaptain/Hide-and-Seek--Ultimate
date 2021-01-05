@@ -22,6 +22,12 @@ playervar LastWalkablePosition
 playervar ThirdPersonCameraEnabled = true if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
 playervar LayingDownCameraEnabled = false
 playervar CameraState = CAMERA_STATE.THIRD_PERSON if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else CAMERA_STATE.FIRST_PERSON
+playervar TeleportTweenPosition
+playervar TeleportPosition
+playervar TeleportingEnabled = false
+playervar Hud_Teleport = []
+
+#!define GetTeleportPosition() updateEveryTick(raycast(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + Vector.UP, raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + (Vector.DOWN * 100), null, eventPlayer, false).getHitPosition())
 
 subroutine StartThirdPersonCamera
 subroutine StartCamera
@@ -385,6 +391,63 @@ rule "Toggle Third Person Camera":
 
     eventPlayer.ThirdPersonCameraEnabled = not eventPlayer.ThirdPersonCameraEnabled
     eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON if eventPlayer.ThirdPersonCameraEnabled else CAMERA_STATE.FIRST_PERSON
+
+rule "Toggle Teleport":
+    @Event eachPlayer
+    @Condition eventPlayer.isHoldingButton(Button.INTERACT)
+
+    eventPlayer.TeleportingEnabled = not eventPlayer.TeleportingEnabled
+
+rule "Create Teleport Effects":
+    @Event eachPlayer
+    @Condition eventPlayer.TeleportingEnabled == true
+
+    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW, GetTeleportPosition(), 1)
+    playEffect(eventPlayer, DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, eventPlayer, 100)
+
+    # Create teleport destination effect
+    createEffect(eventPlayer, Effect.LIGHT_SHAFT, Color.YELLOW, GetTeleportPosition(), 0.1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    eventPlayer.Hud_Teleport.append(getLastCreatedEntity())
+
+    createEffect(eventPlayer, Effect.RING, Color.YELLOW, GetTeleportPosition(), 1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    eventPlayer.Hud_Teleport.append(getLastCreatedEntity())
+
+    # Disallow Primary Fire
+    eventPlayer.disallowButton(Button.PRIMARY_FIRE)
+
+rule "Destroy Teleport Effects":
+    @Event eachPlayer
+    @Condition eventPlayer.TeleportingEnabled == false
+
+    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW, GetTeleportPosition(), 1)
+    playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.WHITE, eventPlayer, 100)
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Hud_Teleport)):
+        destroyEffect(eventPlayer.Hud_Teleport[eventPlayer.playerHudIndex])
+    eventPlayer.Hud_Teleport = []
+
+    # Allow Primary Fire
+    eventPlayer.allowButton(Button.PRIMARY_FIRE)
+
+rule "Confirm Teleport":
+    @Event eachPlayer
+    @Condition eventPlayer.TeleportingEnabled == true
+    @Condition eventPlayer.isOnGround()
+    @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
+
+    playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.WHITE, eventPlayer, 100)
+
+    eventPlayer.TeleportTweenPosition = eventPlayer.getPosition()
+    eventPlayer.TeleportPosition = GetTeleportPosition()
+    if distance(eventPlayer.TeleportPosition, raycast(eventPlayer.TeleportPosition, eventPlayer.TeleportPosition + (Vector.UP * 100), null, eventPlayer, false).getHitPosition()) < 1:
+        eventPlayer.TeleportPosition = nearestWalkablePosition(eventPlayer.TeleportPosition)
+    chase(eventPlayer.TeleportTweenPosition, eventPlayer.TeleportPosition, rate=200, ChaseReeval.NONE)
+    eventPlayer.startForcingPosition(updateEveryTick(eventPlayer.TeleportTweenPosition), true)
+    waitUntil(distance(eventPlayer.getPosition(), eventPlayer.TeleportPosition) < 1 or eventPlayer.isDead(), 9999)
+    wait()
+    eventPlayer.stopForcingPosition()
+    stopChasingVariable(eventPlayer.TeleportTweenPosition)
+    #eventPlayer.applyImpulse(directionTowards(eventPlayer.getPosition(), nearestWalkablePosition(eventPlayer.getPosition())), 10, Relativity.TO_WORLD, Impulse.CANCEL_CONTRARY_MOTION)
+    wait(1)
 
 rule "Show Debug Stats":
     @Condition WS_SET_ADV_DEBUGSTATS != SHOW_DEBUG_STATS.NONE
