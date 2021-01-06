@@ -37,7 +37,7 @@ subroutine SlingshotCooldown
 
 def SlingshotCooldown():
     eventPlayer.SlingshotUsed = true
-    wait(3)
+    wait(5)
     eventPlayer.SlingshotUsed = false
 
 def StartCamera():
