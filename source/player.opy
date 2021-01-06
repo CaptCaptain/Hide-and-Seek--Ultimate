@@ -24,6 +24,7 @@ playervar LayingDownCameraEnabled = false
 playervar CameraState = CAMERA_STATE.THIRD_PERSON if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else CAMERA_STATE.FIRST_PERSON
 playervar SlingshotPosition
 playervar SlingshotEnabled = false
+playervar SlingshotUsed = false
 playervar Hud_Slingshot = []
 playervar PreviousPosition
 
@@ -32,6 +33,12 @@ playervar PreviousPosition
 subroutine StartThirdPersonCamera
 subroutine StartCamera
 subroutine RestrictAbilities
+subroutine SlingshotCooldown
+
+def SlingshotCooldown():
+    eventPlayer.SlingshotUsed = true
+    wait(3)
+    eventPlayer.SlingshotUsed = false
 
 def StartCamera():
     eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
@@ -91,15 +98,15 @@ rule "Create Player Huds":
 
     # Slingshot Instructions
     if WS_SET_USE_SLINGSHOT == true:
-        hudSubtext(eventPlayer, "Press {} to toggle slingshot tool / Press {} to confirm".format(buttonString(Button.INTERACT), buttonString(Button.PRIMARY_FIRE)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, "Press {} to toggle slingshot tool / Press {} to confirm".format(buttonString(Button.INTERACT), buttonString(Button.PRIMARY_FIRE)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
     # Camera Hud Instructions
     if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
-        hudSubtext(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
     # Laying down Instructions
     if WS_SET_LAYING_DOWN == true and eventPlayer.getTeam() == Team.1:
-        hudSubtext(eventPlayer, "Emote and press {} to lay down / Press {} to stand up".format(buttonString(Button.CROUCH), buttonString(Button.JUMP)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, "Emote and press {} to lay down / Press {} to stand up".format(buttonString(Button.CROUCH), buttonString(Button.JUMP)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
 
 rule "Title Hud":
@@ -167,6 +174,10 @@ rule "Global Huds":
     
     if WS_SET_ADV_TANKSCALING != ACCESSIBILITY.TANKS_NOSCALE:
         hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+
+    if WS_SET_USE_SLINGSHOT:
+        hudSubtext(getAllPlayers(), "ALLOW SLINGSHOT TOOL: {}".format(WS_SET_USE_SLINGSHOT), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_SLOWHIDER == true:
@@ -399,32 +410,38 @@ rule "Toggle Third Person Camera":
 
 rule "Toggle Slingshot":
     @Event eachPlayer
-    
     @Condition WS_SET_USE_SLINGSHOT == true
     @Condition eventPlayer.isHoldingButton(Button.INTERACT)
 
     wait()
 
-    if WS_SET_SLOWHIDER and any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)]):
-        smallMessage(eventPlayer, "CANNOT USE SLINGSHOT WHILE IN LOS OF SEEKER")
+    if WS_SET_SLOWHIDER and any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)]) and eventPlayer.getTeam() == Team.1:
+        smallMessage(eventPlayer, "CANNOT USE SLINGSHOT WHILE IN LOS OF SEEKERS")
         return
+    # Using interact with abilities take priority over slingshot toggle
     elif any([interactButtonOccupied == true for interactButtonOccupied in [eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2(), eventPlayer.getCurrentHero() == Hero.TORBJORN and eventPlayer.isUsingAbility1(), distance(eventPlayer.getPosition(), eventPlayer.PreviousPosition) > 1 and any([player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])]]):
         return
 
     eventPlayer.SlingshotEnabled = not eventPlayer.SlingshotEnabled
 
+rule "Disable Slingshot":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicatingEmote()
+
+    eventPlayer.SlingshotEnabled = false
+
 rule "Create Slingshot Effects":
     @Event eachPlayer
     @Condition eventPlayer.SlingshotEnabled == true
 
-    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW, GetSlingshotPosition(), 1)
+    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION,  Color.YELLOW if not eventPlayer.SlingshotUsed else Color.ROSE, GetSlingshotPosition(), 1)
     playEffect(eventPlayer, DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, eventPlayer, 100)
 
     # Create slingshot destination effect
-    createEffect(eventPlayer, Effect.LIGHT_SHAFT, Color.YELLOW, GetSlingshotPosition(), 0.1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createEffect(eventPlayer, Effect.LIGHT_SHAFT, Color.YELLOW if not eventPlayer.SlingshotUsed else Color.ROSE, GetSlingshotPosition(), 0.1, EffectReeval.VISIBILITY_POSITION_RADIUS_AND_COLOR)
     eventPlayer.Hud_Slingshot.append(getLastCreatedEntity())
 
-    createEffect(eventPlayer, Effect.RING, Color.YELLOW, GetSlingshotPosition(), 1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    createEffect(eventPlayer, Effect.RING, Color.YELLOW if not eventPlayer.SlingshotUsed else Color.ROSE, GetSlingshotPosition(), 1, EffectReeval.VISIBILITY_POSITION_RADIUS_AND_COLOR)
     eventPlayer.Hud_Slingshot.append(getLastCreatedEntity())
 
     # Disallow Primary Fire
@@ -434,7 +451,7 @@ rule "Destroy Slingshot Effects":
     @Event eachPlayer
     @Condition eventPlayer.SlingshotEnabled == false
 
-    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW, GetSlingshotPosition(), 1)
+    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW if not eventPlayer.SlingshotUsed else Color.ROSE, GetSlingshotPosition(), 1)
     playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.WHITE, eventPlayer, 100)
     for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Hud_Slingshot)):
         destroyEffect(eventPlayer.Hud_Slingshot[eventPlayer.playerHudIndex])
@@ -446,9 +463,16 @@ rule "Destroy Slingshot Effects":
 rule "Confirm Slingshot":
     @Event eachPlayer
     @Condition eventPlayer.SlingshotEnabled == true
-    @Condition eventPlayer.isOnGround()
     @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
 
+    if eventPlayer.SlingshotUsed:
+        smallMessage(eventPlayer, "SLINGSHOT IS ON COOLDOWN")
+        return
+    elif eventPlayer.isInAir():
+        smallMessage(eventPlayer, "SLINGSHOT CANNOT BE USED WHILE IN THE AIR")
+        return
+
+    playEffect(getPlayers(getOppositeTeam(eventPlayer.getTeam())), DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, eventPlayer, 30)
     playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.WHITE, eventPlayer, 100)
 
     # Fling player toward point
@@ -457,6 +481,8 @@ rule "Confirm Slingshot":
     eventPlayer.applyImpulse(directionTowards(eventPlayer.getPosition(), eventPlayer.SlingshotPosition + (Vector.UP * 2)), distance(eventPlayer.getPosition(), eventPlayer.SlingshotPosition) * 2.5, Relativity.TO_WORLD, Impulse.CANCEL_CONTRARY_MOTION)
     wait()
     eventPlayer.setGravity(100)
+
+    async(SlingshotCooldown, AsyncBehavior.NOOP)
 
 rule "Symmetra TP Detection: Track Previous Position":
     @Event eachPlayer
