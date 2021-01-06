@@ -37,7 +37,7 @@ subroutine SlingshotCooldown
 
 def SlingshotCooldown():
     eventPlayer.SlingshotUsed = true
-    wait(5)
+    wait(8 if CurrentGameState == GAME_STATE.SEEKING else 5)
     eventPlayer.SlingshotUsed = false
 
 def StartCamera():
@@ -388,7 +388,7 @@ rule "Start Laying Down Camera":
 
     # Smooth transition to third person camera
     StartCamera()
-    eventPlayer.startCamera(raycast(eventPlayer.getPosition(), eventPlayer.getPosition() + (Vector.UP * 10) + vect(0.001, 0, 0), null, eventPlayer, false).getHitPosition(), eventPlayer.getPosition(), 10)
+    eventPlayer.startCamera(raycast(eventPlayer.getEyePosition(), eventPlayer.getPosition() + (Vector.UP * 10) + vect(0.001, 0, 0), null, eventPlayer, false).getHitPosition(), eventPlayer.getPosition(), 10)
 
 rule "Stop Camera":
     @Event eachPlayer
