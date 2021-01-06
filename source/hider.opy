@@ -156,6 +156,7 @@ rule "Slow Hider":
     eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight / eventPlayer.HiderSlowFactor)
     eventPlayer.setAbility1Enabled(false)
     eventPlayer.setAbility2Enabled(false)
+    eventPlayer.SlingshotEnabled = false
     eventPlayer.setSecondaryFireEnabled(true if eventPlayer.getCurrentHero() == Hero.HAMMOND else false)
     playEffect(eventPlayer, DynamicEffect.EXPLOSION_SOUND, Color.WHITE, eventPlayer, 250)
     # Destroy Sombra's Translocator

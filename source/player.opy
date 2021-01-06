@@ -22,12 +22,12 @@ playervar LastWalkablePosition
 playervar ThirdPersonCameraEnabled = true if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
 playervar LayingDownCameraEnabled = false
 playervar CameraState = CAMERA_STATE.THIRD_PERSON if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else CAMERA_STATE.FIRST_PERSON
-playervar TeleportTweenPosition
-playervar TeleportPosition
-playervar TeleportingEnabled = false
-playervar Hud_Teleport = []
+playervar SlingshotPosition
+playervar SlingshotEnabled = false
+playervar Hud_Slingshot = []
+playervar PreviousPosition
 
-#!define GetTeleportPosition() updateEveryTick(raycast(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + Vector.UP, raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + (Vector.DOWN * 100), null, eventPlayer, false).getHitPosition())
+#!define GetSlingshotPosition() updateEveryTick(raycast(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + Vector.UP, raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + (Vector.DOWN * 100), null, eventPlayer, false).getHitPosition())
 
 subroutine StartThirdPersonCamera
 subroutine StartCamera
@@ -89,10 +89,15 @@ rule "Create Player Huds":
     hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), "HIDER" if eventPlayer.getTeam() == Team.1 else "SEEKER"), "PHASE: {}".format(CurrentGameState), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.BLUE if eventPlayer.getTeam() == Team.1 else Color.RED, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
     eventPlayer.Hud_Player.append(getLastCreatedText())
 
+    # Slingshot Instructions
+    if WS_SET_USE_SLINGSHOT == true:
+        hudSubtext(eventPlayer, "Press {} to toggle slingshot tool / Press {} to confirm".format(buttonString(Button.INTERACT), buttonString(Button.PRIMARY_FIRE)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        eventPlayer.Hud_Player.append(getLastCreatedText())
     # Camera Hud Instructions
     if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
         hudSubtext(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
+    # Laying down Instructions
     if WS_SET_LAYING_DOWN == true and eventPlayer.getTeam() == Team.1:
         hudSubtext(eventPlayer, "Emote and press {} to lay down / Press {} to stand up".format(buttonString(Button.CROUCH), buttonString(Button.JUMP)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
@@ -392,62 +397,89 @@ rule "Toggle Third Person Camera":
     eventPlayer.ThirdPersonCameraEnabled = not eventPlayer.ThirdPersonCameraEnabled
     eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON if eventPlayer.ThirdPersonCameraEnabled else CAMERA_STATE.FIRST_PERSON
 
-rule "Toggle Teleport":
+rule "Toggle Slingshot":
     @Event eachPlayer
+    
+    @Condition WS_SET_USE_SLINGSHOT == true
     @Condition eventPlayer.isHoldingButton(Button.INTERACT)
 
-    eventPlayer.TeleportingEnabled = not eventPlayer.TeleportingEnabled
+    wait()
 
-rule "Create Teleport Effects":
+    if WS_SET_SLOWHIDER and any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)]):
+        smallMessage(eventPlayer, "CANNOT USE SLINGSHOT WHILE IN LOS OF SEEKER")
+        return
+    elif any([interactButtonOccupied == true for interactButtonOccupied in [eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2(), eventPlayer.getCurrentHero() == Hero.TORBJORN and eventPlayer.isUsingAbility1(), distance(eventPlayer.getPosition(), eventPlayer.PreviousPosition) > 1 and any([player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])]]):
+        return
+
+    eventPlayer.SlingshotEnabled = not eventPlayer.SlingshotEnabled
+
+rule "Create Slingshot Effects":
     @Event eachPlayer
-    @Condition eventPlayer.TeleportingEnabled == true
+    @Condition eventPlayer.SlingshotEnabled == true
 
-    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW, GetTeleportPosition(), 1)
+    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW, GetSlingshotPosition(), 1)
     playEffect(eventPlayer, DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, eventPlayer, 100)
 
-    # Create teleport destination effect
-    createEffect(eventPlayer, Effect.LIGHT_SHAFT, Color.YELLOW, GetTeleportPosition(), 0.1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
-    eventPlayer.Hud_Teleport.append(getLastCreatedEntity())
+    # Create slingshot destination effect
+    createEffect(eventPlayer, Effect.LIGHT_SHAFT, Color.YELLOW, GetSlingshotPosition(), 0.1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    eventPlayer.Hud_Slingshot.append(getLastCreatedEntity())
 
-    createEffect(eventPlayer, Effect.RING, Color.YELLOW, GetTeleportPosition(), 1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
-    eventPlayer.Hud_Teleport.append(getLastCreatedEntity())
+    createEffect(eventPlayer, Effect.RING, Color.YELLOW, GetSlingshotPosition(), 1, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    eventPlayer.Hud_Slingshot.append(getLastCreatedEntity())
 
     # Disallow Primary Fire
     eventPlayer.disallowButton(Button.PRIMARY_FIRE)
 
-rule "Destroy Teleport Effects":
+rule "Destroy Slingshot Effects":
     @Event eachPlayer
-    @Condition eventPlayer.TeleportingEnabled == false
+    @Condition eventPlayer.SlingshotEnabled == false
 
-    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW, GetTeleportPosition(), 1)
+    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW, GetSlingshotPosition(), 1)
     playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.WHITE, eventPlayer, 100)
-    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Hud_Teleport)):
-        destroyEffect(eventPlayer.Hud_Teleport[eventPlayer.playerHudIndex])
-    eventPlayer.Hud_Teleport = []
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Hud_Slingshot)):
+        destroyEffect(eventPlayer.Hud_Slingshot[eventPlayer.playerHudIndex])
+    eventPlayer.Hud_Slingshot = []
 
     # Allow Primary Fire
     eventPlayer.allowButton(Button.PRIMARY_FIRE)
 
-rule "Confirm Teleport":
+rule "Confirm Slingshot":
     @Event eachPlayer
-    @Condition eventPlayer.TeleportingEnabled == true
+    @Condition eventPlayer.SlingshotEnabled == true
     @Condition eventPlayer.isOnGround()
     @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
 
     playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.WHITE, eventPlayer, 100)
 
-    eventPlayer.TeleportTweenPosition = eventPlayer.getPosition()
-    eventPlayer.TeleportPosition = GetTeleportPosition()
-    if distance(eventPlayer.TeleportPosition, raycast(eventPlayer.TeleportPosition, eventPlayer.TeleportPosition + (Vector.UP * 100), null, eventPlayer, false).getHitPosition()) < 1:
-        eventPlayer.TeleportPosition = nearestWalkablePosition(eventPlayer.TeleportPosition)
-    chase(eventPlayer.TeleportTweenPosition, eventPlayer.TeleportPosition, rate=200, ChaseReeval.NONE)
-    eventPlayer.startForcingPosition(updateEveryTick(eventPlayer.TeleportTweenPosition), true)
-    waitUntil(distance(eventPlayer.getPosition(), eventPlayer.TeleportPosition) < 1 or eventPlayer.isDead(), 9999)
+    # Fling player toward point
+    eventPlayer.SlingshotPosition = GetSlingshotPosition()
+    eventPlayer.setGravity(0)
+    eventPlayer.applyImpulse(directionTowards(eventPlayer.getPosition(), eventPlayer.SlingshotPosition + (Vector.UP * 2)), distance(eventPlayer.getPosition(), eventPlayer.SlingshotPosition) * 2.5, Relativity.TO_WORLD, Impulse.CANCEL_CONTRARY_MOTION)
     wait()
-    eventPlayer.stopForcingPosition()
-    stopChasingVariable(eventPlayer.TeleportTweenPosition)
-    #eventPlayer.applyImpulse(directionTowards(eventPlayer.getPosition(), nearestWalkablePosition(eventPlayer.getPosition())), 10, Relativity.TO_WORLD, Impulse.CANCEL_CONTRARY_MOTION)
-    wait(1)
+    eventPlayer.setGravity(100)
+
+rule "Symmetra TP Detection: Track Previous Position":
+    @Event eachPlayer
+    @Condition WS_SET_USE_SLINGSHOT
+    @Condition eventPlayer.hasSpawned()
+    @Condition any([player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])
+
+    # This lets us know if they went through a Symmetra teleporter.
+    eventPlayer.PreviousPosition = eventPlayer.getPosition()    
+    chase(eventPlayer.PreviousPosition, eventPlayer.getPosition(), rate=50, ChaseReeval.DESTINATION_AND_RATE)
+
+    printLog("Symmetra Teleporter Detection Started for {}".format(eventPlayer))
+
+rule "Symmetra TP Detection: Stop Tracking Previous Position":
+    @Event eachPlayer
+    @Condition WS_SET_USE_SLINGSHOT
+    @Condition eventPlayer.hasSpawned()
+    @Condition all([not player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])
+
+    # We don't need to track the player's last position if no teleporter is up.
+    stopChasingVariable(eventPlayer.PreviousPosition)
+
+    printLog("Symmetra Teleporter Detection Stopped for {}".format(eventPlayer))
 
 rule "Show Debug Stats":
     @Condition WS_SET_ADV_DEBUGSTATS != SHOW_DEBUG_STATS.NONE
