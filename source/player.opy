@@ -17,14 +17,28 @@ playervar BaseJumpHeight = 100 * WS_SET_ADV_BASESPEED
 playervar BaseScaling = WS_SET_ADV_SCALE
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
+playervar DvaHasTeleported
 playervar LastWalkablePosition
 playervar ThirdPersonCameraEnabled = true if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
 playervar LayingDownCameraEnabled = false
 playervar CameraState = CAMERA_STATE.THIRD_PERSON if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else CAMERA_STATE.FIRST_PERSON
+playervar SlingshotPosition
+playervar SlingshotEnabled = false
+playervar SlingshotUsed = false
+playervar Hud_Slingshot = []
+playervar PreviousPosition
+
+#!define GetSlingshotPosition() updateEveryTick(raycast(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + Vector.UP, raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + (Vector.DOWN * 100), null, eventPlayer, false).getHitPosition())
 
 subroutine StartThirdPersonCamera
 subroutine StartCamera
 subroutine RestrictAbilities
+subroutine SlingshotCooldown
+
+def SlingshotCooldown():
+    eventPlayer.SlingshotUsed = true
+    wait(5)
+    eventPlayer.SlingshotUsed = false
 
 def StartCamera():
     eventPlayer.startCamera(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1), 60)
@@ -82,12 +96,17 @@ rule "Create Player Huds":
     hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), "HIDER" if eventPlayer.getTeam() == Team.1 else "SEEKER"), "PHASE: {}".format(CurrentGameState), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.BLUE if eventPlayer.getTeam() == Team.1 else Color.RED, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
     eventPlayer.Hud_Player.append(getLastCreatedText())
 
+    # Slingshot Instructions
+    if WS_SET_USE_SLINGSHOT == true:
+        hudSubheader(eventPlayer, "Press {} to toggle slingshot tool / Press {} to confirm".format(buttonString(Button.INTERACT), buttonString(Button.PRIMARY_FIRE)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        eventPlayer.Hud_Player.append(getLastCreatedText())
     # Camera Hud Instructions
     if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
-        hudSubtext(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
+    # Laying down Instructions
     if WS_SET_LAYING_DOWN == true and eventPlayer.getTeam() == Team.1:
-        hudSubtext(eventPlayer, "Emote and press {} to lay down / Press {} to stand up".format(buttonString(Button.CROUCH), buttonString(Button.JUMP)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, "Emote and press {} to lay down / Press {} to stand up".format(buttonString(Button.CROUCH), buttonString(Button.JUMP)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
 
 rule "Title Hud":
@@ -124,10 +143,6 @@ rule "Global Huds":
     hudHeader(getAllPlayers(), "{} RULESET:".format(abilityIconString(Hero.TORBJORN, Button.ABILITY_2)), HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    if WS_SET_ADV_USEPRERELEASE:
-        hudSubtext(getAllPlayers(), "USE PRE-RELEASE UPDATE: {}".format(WS_SET_ADV_USEPRERELEASE), HudPosition.LEFT, 1.1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-        Hud_GameInfo.append(getLastCreatedText())
-
     hudSubtext(getAllPlayers(), "STYLE: {}".format(WS_SET_MODE), HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
@@ -149,7 +164,7 @@ rule "Global Huds":
     if WS_SET_SEEKER_OUTLINES != ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT:
         hudSubtext(getAllPlayers(), "SEEKER OUTLINES: {}".format(WS_SET_SEEKER_OUTLINES), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
-
+        
     hudSubtext(getAllPlayers(), "HIDER OUTLINES: {}".format("on" if WS_SET_USEOUTLINE else "off"), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
@@ -157,18 +172,28 @@ rule "Global Huds":
         hudSubtext(getAllPlayers(), "SEEKER ASSISTANCE: {}".format(WS_SET_SEEKER_ASSIST), HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
-    hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-    Hud_GameInfo.append(getLastCreatedText())
+    if WS_SET_ADV_TANKSCALING != ACCESSIBILITY.TANKS_NOSCALE:
+        hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "SLOW HIDERS WHEN IN LOS OF SEEKER: {}".format(WS_SET_SLOWHIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-    Hud_GameInfo.append(getLastCreatedText())
+    if WS_SET_USE_SLINGSHOT:
+        hudSubtext(getAllPlayers(), "ALLOW SLINGSHOT TOOL: {}".format(WS_SET_USE_SLINGSHOT), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+    
+    if WS_SET_SLOWHIDER == true:
+        hudSubtext(getAllPlayers(), "SLOW HIDERS WHEN IN LOS OF SEEKER: {}".format(WS_SET_SLOWHIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_LAYING_DOWN:
         hudSubtext(getAllPlayers(), "ALLOW HIDERS TO LAY DOWN: {}".format("On" if WS_SET_LAYING_DOWN else "Off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SHOW_HIDERS != SHOW_HIDERS.OFF:
-        hudSubtext(getAllPlayers(), "SHOW REMAINING HIDERS AFTER ROUND: {}".format(WS_SET_SHOW_HIDERS), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), "SHOW REMAINING HIDERS AFTER ROUND: {}".format(WS_SET_SHOW_HIDERS), HudPosition.LEFT, 5.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+
+    if WS_SET_ADV_INF_HAMMOND_GRAPPLE == true:
+        hudSubtext(getAllPlayers(), "WRECKING HIDER INFINITE GRAPPLE: {}".format(WS_SET_ADV_INF_HAMMOND_GRAPPLE), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_ADV_SEEK_ALLOWH == true:
@@ -300,6 +325,9 @@ rule "D.va: TP to Mech Position (Hider)":
     @Team 1
     @Hero dva
     @Condition CurrentGameState == GAME_STATE.HIDING
+    @Condition eventPlayer.DvaHasTeleported == false
+
+    eventPlayer.DvaHasTeleported = true
     
     eventPlayer.teleport(eventPlayer.DvaMechPosition)
 
@@ -310,6 +338,7 @@ rule "D.va: TP to Mech Position (Seeker)":
     @Condition CurrentGameState == GAME_STATE.HIDING
     @Condition not eventPlayer.isInSpawnRoom()
     
+    wait(0.25, Wait.ABORT_WHEN_FALSE)
     eventPlayer.teleport(eventPlayer.DvaMechPosition)
 
 rule "D.va: Ult":
@@ -318,6 +347,13 @@ rule "D.va: Ult":
 
     eventPlayer.setUltEnabled(true)
     eventPlayer.disallowButton(Button.ULTIMATE)
+
+rule "D.va: Get Ult In Spawn":
+    @Event eachPlayer
+    @Hero dva
+    @Condition eventPlayer.isInSpawnRoom()
+
+    eventPlayer.setUltCharge(100)
 
 rule "D.va: Enable De-mech":
     @Event eachPlayer
@@ -371,6 +407,105 @@ rule "Toggle Third Person Camera":
 
     eventPlayer.ThirdPersonCameraEnabled = not eventPlayer.ThirdPersonCameraEnabled
     eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON if eventPlayer.ThirdPersonCameraEnabled else CAMERA_STATE.FIRST_PERSON
+
+rule "Toggle Slingshot":
+    @Event eachPlayer
+    @Condition WS_SET_USE_SLINGSHOT == true
+    @Condition eventPlayer.isHoldingButton(Button.INTERACT)
+
+    wait()
+
+    if WS_SET_SLOWHIDER and any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)]) and eventPlayer.getTeam() == Team.1:
+        smallMessage(eventPlayer, "CANNOT USE SLINGSHOT WHILE IN LOS OF SEEKERS")
+        return
+    # Using interact with abilities take priority over slingshot toggle
+    elif any([interactButtonOccupied == true for interactButtonOccupied in [eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2(), eventPlayer.getCurrentHero() == Hero.TORBJORN and eventPlayer.isUsingAbility1(), distance(eventPlayer.getPosition(), eventPlayer.PreviousPosition) > 1 and any([player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])]]):
+        return
+
+    eventPlayer.SlingshotEnabled = not eventPlayer.SlingshotEnabled
+
+rule "Disable Slingshot":
+    @Event eachPlayer
+    @Condition eventPlayer.isCommunicatingEmote()
+
+    eventPlayer.SlingshotEnabled = false
+
+rule "Create Slingshot Effects":
+    @Event eachPlayer
+    @Condition eventPlayer.SlingshotEnabled == true
+
+    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION,  Color.YELLOW if not eventPlayer.SlingshotUsed else Color.ROSE, GetSlingshotPosition(), 1)
+    playEffect(eventPlayer, DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, eventPlayer, 100)
+
+    # Create slingshot destination effect
+    createEffect(eventPlayer, Effect.LIGHT_SHAFT, Color.YELLOW if not eventPlayer.SlingshotUsed else Color.ROSE, GetSlingshotPosition(), 0.1, EffectReeval.VISIBILITY_POSITION_RADIUS_AND_COLOR)
+    eventPlayer.Hud_Slingshot.append(getLastCreatedEntity())
+
+    createEffect(eventPlayer, Effect.RING, Color.YELLOW if not eventPlayer.SlingshotUsed else Color.ROSE, GetSlingshotPosition(), 1, EffectReeval.VISIBILITY_POSITION_RADIUS_AND_COLOR)
+    eventPlayer.Hud_Slingshot.append(getLastCreatedEntity())
+
+    # Disallow Primary Fire
+    eventPlayer.disallowButton(Button.PRIMARY_FIRE)
+
+rule "Destroy Slingshot Effects":
+    @Event eachPlayer
+    @Condition eventPlayer.SlingshotEnabled == false
+
+    playEffect(eventPlayer, DynamicEffect.GOOD_EXPLOSION, Color.YELLOW if not eventPlayer.SlingshotUsed else Color.ROSE, GetSlingshotPosition(), 1)
+    playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.WHITE, eventPlayer, 100)
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Hud_Slingshot)):
+        destroyEffect(eventPlayer.Hud_Slingshot[eventPlayer.playerHudIndex])
+    eventPlayer.Hud_Slingshot = []
+
+    # Allow Primary Fire
+    eventPlayer.allowButton(Button.PRIMARY_FIRE)
+
+rule "Confirm Slingshot":
+    @Event eachPlayer
+    @Condition eventPlayer.SlingshotEnabled == true
+    @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
+
+    if eventPlayer.SlingshotUsed:
+        smallMessage(eventPlayer, "SLINGSHOT IS ON COOLDOWN")
+        return
+    elif eventPlayer.isInAir():
+        smallMessage(eventPlayer, "SLINGSHOT CANNOT BE USED WHILE IN THE AIR")
+        return
+
+    playEffect(getPlayers(getOppositeTeam(eventPlayer.getTeam())), DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, eventPlayer, 30)
+    playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.WHITE, eventPlayer, 100)
+
+    # Fling player toward point
+    eventPlayer.SlingshotPosition = GetSlingshotPosition()
+    eventPlayer.setGravity(0)
+    eventPlayer.applyImpulse(directionTowards(eventPlayer.getPosition(), eventPlayer.SlingshotPosition + (Vector.UP * 2)), distance(eventPlayer.getPosition(), eventPlayer.SlingshotPosition) * 2.5, Relativity.TO_WORLD, Impulse.CANCEL_CONTRARY_MOTION)
+    wait()
+    eventPlayer.setGravity(100)
+
+    async(SlingshotCooldown, AsyncBehavior.NOOP)
+
+rule "Symmetra TP Detection: Track Previous Position":
+    @Event eachPlayer
+    @Condition WS_SET_USE_SLINGSHOT
+    @Condition eventPlayer.hasSpawned()
+    @Condition any([player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])
+
+    # This lets us know if they went through a Symmetra teleporter.
+    eventPlayer.PreviousPosition = eventPlayer.getPosition()    
+    chase(eventPlayer.PreviousPosition, eventPlayer.getPosition(), rate=50, ChaseReeval.DESTINATION_AND_RATE)
+
+    printLog("Symmetra Teleporter Detection Started for {}".format(eventPlayer))
+
+rule "Symmetra TP Detection: Stop Tracking Previous Position":
+    @Event eachPlayer
+    @Condition WS_SET_USE_SLINGSHOT
+    @Condition eventPlayer.hasSpawned()
+    @Condition all([not player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])
+
+    # We don't need to track the player's last position if no teleporter is up.
+    stopChasingVariable(eventPlayer.PreviousPosition)
+
+    printLog("Symmetra Teleporter Detection Stopped for {}".format(eventPlayer))
 
 rule "Show Debug Stats":
     @Condition WS_SET_ADV_DEBUGSTATS != SHOW_DEBUG_STATS.NONE

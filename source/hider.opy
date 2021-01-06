@@ -67,32 +67,6 @@ rule "Hider Tank Scaling":
 
     eventPlayer.BaseScaling *= 1 if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE and eventPlayer.getCurrentHero() == Hero.HAMMOND else TankScaleDownFactor if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else 1
 
-rule "Hider Laying Down":
-    @Event eachPlayer
-    @Team 1
-    @Condition WS_SET_LAYING_DOWN == true
-    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
-    @Condition not eventPlayer.isInSpawnRoom()
-    @Condition eventPlayer.isCommunicatingEmote()
-    @Condition eventPlayer.isHoldingButton(Button.CROUCH)
-
-    eventPlayer.LayingDownCameraEnabled = true
-
-    eventPlayer.CameraState = CAMERA_STATE.LAYING_DOWN
-    eventPlayer.setStatusEffect(null, Status.KNOCKED_DOWN, 9999)
-    wait(1)
-    waitUntil(eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN and any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE, Button.PRIMARY_FIRE, Button.SECONDARY_FIRE, Button.ULTIMATE]]), 9999)
-    eventPlayer.clearStatusEffect(Status.KNOCKED_DOWN)
-
-    eventPlayer.LayingDownCameraEnabled = false
-
-    # Return to previous camera state
-    if eventPlayer.ThirdPersonCameraEnabled == true:
-        eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON
-        StartThirdPersonCamera()
-    else:
-        eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
-
 rule "Update Seeker Outline":
     @Event playerJoined
     @Team 2
@@ -182,6 +156,7 @@ rule "Slow Hider":
     eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight / eventPlayer.HiderSlowFactor)
     eventPlayer.setAbility1Enabled(false)
     eventPlayer.setAbility2Enabled(false)
+    eventPlayer.SlingshotEnabled = false
     eventPlayer.setSecondaryFireEnabled(true if eventPlayer.getCurrentHero() == Hero.HAMMOND else false)
     playEffect(eventPlayer, DynamicEffect.EXPLOSION_SOUND, Color.WHITE, eventPlayer, 250)
     # Destroy Sombra's Translocator
@@ -298,6 +273,33 @@ rule "Sombra: Clear Effects When Switching Heroes":
         destroyHudText(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
         destroyEffect(eventPlayer.Effects_SombraInvis[eventPlayer.playerHudIndex])
     eventPlayer.Effects_SombraInvis = null
+
+# Accessibility Rules
+rule "Hider Laying Down":
+    @Event eachPlayer
+    @Team 1
+    @Condition WS_SET_LAYING_DOWN == true
+    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
+    @Condition not eventPlayer.isInSpawnRoom()
+    @Condition eventPlayer.isCommunicatingEmote()
+    @Condition eventPlayer.isHoldingButton(Button.CROUCH)
+
+    eventPlayer.LayingDownCameraEnabled = true
+
+    eventPlayer.CameraState = CAMERA_STATE.LAYING_DOWN
+    eventPlayer.setStatusEffect(null, Status.KNOCKED_DOWN, 9999)
+    wait(1)
+    waitUntil(eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN and any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE, Button.PRIMARY_FIRE, Button.SECONDARY_FIRE, Button.ULTIMATE]]), 9999)
+    eventPlayer.clearStatusEffect(Status.KNOCKED_DOWN)
+
+    eventPlayer.LayingDownCameraEnabled = false
+
+    # Return to previous camera state
+    if eventPlayer.ThirdPersonCameraEnabled == true:
+        eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON
+        StartThirdPersonCamera()
+    else:
+        eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
     
 # Mercy V. Rein Specific Rules
 rule "Refresh Resurrect Cooldown":
