@@ -76,7 +76,7 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "1.5.1"
+globalvar CURRENT_VERSION = "1.6.0"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
