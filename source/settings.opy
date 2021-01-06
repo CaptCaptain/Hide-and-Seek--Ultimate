@@ -80,9 +80,9 @@ globalvar CURRENT_VERSION = "1.6.0"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
-globalvar WS_SET_HIDETIME_RAW = createWorkshopSetting(enum["1:30", "1:00", "0:45"], "Ruleset", "Hiding Time", 1, 2)
+globalvar WS_SET_HIDETIME_RAW = createWorkshopSetting(enum["1:30", "1:00", "0:45"], "Ruleset", "Time Limit: Hiding", 1, 2)
 globalvar WS_SET_HIDETIME = [90, 60, 45][WS_SET_HIDETIME_RAW]
-globalvar WS_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30", "4:00", "3:30", "3:00", "2:30", "2:00"], "Ruleset", "Seeking Time", 2, 2)
+globalvar WS_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30", "4:00", "3:30", "3:00", "2:30", "2:00"], "Ruleset", "Time Limit: Seeking", 2, 2)
 globalvar WS_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 120][WS_SET_SEEKTIME_RAW]
 globalvar WS_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Noclip)", "TINY", "Mercy V. Reinhardt"], "Ruleset", "Style", 0, 0)
 globalvar WS_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.TINY, STYLE.MERCY_REIN][WS_SET_MODE_RAW]
