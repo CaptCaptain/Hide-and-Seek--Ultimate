@@ -85,7 +85,7 @@ rule "Seeker Assistance":
     @Team 2
     @Condition WS_SET_SEEKER_ASSIST == true
     @Condition eventPlayer.hasSpawned()
-    @Condition len(getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF)) > 0
+    @Condition len([player for player in getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF) if player.isAlive()]) > 0
 
     # Create hud text
     hudSubtext(eventPlayer, "{0} THERE ARE HIDERS IN THIS AREA {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
