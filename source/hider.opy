@@ -133,7 +133,7 @@ rule "Show Warning to Hider While In Spawn Room":
     @Condition eventPlayer.isInSpawnRoom()
     @Condition CurrentGameState == GAME_STATE.HIDING
 
-    hudSubtext(eventPlayer, "{0} YOU WILL BE KILLED IF YOU REMAIN IN SPAWN AFTER HIDING PHASE {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    hudSubtext(eventPlayer, STR_HIDER_IN_SPAWN, HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_InSpawn = getLastCreatedText()
 
     waitUntil(not eventPlayer.isInSpawnRoom() or not CurrentGameState == GAME_STATE.HIDING, 9999)
@@ -200,13 +200,13 @@ rule "Kill Hiders Who Joined Late":
     eventPlayer.disableHeroHUD()
 
     # Create hud
-    createInWorldText(eventPlayer, "YOU JOINED LATE!", updateEveryTick(eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1)), 5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
+    createInWorldText(eventPlayer, STR_JOINED_LATE_1, updateEveryTick(eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1)), 5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
     eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
 
-    createInWorldText(eventPlayer, "YOU WILL BE PUT INTO SPECTATOR", updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.1, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
+    createInWorldText(eventPlayer, STR_JOINED_LATE_2, updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.1, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
     eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
 
-    createInWorldText(eventPlayer, "PLEASE WAIT FOR THE NEXT ROUND", updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.2, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
+    createInWorldText(eventPlayer, STR_JOINED_LATE_3, updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.2, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
     eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
 
     eventPlayer.setStatusEffect(null, Status.ROOTED, 5)
@@ -233,7 +233,7 @@ rule "Sombra Invisibility Tracker":
     eventPlayer.Effects_SombraInvis.append(getLastCreatedEntity())
     createInWorldText(getPlayers(Team.2), eventPlayer, eventPlayer, 1, Clip.SURFACES, WorldTextReeval.VISIBILITY_POSITION_AND_STRING, Color.TEAM_1, SpecVisibility.DEFAULT)
     eventPlayer.Effects_SombraInvis.append(getLastCreatedText())
-    hudSubtext(eventPlayer, "{0} YOU ARE VISIBLE TO SEEKERS {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    hudSubtext(eventPlayer, STR_SOMBRA_VISIBLE, HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Effects_SombraInvis.append(getLastCreatedText())
 
     waitUntil(not eventPlayer.isUsingAbility1(), 9999)
@@ -252,7 +252,7 @@ rule "Sombra: Destroy Translocator":
     @Condition eventPlayer.hasSpawned()
     @Condition eventPlayer.isUsingAbility2()
 
-    hudSubtext(eventPlayer, "{0} YOUR TRANSLOCATOR WILL BE DESTROYED IN {1} SECONDS OR WHEN IT IS OUT OF LOS {0}".format(iconString(Icon.WARNING), eventPlayer.getAbilityCooldown(Button.ABILITY_2)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    hudSubtext(eventPlayer, STR_SOMBRA_DESTROY_TRANSLOCATOR, HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_SombraTrans = getLastCreatedText()
 
     waitUntil(eventPlayer.getAbilityCooldown(Button.ABILITY_2) == 0 or not eventPlayer.isUsingAbility2() or not isInLoS(eventPlayer.getEyePosition(), evalOnce(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 25), null, eventPlayer, false).getHitPosition()), BarrierLos.PASS_THROUGH_BARRIERS), 6)

@@ -55,7 +55,7 @@ rule "Respawn Seeker if they leave Spawn Room":
     if eventPlayer.getCurrentHero() == Hero.DVA: goto skip_respawn:
     eventPlayer.respawn()
     skip_respawn:
-    smallMessage(eventPlayer, "Wait until Seeking Phase to Leave")
+    smallMessage(eventPlayer, STR_SEEKER_WAIT)
     printLog("{} left spawn room during hiding phase, respawning".format(eventPlayer))
 
 rule "Seeker Noclip Barrier":
@@ -88,7 +88,7 @@ rule "Seeker Assistance":
     @Condition len([player for player in getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF) if player.isAlive()]) > 0
 
     # Create hud text
-    hudSubtext(eventPlayer, "{0} THERE ARE HIDERS IN THIS AREA {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    hudSubtext(eventPlayer, STR_SEEKER_ASSISTANCE, HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_Seeker_Assistance = getLastCreatedText()
 
     # Wait until there are no hiders in range

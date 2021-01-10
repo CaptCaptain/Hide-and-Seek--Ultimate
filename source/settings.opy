@@ -42,13 +42,17 @@ settings {
     }
 }
 
+# Translations
+#!define TranslateToHostLanguage() __script__("translation.js")
+TranslateToHostLanguage()
+
 enum STYLE:
-    DEFAULT = "DEFAULT",
-    CLASSIC = "CLASSIC",
-    RESTRICTED = "RESTRICTED",
-    MERCY_REIN = "MERCY VS. REINHARDT",
-    GLITCH = "GLITCH",
-    TINY = "TINY"
+    DEFAULT,
+    CLASSIC,
+    RESTRICTED,
+    MERCY_REIN,
+    GLITCH,
+    TINY
 
 enum ACCESSIBILITY:
     DVA_MECH_ALLOW_BOTH,
@@ -62,21 +66,21 @@ enum ACCESSIBILITY:
     3RD_CAMERA_TOGGLE,
     SEEKER_ASSIST_ON,
     SEEKER_ASSIST_OFF,
-    SEEKER_OUTLINES_DEFAULT = "Default",
-    SEEKER_OUTLINES_OCCLUDED = "Occluded",
-    SEEKER_OUTLINES_ALWAYS = "Always"
+    SEEKER_OUTLINES_DEFAULT,
+    SEEKER_OUTLINES_OCCLUDED,
+    SEEKER_OUTLINES_ALWAYS
 
 enum SHOW_HIDERS:
-    LAST_HIDER = "Last Hider Only",
-    ALL_HIDERS = "On",
-    OFF = "Off"
+    LAST_HIDER,
+    ALL_HIDERS,
+    OFF
 
 enum SHOW_DEBUG_STATS:
     ALL,
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "1.6.0"
+globalvar CURRENT_VERSION = "2.0.0"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)

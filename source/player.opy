@@ -30,6 +30,12 @@ playervar PreviousPosition
 
 #!define GetSlingshotPosition() updateEveryTick(raycast(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + Vector.UP, raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + (Vector.DOWN * 100), null, eventPlayer, false).getHitPosition())
 
+#!define StyleString [STR_STYLE_DEFAULT, STR_STYLE_GLITCH, STR_STYLE_TINY, STR_STYLE_MERCY_V_REIN][WS_SET_MODE_RAW]
+#!define GameStateString [STR_GAME_STATE_WAITING, STR_GAME_STATE_HIDING, STR_GAME_STATE_SEEKING, STR_GAME_STATE_RESULTS, STR_GAME_STATE_END][CurrentGameState]
+#!define SeekerOutlineString STR_SEEKER_OUTLINES_DEFAULT if WS_SET_SEEKER_OUTLINES == ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT else STR_SEEKER_OUTLINES_OCCLUDED if WS_SET_SEEKER_OUTLINES == ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED else STR_SEEKER_OUTLINES_ALWAYS
+#!define ShowHiderString STR_SHOW_LAST_HIDER if WS_SET_SHOW_HIDERS == SHOW_HIDERS.LAST_HIDER else true if WS_SET_SHOW_HIDERS == SHOW_HIDERS.ALL_HIDERS else false
+#!define TankScalingString STR_RULESET_AUTOMATIC if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else true if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else false
+
 subroutine StartThirdPersonCamera
 subroutine StartCamera
 subroutine RestrictAbilities
@@ -93,30 +99,30 @@ rule "Create Player Huds":
     waitUntil(eventPlayer.hasSpawned(), 9999)
 
     # Creates the Objective Hud
-    hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), "HIDER" if eventPlayer.getTeam() == Team.1 else "SEEKER"), "PHASE: {}".format(CurrentGameState), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.BLUE if eventPlayer.getTeam() == Team.1 else Color.RED, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
+    hudText(eventPlayer, "{} {}".format(abilityIconString(eventPlayer.getCurrentHero(), Button.ULTIMATE) if eventPlayer.getTeam() == Team.1 else abilityIconString(eventPlayer.getCurrentHero(), Button.PRIMARY_FIRE), STR_HIDER if eventPlayer.getTeam() == Team.1 else STR_SEEKER), "{}: {}".format(STR_PHASE, GameStateString), "{}:{}".format(floor(((CurrentTime % 86400) % 3600) / 60), floor(((CurrentTime % 86400) % 3600) % 60)) if CurrentTime > 60 else "{}".format(CurrentTime), HudPosition.TOP, 1, Color.BLUE if eventPlayer.getTeam() == Team.1 else Color.RED, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_STRING_AND_COLOR, SpecVisibility.DEFAULT)
     eventPlayer.Hud_Player.append(getLastCreatedText())
 
     # Slingshot Instructions
     if WS_SET_USE_SLINGSHOT == true:
-        hudSubheader(eventPlayer, "Press {} to toggle slingshot tool / Press {} to confirm".format(buttonString(Button.INTERACT), buttonString(Button.PRIMARY_FIRE)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, "[{}]: {} / [{}]: {}".format(buttonString(Button.INTERACT), STR_SLINGSHOT_USAGE_TOGGLE, buttonString(Button.PRIMARY_FIRE), STR_SLINGSHOT_USAGE_CONFIRM), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
     # Camera Hud Instructions
     if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
-        hudSubheader(eventPlayer, "Press {} to toggle third person camera".format(buttonString(Button.RELOAD)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, "[{}]: {}".format(buttonString(Button.RELOAD), STR_THIRD_PERSON_CAMERA_USAGE), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
     # Laying down Instructions
     if WS_SET_LAYING_DOWN == true and eventPlayer.getTeam() == Team.1:
-        hudSubheader(eventPlayer, "Emote and press {} to lay down / Press {} to stand up".format(buttonString(Button.CROUCH), buttonString(Button.JUMP)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, "[{} + {}]: {} / [{}]: {}".format(STR_LAYING_DOWN_EMOTE, buttonString(Button.CROUCH), STR_LAYING_DOWN_LAYING, buttonString(Button.JUMP), STR_LAYING_DOWN_STAND), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
 
 rule "Title Hud":
-    createInWorldText(getAllPlayers(), "HIDE & SEEK", getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), STR_GAME_TITLE, getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "ULTIMATE", getObjectivePosition(getCurrentObjective()) + vect(0, 3.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), STR_GAME_SUBTITLE, getObjectivePosition(getCurrentObjective()) + vect(0, 3.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "STYLE: {}".format(WS_SET_MODE), getObjectivePosition(getCurrentObjective()) + vect(0, 3, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), "{}: {}".format(STR_GAME_STYLE, StyleString), getObjectivePosition(getCurrentObjective()) + vect(0, 3, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_POSITION_AND_STRING, Color.ROSE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "WAITING FOR PLAYERS".format(RequiredHiders), getObjectivePosition(getCurrentObjective()) + vect(0, 2.25, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.WHITE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), STR_GAME_WAITING_FOR_PLAYERS, getObjectivePosition(getCurrentObjective()) + vect(0, 2.25, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.WHITE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
     createEffect(getAllPlayers(), Effect.RING, Color.TURQUOISE, getObjectivePosition(getCurrentObjective()), 10, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
     Hud_GameTitle.append(getLastCreatedEntity())
@@ -131,83 +137,83 @@ rule "Title Hud":
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
-    hudSubheader(getAllPlayers(), "Current Version: {}\n".format(CURRENT_VERSION), HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_VERSION, HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), "For Latest Version, head to: https://workshop.codes/hide-and-seek-ult", HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_WEBLINK, HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "{} Hide & Seek: Ultimate by CaptCaptain#11421".format(abilityIconString(random.choice(getAllHeroes()), Button.ULTIMATE)), HudPosition.RIGHT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_GAME_NAME, HudPosition.RIGHT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudHeader(getAllPlayers(), "{} RULESET:".format(abilityIconString(Hero.TORBJORN, Button.ABILITY_2)), HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudHeader(getAllPlayers(), STR_RULESET_TITLE, HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "STYLE: {}".format(WS_SET_MODE), HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_RULESET_STYLE, HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "FIRST TEAM TO: {} WIN(S)".format(WS_SET_ADV_WINS), HudPosition.LEFT, 3, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_RULESET_FIRST_WINS, HudPosition.LEFT, 3, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "SEEK TIME: {}:{}".format(floor(((WS_SET_SEEKTIME % 86400) % 3600) / 60), floor(((WS_SET_SEEKTIME % 86400) % 3600) % 60)), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_RULESET_SEEK_TIME, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "HIDING TIME: {}:{}".format(floor(((WS_SET_HIDETIME % 86400) % 3600) / 60), floor(((WS_SET_HIDETIME % 86400) % 3600) % 60)), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_RULESET_HIDING_TIME, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "PLAYER SIZE: {}x".format(WS_SET_ADV_SCALE), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_RULESET_PLAYER_SIZE, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), "PLAYER SPEED: {}x".format(WS_SET_ADV_BASESPEED), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_RULESET_PLAYER_SPEED, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SEEKER_OUTLINES != ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT:
-        hudSubtext(getAllPlayers(), "SEEKER OUTLINES: {}".format(WS_SET_SEEKER_OUTLINES), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_SEEKER_OUTLINES, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
         
-    hudSubtext(getAllPlayers(), "HIDER OUTLINES: {}".format("on" if WS_SET_USEOUTLINE else "off"), HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_RULESET_HIDER_OUTLINES, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SEEKER_ASSIST:
-        hudSubtext(getAllPlayers(), "SEEKER ASSISTANCE: {}".format(WS_SET_SEEKER_ASSIST), HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_SEEKER_ASSIST, HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_ADV_TANKSCALING != ACCESSIBILITY.TANKS_NOSCALE:
-        hudSubtext(getAllPlayers(), "HIDER TANK SCALING: {}".format("automatic" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE else "on" if WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL else "off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_TANK_SCALING, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_USE_SLINGSHOT:
-        hudSubtext(getAllPlayers(), "ALLOW SLINGSHOT TOOL: {}".format(WS_SET_USE_SLINGSHOT), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_SLINGSHOT, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_SLOWHIDER == true:
-        hudSubtext(getAllPlayers(), "SLOW HIDERS WHEN IN LOS OF SEEKER: {}".format(WS_SET_SLOWHIDER), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_SLOW_HIDERS, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_LAYING_DOWN:
-        hudSubtext(getAllPlayers(), "ALLOW HIDERS TO LAY DOWN: {}".format("On" if WS_SET_LAYING_DOWN else "Off"), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_LAYING_DOWN, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SHOW_HIDERS != SHOW_HIDERS.OFF:
-        hudSubtext(getAllPlayers(), "SHOW REMAINING HIDERS AFTER ROUND: {}".format(WS_SET_SHOW_HIDERS), HudPosition.LEFT, 5.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_SHOW_HIDERS, HudPosition.LEFT, 5.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_ADV_INF_HAMMOND_GRAPPLE == true:
-        hudSubtext(getAllPlayers(), "WRECKING HIDER INFINITE GRAPPLE: {}".format(WS_SET_ADV_INF_HAMMOND_GRAPPLE), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_WB_INF_GRAPPLE, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_ADV_SEEK_ALLOWH == true:
-        hudSubtext(getAllPlayers(), "RESTRICT SEEKER HERO ROSTER: {}".format(not(WS_SET_ADV_SEEK_ALLOWH)), HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubtext(getAllPlayers(), STR_RULESET_RESTRICT_SEEKER_HERO, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), "TO CUSTOMIZE RULESET (HOST ONLY):\nGO TO LOBBY > SETTINGS > WORKSHOP SETTINGS", HudPosition.LEFT, 6, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_RULESET_CHANGE_HOST, HudPosition.LEFT, 6, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), "FOR MORE INFORMATION ON RULESET:\nGO TO LOBBY > RIGHT CLICK MAP PICTURE > SCROLL DOWN TO WORKSHOP\n", HudPosition.LEFT, 7, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_RULESET_CHECK_CHANGE, HudPosition.LEFT, 7, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_ADV_WINS > 1:
-        hudText(getAllPlayers(), "TEAM SCORE:", "", "HIDERS: {}\nSEEKERS: {}".format(HiderTeamScore, SeekerTeamScore), HudPosition.LEFT, 8, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudText(getAllPlayers(), STR_TEAM_SCORE_TITLE, "", STR_TEAM_SCORE, HudPosition.LEFT, 8, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
 rule "Remove Global Huds":
@@ -267,7 +273,7 @@ rule "Resurrect":
     eventPlayer.teleport(eventPlayer.LastWalkablePosition if eventPlayer.LastWalkablePosition != null else nearestWalkablePosition(eventPlayer.getPosition()))
     eventPlayer.setStatusEffect(null, Status.STUNNED, 2)
     if attacker() == victim(): eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
-    smallMessage(eventPlayer, "BE CAREFUL!")
+    smallMessage(eventPlayer, STR_BE_CAREFUL)
 
 rule "Disable Abilities In Spawn":
     @Event eachPlayer
@@ -416,7 +422,7 @@ rule "Toggle Slingshot":
     wait()
 
     if WS_SET_SLOWHIDER and any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)]) and eventPlayer.getTeam() == Team.1:
-        smallMessage(eventPlayer, "CANNOT USE SLINGSHOT WHILE IN LOS OF SEEKERS")
+        smallMessage(eventPlayer, STR_SLINGSHOT_CANNOT_USE)
         return
     # Using interact with abilities take priority over slingshot toggle
     elif any([interactButtonOccupied == true for interactButtonOccupied in [eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2(), eventPlayer.getCurrentHero() == Hero.TORBJORN and eventPlayer.isUsingAbility1(), distance(eventPlayer.getPosition(), eventPlayer.PreviousPosition) > 1 and any([player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])]]):
@@ -466,10 +472,10 @@ rule "Confirm Slingshot":
     @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
 
     if eventPlayer.SlingshotUsed:
-        smallMessage(eventPlayer, "SLINGSHOT IS ON COOLDOWN")
+        smallMessage(eventPlayer, STR_SLINGSHOT_ON_COOLDOWN)
         return
     elif eventPlayer.isInAir():
-        smallMessage(eventPlayer, "SLINGSHOT CANNOT BE USED WHILE IN THE AIR")
+        smallMessage(eventPlayer, STR_SLINGSHOT_CANT_IN_AIR)
         return
 
     playEffect(getPlayers(getOppositeTeam(eventPlayer.getTeam())), DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, eventPlayer, 30)
