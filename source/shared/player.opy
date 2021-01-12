@@ -58,6 +58,7 @@ def StartCamera():
 
 def StartThirdPersonCamera():
     eventPlayer.startCamera(updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + worldVector(vect(1 * -1, 0, 0), eventPlayer, Transform.ROTATION) + eventPlayer.getFacingDirection() * -2.5, getAllPlayers(), eventPlayer, false).getHitPosition()), updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + eventPlayer.getFacingDirection() * 200, getAllPlayers(), eventPlayer, false).getHitPosition()), 60)
+
 def RestrictAbilities():
     eventPlayer.setAbility1Enabled(true)
     eventPlayer.setAbility2Enabled(true)
@@ -68,6 +69,9 @@ def RestrictAbilities():
             switch eventPlayer.getCurrentHero():
                 case Hero.MERCY:
                     eventPlayer.setAbility2Enabled(false)
+                    break
+                case Hero.HANZO:
+                    eventPlayer.setAbility1Enabled(false)
                     break
             break
         case Team.2:
@@ -133,9 +137,6 @@ rule "Global Huds":
     Hud_GameInfo.append(getLastCreatedText())
 
     hudHeader(getAllPlayers(), STR_RULESET_TITLE, HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
-    Hud_GameInfo.append(getLastCreatedText())
-
-    hudSubtext(getAllPlayers(), "GAMEMODE: {}".format(getCurrentGamemode()), HudPosition.LEFT, 1.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), STR_RULESET_STYLE, HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
@@ -216,6 +217,7 @@ rule "Player Setup":
 
     eventPlayer.disableGamemodeHud()
     eventPlayer.disableRespawn()
+    eventPlayer.stopCamera()
     eventPlayer.setMoveSpeed(eventPlayer.BaseMoveSpeed)
     eventPlayer.setJumpVerticalSpeed(eventPlayer.BaseJumpHeight)
     
@@ -416,6 +418,8 @@ rule "Confirm Slingshot":
     @Event eachPlayer
     @Condition eventPlayer.SlingshotEnabled == true
     @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
+
+    if eventPlayer.hasStatusEffect(Status.ROOTED): return
 
     if eventPlayer.SlingshotUsed:
         smallMessage(eventPlayer, STR_SLINGSHOT_ON_COOLDOWN)
