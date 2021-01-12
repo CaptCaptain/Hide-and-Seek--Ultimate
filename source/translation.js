@@ -82,7 +82,7 @@ const translations = {
         "en-US": 'Emote'
     },
     LAYING_DOWN_LAYING: {
-        "en-US": 'Laying Down'
+        "en-US": 'Lay Down'
     },
     LAYING_DOWN_STAND: {
         "en-US": 'Stand up'
@@ -153,11 +153,11 @@ const translations = {
         format: 'WS_SET_ADV_WINS'
     },
     RULESET_HIDING_TIME: {
-        "en-US": 'HIDING TIME: {}:{}',
+        "en-US": 'TIME LIMIT - HIDING: {}:{}',
         format: 'floor(((WS_SET_HIDETIME % 86400) % 3600) / 60), floor(((WS_SET_HIDETIME % 86400) % 3600) % 60)'
     },
     RULESET_SEEK_TIME: {
-        "en-US": 'SEEK TIME: {}:{}',
+        "en-US": 'TIME LIMIT - SEEKING: {}:{}',
         format: 'floor(((WS_SET_SEEKTIME % 86400) % 3600) / 60), floor(((WS_SET_SEEKTIME % 86400) % 3600) % 60)'
     },
     RULESET_PLAYER_SIZE: {
@@ -200,7 +200,7 @@ const translations = {
         format: 'WS_SET_LAYING_DOWN'
     },
     RULESET_SHOW_HIDERS: {
-        "en-US": 'SHOW REMAINING HIDERS AFTER ROUND: {}',
+        "en-US": 'SHOW REMAINING HIDERS AFTER THE ROUND: {}',
         format: 'ShowHiderString'
     },
     RULESET_WB_INF_GRAPPLE: {
