@@ -7,7 +7,7 @@ rule "Lock Seeker in place hud":
     @Condition getCurrentGamemode() == Gamemode.TDM
     @Condition CurrentGameState == GAME_STATE.HIDING
 
-    hudSubtext(getPlayers(Team.2), "You are currently blinded!\nWait until Seeking Phase!", HudPosition.TOP, 2, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubtext(getPlayers(Team.2), STR_SEEKER_BLINDED, HudPosition.TOP, 2, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     Hud_Seeker_Blindness.append(getLastCreatedText())
 
     waitUntil(CurrentGameState == GAME_STATE.SEEKING, 9999)

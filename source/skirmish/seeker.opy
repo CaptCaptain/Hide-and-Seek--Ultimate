@@ -10,7 +10,7 @@ rule "Respawn Seeker if they leave Spawn Room":
     if eventPlayer.getCurrentHero() == Hero.DVA: goto skip_respawn:
     eventPlayer.respawn()
     skip_respawn:
-    smallMessage(eventPlayer, "Wait until Seeking Phase to Leave")
+    smallMessage(eventPlayer, STR_SEEKER_WAIT)
     printLog("{} left spawn room during hiding phase, respawning".format(eventPlayer))
 
 rule "Seeker Noclip Barrier":

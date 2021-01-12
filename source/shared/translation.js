@@ -50,7 +50,7 @@ const translations = {
         "en-US": "Phase"
     },
     WEBLINK: {
-        "en-US": "For Latest Version, head to: https://workshop.codes/hide-and-seek-ult"
+        "en-US": "This is an preview update, for the current version: visit: https://workshop.codes/hide-and-seek-ult"
     },
     VERSION: {
         "en-US": 'Current Version: {}\n',
@@ -119,6 +119,9 @@ const translations = {
     HIDER_IN_SPAWN: {
         "en-US": '{0} YOU WILL BE KILLED IF YOU REMAIN IN SPAWN AFTER HIDING PHASE {0}',
         format: 'iconString(Icon.WARNING)'
+    },
+    SEEKER_BLINDED: {
+        "en-US": 'You are currently blind while the hiders hide!'
     },
     SOMBRA_VISIBLE: {
         "en-US": '{0} YOU ARE VISIBLE TO SEEKERS {0}',

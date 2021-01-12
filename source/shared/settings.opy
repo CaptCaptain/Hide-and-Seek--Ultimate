@@ -100,7 +100,7 @@ globalvar WS_SET_SEEKER_OUTLINES_RAW = createWorkshopSetting(enum["Default", "Oc
 globalvar WS_SET_SEEKER_OUTLINES = [ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT, ACCESSIBILITY.SEEKER_OUTLINES_OCCLUDED, ACCESSIBILITY.SEEKER_OUTLINES_ALWAYS][WS_SET_SEEKER_OUTLINES_RAW]
 globalvar WS_SET_SHOW_HIDERS_RAW = createWorkshopSetting(enum["Last Hider Only", "On", "Off"], "Ruleset", "Show Remaining Hiders When Round Ends", 2, 5)
 globalvar WS_SET_SHOW_HIDERS = [SHOW_HIDERS.LAST_HIDER, SHOW_HIDERS.ALL_HIDERS, SHOW_HIDERS.OFF][WS_SET_SHOW_HIDERS_RAW]
-globalvar WS_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 0, 7)
+globalvar WS_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE (SKIRMISH)", 0, 7)
 globalvar WS_SET_END = [25.9, 8, 9999][WS_SET_END_RAW]
 
 # Accessibility Settings
