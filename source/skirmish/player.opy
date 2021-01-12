@@ -3,13 +3,13 @@
 rule "Title Hud":
     @Condition getCurrentGamemode() == Gamemode.SKIRMISH
     
-    createInWorldText(getAllPlayers(), "HIDE & SEEK", getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), STR_GAME_TITLE, getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "ULTIMATE", getObjectivePosition(getCurrentObjective()) + vect(0, 3.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), STR_GAME_SUBTITLE, getObjectivePosition(getCurrentObjective()) + vect(0, 3.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "STYLE: {}".format(WS_SET_MODE), getObjectivePosition(getCurrentObjective()) + vect(0, 3, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), "{}: {}".format(STR_GAME_STYLE, StyleString), getObjectivePosition(getCurrentObjective()) + vect(0, 3, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_POSITION_AND_STRING, Color.ROSE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "WAITING FOR PLAYERS".format(RequiredHiders), getObjectivePosition(getCurrentObjective()) + vect(0, 2.25, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.WHITE, SpecVisibility.NEVER)
+    createInWorldText(getAllPlayers(), STR_GAME_WAITING_FOR_PLAYERS, getObjectivePosition(getCurrentObjective()) + vect(0, 2.25, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.WHITE, SpecVisibility.NEVER)
     Hud_GameTitle.append(getLastCreatedText())
     createEffect(getAllPlayers(), Effect.RING, Color.TURQUOISE, getObjectivePosition(getCurrentObjective()), 10, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
     Hud_GameTitle.append(getLastCreatedEntity())
