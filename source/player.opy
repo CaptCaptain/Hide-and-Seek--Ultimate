@@ -37,7 +37,8 @@ subroutine SlingshotCooldown
 
 def SlingshotCooldown():
     eventPlayer.SlingshotUsed = true
-    wait(8 if CurrentGameState == GAME_STATE.SEEKING else 3)
+    waitUntil(eventPlayer.isOnGround(), 9999)
+    wait(8 if CurrentGameState == GAME_STATE.SEEKING else 0)
     eventPlayer.SlingshotUsed = false
 
 def StartCamera():
