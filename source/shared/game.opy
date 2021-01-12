@@ -1,11 +1,11 @@
 #!mainFile "settings.opy"
 
 enum GAME_STATE:
-    WAITING = "Waiting For Players",
-    HIDING = "Hiding",
-    SEEKING = "Seeking",
-    RESULTS = "Results",
-    END = "End Game"
+    WAITING,
+    HIDING,
+    SEEKING,
+    RESULTS,
+    END
 
 globalvar CurrentGameState = GAME_STATE.WAITING
 globalvar CurrentTime = 1800
@@ -102,7 +102,7 @@ rule "Results":
     
     # Show hiders if workshop setting is enabled
     if (WS_SET_SHOW_HIDERS == SHOW_HIDERS.ALL_HIDERS and len(getLivingPlayers(Team.1)) >= 1) or (WS_SET_SHOW_HIDERS == SHOW_HIDERS.LAST_HIDER and len(getLivingPlayers(Team.1)) == 1):
-        smallMessage(getAllPlayers(), "Revealing the remaining hiders")
+        smallMessage(getAllPlayers(), STR_REVEALING_HIDERS)
         getPlayers(Team.ALL).ShowHiders = true
         waitUntil(all([player.ShowHiders == false for player in getAllPlayers()]), 9999)
     

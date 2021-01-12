@@ -46,6 +46,34 @@ rule "Update Hider Outline":
 
     eventPlayer.startForcingOutlineFor(getPlayers(Team.2), WS_SET_USEOUTLINE, Color.TEAM_1, OutlineVisibility.DEFAULT)
 
+rule "Respawn Seeker if they leave Spawn Room":
+    @Event eachPlayer
+    @Team 2
+    @Condition CurrentGameState == GAME_STATE.HIDING
+    @Condition not eventPlayer.isInSpawnRoom()
+
+    if eventPlayer.getCurrentHero() == Hero.DVA: goto skip_respawn:
+    eventPlayer.respawn()
+    skip_respawn:
+    smallMessage(eventPlayer, STR_SEEKER_WAIT)
+    printLog("{} left spawn room during hiding phase, respawning".format(eventPlayer))
+
+rule "Seeker Noclip Barrier":
+    @Event eachPlayer
+    @Team 2
+    @Condition WS_SET_MODE != STYLE.GLITCH
+    @Condition CurrentGameState == GAME_STATE.SEEKING
+    @Condition eventPlayer.isMoving()
+    @Condition eventPlayer.isOnGround()
+    @Condition isInLoS(eventPlayer.getEyePosition(), worldVector(eventPlayer.getThrottle(), eventPlayer, Transform.ROTATION_AND_TRANSLATION) + vect(0, evalOnce(distance(eventPlayer.getEyePosition(), eventPlayer.getPosition()) / 2), 0), BarrierLos.PASS_THROUGH_BARRIERS)
+
+    # Disable collision if the player is within line of sight of a point in the direction of throttle.
+    eventPlayer.disableEnvironmentCollision(false)
+    wait(0.05)
+    if RULE_CONDITION:
+        goto RULE_START
+    eventPlayer.enableEnvironmentCollision()
+
 rule "Clear Seeker Name":
     @Event playerLeft
     @Team 2
@@ -60,7 +88,7 @@ rule "Seeker Assistance":
     @Condition len([player for player in getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF) if player.isAlive()]) > 0
 
     # Create hud text
-    hudSubtext(eventPlayer, "{0} THERE ARE HIDERS IN THIS AREA {0}".format(iconString(Icon.WARNING)), HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
+    hudSubtext(eventPlayer, STR_SEEKER_ASSISTANCE, HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_Seeker_Assistance = getLastCreatedText()
 
     # Wait until there are no hiders in range
