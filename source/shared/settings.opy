@@ -12,7 +12,7 @@ settings {
         "team2Slots": 3
     },
     "gamemodes": {
-        "skirmish": {
+        "tdm": {
             "disabledMaps": [
                 "workshopIsland", "workshopIslandNight", "workshopChamber", "workshopGreenScreen", "workshopExpanse", "workshopExpanseNight"
             ]
@@ -76,7 +76,7 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "1.6.1"
+globalvar CURRENT_VERSION = "2.0.0"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
@@ -119,5 +119,16 @@ globalvar WS_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Set
 globalvar WS_SET_ADV_DEBUGSTATS_RAW = createWorkshopSetting(enum["HOST ONLY", "ALL PLAYERS", "NONE"], "Advanced Settings", "Show Debug Stats", 2, 6)
 globalvar WS_SET_ADV_DEBUGSTATS = [SHOW_DEBUG_STATS.HOST, SHOW_DEBUG_STATS.ALL, SHOW_DEBUG_STATS.NONE][WS_SET_ADV_DEBUGSTATS_RAW]
 
+rule "____________Shared Rules": @Delimiter
 #!include "game.opy"
 #!include "player.opy"
+#!include "hider.opy"
+#!include "seeker.opy"
+rule "____________Skirmish Rules": @Delimiter
+#!include "../skirmish/player.opy"
+#!include "../skirmish/hider.opy"
+#!include "../skirmish/seeker.opy"
+rule "____________TDM Rules": @Delimiter
+#!include "../tdm/player.opy"
+#!include "../tdm/hider.opy"
+#!include "../tdm/seeker.opy"

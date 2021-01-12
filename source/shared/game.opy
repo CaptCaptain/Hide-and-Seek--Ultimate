@@ -14,6 +14,9 @@ globalvar HiderTeamScore = 0
 globalvar SeekerTeamScore = 0
 globalvar LastHiderHud
 playervar ShowHiders = false
+playervar JoinedLate
+
+#!define HidersExist (len([player for player in getPlayers(Team.1) if player.hasSpawned() and player.isAlive() and not player.isInSpawnRoom() and not player.JoinedLate]) > 0)
 
 subroutine PLAYSOUND_DEBUFF
 subroutine PLAYSOUND_RINGEXPLOSION
@@ -44,7 +47,7 @@ rule "Waiting Phase":
     waitUntil(all([player.hasSpawned() for player in getAllPlayers()]), WS_SET_WAITING_MAXTIME)
 
     # Wait until player count meets the required ratio of seekers to hiders
-    waitUntil(len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy()]) >= RequiredHiders and len([player for player in getPlayers(Team.2) if player.hasSpawned() and not player.isDummy()]) > 0, WS_SET_WAITING_MAXTIME)
+    waitUntil(len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy()]) >= RequiredHiders and len([player for player in getPlayers(Team.2) if player.hasSpawned()]) > 0, WS_SET_WAITING_MAXTIME)
 
     CurrentGameState = GAME_STATE.HIDING
 
@@ -71,8 +74,6 @@ rule "Seeking Phase":
 
     printLog("Game Phase: Seeking")
     PLAYSOUND_RINGEXPLOSION()
-
-    #!define HidersExist (len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy() and player.isAlive() and not player.isInSpawnRoom()]) > 0)
     
     CurrentTime = WS_SET_SEEKTIME
     chase(CurrentTime, 0, rate = 1, ChaseReeval.DESTINATION_AND_RATE)
@@ -89,8 +90,6 @@ rule "Results":
     printLog("Game Phase: Results")
 
     PLAYSOUND_BUFF()
-
-    #!define HidersExist (len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isDummy() and player.isAlive() and not player.isInSpawnRoom()]) > 0)
 
     # Add score to winning team
     if HidersExist:
@@ -139,4 +138,18 @@ rule "End Game":
 
     setMatchTime(0)
     unpauseMatchTime()
-    
+
+rule "Add Bots":
+    @Condition hostPlayer.isCommunicating(Comms.READY)
+
+    createDummy(Hero.TRACER, Team.1, 0, random.choice(getSpawnPoints(Team.1)), null)
+    createDummy(Hero.TRACER, Team.1, 1, random.choice(getSpawnPoints(Team.1)), null)
+    createDummy(Hero.TRACER, Team.1, 2, random.choice(getSpawnPoints(Team.1)), null)
+    createDummy(Hero.TRACER, Team.1, 3, random.choice(getSpawnPoints(Team.1)), null)
+    createDummy(Hero.TRACER, Team.1, 4, random.choice(getSpawnPoints(Team.1)), null)
+    createDummy(Hero.TRACER, Team.1, 5, random.choice(getSpawnPoints(Team.1)), null)
+
+    createDummy(Hero.TRACER, Team.2, 0, random.choice(getSpawnPoints(Team.2)), null)
+    createDummy(Hero.TRACER, Team.2, 1, random.choice(getSpawnPoints(Team.2)), null)
+    createDummy(Hero.TRACER, Team.2, 2, random.choice(getSpawnPoints(Team.2)), null)
+

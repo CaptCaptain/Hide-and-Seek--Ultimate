@@ -1,11 +1,10 @@
-#!mainFile "settings.opy"
+#!mainFile "../shared/settings.opy"
 
 playervar Hud_Detection
 playervar Hud_InSpawn
 playervar Huds_JoinedLate
 playervar Effects_SombraInvis
 playervar Hud_SombraTrans
-playervar JoinedLate
 
 #!define refreshAbility(button) eventPlayer.setAbilityCooldown(button, 0.2 if eventPlayer.getAbilityCooldown(button) > 0 else 0)\
 eventPlayer.setAbilityCharge(button, 3)
@@ -51,6 +50,46 @@ rule "Hider Setup":
     startDamageModification(eventPlayer, getAllPlayers(), abs(9999999999) if (CurrentGameState == GAME_STATE.SEEKING) else 0, DamageReeval.RECEIVERS_DAMAGERS_AND_DMGPERCENT)
 
     printLog("Hider Setup finished for {}".format(eventPlayer))
+
+rule "Hiders Joined Late":
+    @Event eachPlayer
+    @Team 1
+    @Condition CurrentGameState == GAME_STATE.SEEKING
+    @Condition not eventPlayer.hasSpawned()
+
+    eventPlayer.JoinedLate = true
+
+rule "Kill Hiders Who Joined Late":
+    @Event eachPlayer
+    @Team 1
+    @Condition CurrentGameState == GAME_STATE.SEEKING
+    @Condition eventPlayer.JoinedLate == true
+    @Condition eventPlayer.hasSpawned()
+
+    eventPlayer.disableHeroHUD()
+
+    # Create hud
+    createInWorldText(eventPlayer, "YOU JOINED LATE!", updateEveryTick(eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1)), 5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
+    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
+
+    createInWorldText(eventPlayer, "YOU WILL BE PUT INTO SPECTATOR", updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.1, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
+    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
+
+    createInWorldText(eventPlayer, "PLEASE WAIT FOR THE NEXT ROUND", updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.2, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
+    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
+
+    eventPlayer.setStatusEffect(null, Status.ROOTED, 5)
+
+    wait(5)
+
+    # Destroy all hud text
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Huds_JoinedLate)):
+        destroyInWorldText(eventPlayer.Huds_JoinedLate[eventPlayer.playerHudIndex])
+    eventPlayer.Huds_JoinedLate = null
+    # Set JoinedLate to false so the spawn room kill rule can run
+    eventPlayer.JoinedLate = false
+    eventPlayer.ResurrectBlocked = true
+    eventPlayer.enableHeroHud()
 
 rule "Hider Tank Scaling":
     @Event eachPlayer
@@ -115,18 +154,6 @@ rule "Refresh Secondary Fire for Wrecking Ball":
 
     refreshAbility(Button.SECONDARY_FIRE)
 
-rule "Kill Hider in Spawn Room":
-    @Event eachPlayer
-    @Team 1
-    @Condition eventPlayer.isInSpawnRoom()
-    @Condition CurrentGameState == GAME_STATE.SEEKING
-    @Condition eventPlayer.JoinedLate == false
-
-    do:
-        kill(eventPlayer, null)
-        wait()
-    while RULE_CONDITION
-
 rule "Show Warning to Hider While In Spawn Room":
     @Event eachPlayer
     @Team 1
@@ -181,45 +208,6 @@ rule "Slow Hider":
     eventPlayer.Hud_Detection = null
 
     printLog("{} is no longer in line of sight".format(eventPlayer))
-
-rule "Hiders Joined Late":
-    @Event eachPlayer
-    @Team 1
-    @Condition CurrentGameState == GAME_STATE.SEEKING
-    @Condition not eventPlayer.hasSpawned()
-
-    eventPlayer.JoinedLate = true
-
-rule "Kill Hiders Who Joined Late":
-    @Event eachPlayer
-    @Team 1
-    @Condition CurrentGameState == GAME_STATE.SEEKING
-    @Condition eventPlayer.JoinedLate == true
-    @Condition eventPlayer.hasSpawned()
-
-    eventPlayer.disableHeroHUD()
-
-    # Create hud
-    createInWorldText(eventPlayer, "YOU JOINED LATE!", updateEveryTick(eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 1)), 5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
-    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
-
-    createInWorldText(eventPlayer, "YOU WILL BE PUT INTO SPECTATOR", updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.1, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
-    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
-
-    createInWorldText(eventPlayer, "PLEASE WAIT FOR THE NEXT ROUND", updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.2, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
-    eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
-
-    eventPlayer.setStatusEffect(null, Status.ROOTED, 5)
-
-    wait(5)
-
-    # Destroy all hud text
-    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Huds_JoinedLate)):
-        destroyInWorldText(eventPlayer.Huds_JoinedLate[eventPlayer.playerHudIndex])
-    eventPlayer.Huds_JoinedLate = null
-    # Set JoinedLate to false so the spawn room kill rule can run
-    eventPlayer.JoinedLate = false
-    eventPlayer.enableHeroHud()
 
 rule "Sombra Invisibility Tracker":
     @Event eachPlayer

@@ -6,22 +6,27 @@ enum CAMERA_STATE:
     THIRD_PERSON,
     LAST_HIDER
 
-globalvar Hud_GameInfo
-globalvar Hud_GameTitle
-playervar Hud_Player
 globalvar globalHudIndex = 0
 playervar playerHudIndex = 0
 playervar playerIndex = 0
+
+globalvar Hud_GameInfo
+globalvar Hud_GameTitle
+playervar Hud_Player
+
 playervar BaseMoveSpeed = 100 * WS_SET_ADV_BASESPEED
 playervar BaseJumpHeight = 100 * WS_SET_ADV_BASESPEED
 playervar BaseScaling = WS_SET_ADV_SCALE
+
 playervar HiderSlowFactor = 2
 playervar DvaMechPosition
 playervar DvaHasTeleported
 playervar LastWalkablePosition
+playervar ResurrectBlocked
+
+playervar CameraState = CAMERA_STATE.THIRD_PERSON if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else CAMERA_STATE.FIRST_PERSON
 playervar ThirdPersonCameraEnabled = true if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
 playervar LayingDownCameraEnabled = false
-playervar CameraState = CAMERA_STATE.THIRD_PERSON if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else CAMERA_STATE.FIRST_PERSON
 playervar SlingshotPosition
 playervar SlingshotEnabled = false
 playervar SlingshotUsed = false
@@ -32,8 +37,8 @@ playervar PreviousPosition
 
 subroutine StartThirdPersonCamera
 subroutine StartCamera
-subroutine RestrictAbilities
 subroutine SlingshotCooldown
+subroutine RestrictAbilities
 
 def SlingshotCooldown():
     eventPlayer.SlingshotUsed = true
@@ -47,7 +52,6 @@ def StartCamera():
 
 def StartThirdPersonCamera():
     eventPlayer.startCamera(updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + worldVector(vect(1 * -1, 0, 0), eventPlayer, Transform.ROTATION) + eventPlayer.getFacingDirection() * -2.5, getAllPlayers(), eventPlayer, false).getHitPosition()), updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + eventPlayer.getFacingDirection() * 200, getAllPlayers(), eventPlayer, false).getHitPosition()), 60)
-
 def RestrictAbilities():
     eventPlayer.setAbility1Enabled(true)
     eventPlayer.setAbility2Enabled(true)
@@ -110,25 +114,6 @@ rule "Create Player Huds":
         hudSubheader(eventPlayer, "Emote and press {} to lay down / Press {} to stand up".format(buttonString(Button.CROUCH), buttonString(Button.JUMP)), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
 
-rule "Title Hud":
-    createInWorldText(getAllPlayers(), "HIDE & SEEK", getObjectivePosition(getCurrentObjective()) + vect(0, 4, 0),5, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.BLUE, SpecVisibility.NEVER)
-    Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "ULTIMATE", getObjectivePosition(getCurrentObjective()) + vect(0, 3.5, 0),2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.SKY_BLUE, SpecVisibility.NEVER)
-    Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "STYLE: {}".format(WS_SET_MODE), getObjectivePosition(getCurrentObjective()) + vect(0, 3, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.ROSE, SpecVisibility.NEVER)
-    Hud_GameTitle.append(getLastCreatedText())
-    createInWorldText(getAllPlayers(), "WAITING FOR PLAYERS".format(RequiredHiders), getObjectivePosition(getCurrentObjective()) + vect(0, 2.25, 0),1, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.WHITE, SpecVisibility.NEVER)
-    Hud_GameTitle.append(getLastCreatedText())
-    createEffect(getAllPlayers(), Effect.RING, Color.TURQUOISE, getObjectivePosition(getCurrentObjective()), 10, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
-    Hud_GameTitle.append(getLastCreatedEntity())
-
-    waitUntil(CurrentGameState != GAME_STATE.WAITING, 9999)
-
-    for globalHudIndex in range(0, len(Hud_GameTitle)):
-        destroyInWorldText(Hud_GameTitle[globalHudIndex])
-        destroyEffect(Hud_GameTitle[globalHudIndex])
-    Hud_GameTitle = null
-
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
@@ -142,6 +127,9 @@ rule "Global Huds":
     Hud_GameInfo.append(getLastCreatedText())
 
     hudHeader(getAllPlayers(), "{} RULESET:".format(abilityIconString(Hero.TORBJORN, Button.ABILITY_2)), HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    Hud_GameInfo.append(getLastCreatedText())
+
+    hudSubtext(getAllPlayers(), "GAMEMODE: {}".format(getCurrentGamemode()), HudPosition.LEFT, 1.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), "STYLE: {}".format(WS_SET_MODE), HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
@@ -217,17 +205,6 @@ rule "Remove Global Huds":
         destroyHudText(Hud_GameInfo[globalHudIndex])
     Hud_GameInfo = null
 
-rule "Player Scaling":
-    @Event eachPlayer
-    @Condition (eventPlayer.BaseScaling > 1 or eventPlayer.BaseScaling < 1) or (WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL)
-
-    # Scales the player
-    eventPlayer.startScalingSize(eventPlayer.BaseScaling, true)
-    eventPlayer.startScalingBarriers(eventPlayer.BaseScaling, true)
-    if not (WS_SET_ADV_SCALE > 1 or WS_SET_ADV_SCALE < 1): goto skip_voice_modification
-    eventPlayer.startModifyingVoicelinePitch(2 - eventPlayer.BaseScaling, true)
-    skip_voice_modification:
-
 rule "Player Setup":
     @Event eachPlayer
 
@@ -240,14 +217,16 @@ rule "Player Setup":
     if WS_SET_MODE == STYLE.GLITCH:
         eventPlayer.disableEnvironmentCollision(false)
 
-    # Teleport to Objective
-    waitUntil(eventPlayer.hasSpawned(), 9999)
-    eventPlayer.DvaMechPosition = eventPlayer.getPosition()
-    RestrictAbilities()
-    if CurrentGameState == GAME_STATE.WAITING:
-        eventPlayer.teleport(nearestWalkablePosition(getObjectivePosition(getCurrentObjective()) + vect(random.randint(-10, 10), 0, random.randint(-10, 10))))
-        wait()
-        eventPlayer.setFacing(directionTowards(eventPlayer.getEyePosition(), getObjectivePosition(getCurrentObjective())) + vect(0, 0.5, 0), Relativity.TO_WORLD)
+rule "Player Scaling":
+    @Event eachPlayer
+    @Condition (eventPlayer.BaseScaling > 1 or eventPlayer.BaseScaling < 1) or (WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE or WS_SET_ADV_TANKSCALING == ACCESSIBILITY.TANKS_SCALE_ALL)
+
+    # Scales the player
+    eventPlayer.startScalingSize(eventPlayer.BaseScaling, true)
+    eventPlayer.startScalingBarriers(eventPlayer.BaseScaling, true)
+    if not (WS_SET_ADV_SCALE > 1 or WS_SET_ADV_SCALE < 1): goto skip_voice_modification
+    eventPlayer.startModifyingVoicelinePitch(2 - eventPlayer.BaseScaling, true)
+    skip_voice_modification:
 
 rule "Reset Ammo":
     @Event eachPlayer
@@ -261,7 +240,7 @@ rule "Reset Ammo":
 rule "Resurrect":
     @Event playerDied
     @Condition eventWasEnvironment or attacker() == victim()
-    @Condition not eventPlayer.isInSpawnRoom()
+    @Condition eventPlayer.ResurrectBlocked == false
 
     # If the player dies to the environment or self-destructs.
     eventPlayer.resurrect()
@@ -269,19 +248,6 @@ rule "Resurrect":
     eventPlayer.setStatusEffect(null, Status.STUNNED, 2)
     if attacker() == victim(): eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, "BE CAREFUL!")
-
-rule "Disable Abilities In Spawn":
-    @Event eachPlayer
-    @Condition eventPlayer.isInSpawnRoom()
-
-    eventPlayer.setAbility1Enabled(false)
-    eventPlayer.setAbility2Enabled(false)
-    eventPlayer.setSecondaryFireEnabled(false)
-    eventPlayer.cancelPrimaryAction()
-
-    waitUntil(not eventPlayer.isInSpawnRoom(), 9999)
-
-    RestrictAbilities()
 
 rule "Set Last Walkable Position":
     @Event eachPlayer
@@ -291,6 +257,7 @@ rule "Set Last Walkable Position":
 
     waitUntil(eventPlayer.isOnGround(), 9999)
 
+# Accessibility Rules
 rule "Show Remaining Hiders":
     @Event eachPlayer
     @Condition eventPlayer.ShowHiders == true
@@ -319,28 +286,6 @@ rule "Show Remaining Hiders":
         eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
     
     eventPlayer.ShowHiders = false
-
-# Accessibility Rules
-rule "D.va: TP to Mech Position (Hider)":
-    @Event eachPlayer
-    @Team 1
-    @Hero dva
-    @Condition CurrentGameState == GAME_STATE.HIDING
-    @Condition eventPlayer.DvaHasTeleported == false
-
-    eventPlayer.DvaHasTeleported = true
-    
-    eventPlayer.teleport(eventPlayer.DvaMechPosition)
-
-rule "D.va: TP to Mech Position (Seeker)":
-    @Event eachPlayer
-    @Team 2
-    @Hero dva
-    @Condition CurrentGameState == GAME_STATE.HIDING
-    @Condition not eventPlayer.isInSpawnRoom()
-    
-    wait(0.25, Wait.ABORT_WHEN_FALSE)
-    eventPlayer.teleport(eventPlayer.DvaMechPosition)
 
 rule "D.va: Ult":
     @Event eachPlayer
@@ -514,6 +459,3 @@ rule "Show Debug Stats":
     hudSubtext(hostPlayer if WS_SET_ADV_DEBUGSTATS == SHOW_DEBUG_STATS.HOST else getAllPlayers(), "DEBUG STATS".format(getServerLoad(), getAverageServerLoad(), getPeakServerLoad()), HudPosition.LEFT, -2, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     hudSubheader(hostPlayer if WS_SET_ADV_DEBUGSTATS == SHOW_DEBUG_STATS.HOST else getAllPlayers(), "SERVER LOAD: {}\nSERVER LOAD AVERAGE: {}\nSERVER LOAD PEAK: {}\n".format(getServerLoad(), getAverageServerLoad(), getPeakServerLoad()), HudPosition.LEFT, -1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
     hudSubheader(hostPlayer if WS_SET_ADV_DEBUGSTATS == SHOW_DEBUG_STATS.HOST else getAllPlayers(), "CURRENT TIME: {}".format(CurrentTime), HudPosition.LEFT, -1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-
-#!include "hider.opy"
-#!include "seeker.opy"
