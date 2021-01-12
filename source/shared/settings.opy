@@ -20,7 +20,8 @@ settings {
         "general": {
             "heroLimit": "off",
             "enableRandomHeroes": false,
-            "spawnHealthPacks": "disabled"
+            "spawnHealthPacks": "disabled",
+            "gamemodeStartTrigger": "immediately"
         }
     },
     "heroes": {
@@ -76,7 +77,7 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "2.0.0"
+globalvar CURRENT_VERSION = "2.0.0 [Canary Build]"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
@@ -129,6 +130,7 @@ rule "____________Skirmish Rules": @Delimiter
 #!include "../skirmish/hider.opy"
 #!include "../skirmish/seeker.opy"
 rule "____________TDM Rules": @Delimiter
+#!include "../tdm/game.opy"
 #!include "../tdm/player.opy"
 #!include "../tdm/hider.opy"
 #!include "../tdm/seeker.opy"

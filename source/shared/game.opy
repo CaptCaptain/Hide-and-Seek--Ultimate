@@ -32,8 +32,9 @@ def PLAYSOUND_BUFF():
     for playerIndex in range(0, len(getAllPlayers())):
         playEffect(getAllPlayers()[playerIndex], DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, getAllPlayers()[playerIndex], 100)
 
-rule "Stop Skirmish Clock":
+rule "Stop Skirmish Clock / Scoring":
     pauseMatchTime()
+    disableScoring()
 
 rule "Waiting Phase":
     @Condition CurrentGameState == GAME_STATE.WAITING
@@ -141,6 +142,7 @@ rule "End Game":
 
 rule "Add Bots":
     @Condition hostPlayer.isCommunicating(Comms.READY)
+    @Disabled
 
     createDummy(Hero.TRACER, Team.1, 0, random.choice(getSpawnPoints(Team.1)), null)
     createDummy(Hero.TRACER, Team.1, 1, random.choice(getSpawnPoints(Team.1)), null)
