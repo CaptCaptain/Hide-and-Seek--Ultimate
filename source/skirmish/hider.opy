@@ -3,7 +3,7 @@
 rule "Kill Hider in Spawn Room":
     @Event eachPlayer
     @Team 1
-    @Condition getCurrentGamemode() == Gamemode.TDM
+    @Condition getCurrentGamemode() == Gamemode.SKIRMISH
     @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.isInSpawnRoom()
     @Condition eventPlayer.JoinedLate == false
