@@ -31,11 +31,9 @@ rule "Lock Seeker in place until seeking phase":
     printLog("Locking {} in place".format(eventPlayer))
     eventPlayer.setStatusEffect(null, Status.ROOTED, 9999)
 
-    createEffect(eventPlayer, Effect.SPHERE, Color.BLACK, eventPlayer, 9999, EffectReeval.VISIBILITY)
-    eventPlayer.Effect_Seeker_Blindness.append(getLastCreatedEntity())
-
-    fogCreate(5)
-    fogCreate(5 * -1)
+    fogCreate(3)
+    fogCreate(3 + 1)
+    fogCreate(3 * -1)
 
     waitUntil(CurrentGameState == GAME_STATE.SEEKING, 9999)
 
@@ -44,3 +42,12 @@ rule "Lock Seeker in place until seeking phase":
         destroyEffect(eventPlayer.Effect_Seeker_Blindness[eventPlayer.playerHudIndex])
     eventPlayer.Effect_Seeker_Blindness = null
     eventPlayer.clearStatusEffect(Status.ROOTED)
+
+rule "Prevent Seeker from using hopping emotes":
+    @Event eachPlayer
+    @Team 2
+    @Condition getCurrentGamemode() == Gamemode.TDM
+    @Condition CurrentGameState == GAME_STATE.HIDING
+    @Condition eventPlayer.isCommunicatingEmote()
+
+    eventPlayer.cancelPrimaryAction()
