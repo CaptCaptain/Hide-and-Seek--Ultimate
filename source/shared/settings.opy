@@ -81,7 +81,7 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "2.0.0 [Canary Build]"
+globalvar CURRENT_VERSION = "2.0.0"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)

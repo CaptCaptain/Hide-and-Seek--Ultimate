@@ -50,7 +50,7 @@ const translations = {
         "en-US": "Phase"
     },
     WEBLINK: {
-        "en-US": "This is an preview update, for the current version: visit: https://workshop.codes/hide-and-seek-ult"
+        "en-US": "For Latest Version, head to: https://workshop.codes/hide-and-seek-ult"
     },
     VERSION: {
         "en-US": 'Current Version: {}\n',
