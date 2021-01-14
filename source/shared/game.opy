@@ -139,18 +139,3 @@ rule "End Game":
 
     setMatchTime(0)
     unpauseMatchTime()
-
-rule "Add Bots":
-    @Condition hostPlayer.isCommunicating(Comms.READY)
-
-    createDummy(Hero.TRACER, Team.1, 0, random.choice(getSpawnPoints(Team.1)), null)
-    createDummy(Hero.TRACER, Team.1, 1, random.choice(getSpawnPoints(Team.1)), null)
-    createDummy(Hero.TRACER, Team.1, 2, random.choice(getSpawnPoints(Team.1)), null)
-    createDummy(Hero.TRACER, Team.1, 3, random.choice(getSpawnPoints(Team.1)), null)
-    createDummy(Hero.TRACER, Team.1, 4, random.choice(getSpawnPoints(Team.1)), null)
-    createDummy(Hero.TRACER, Team.1, 5, random.choice(getSpawnPoints(Team.1)), null)
-
-    createDummy(Hero.TRACER, Team.2, 0, random.choice(getSpawnPoints(Team.2)), null)
-    createDummy(Hero.TRACER, Team.2, 1, random.choice(getSpawnPoints(Team.2)), null)
-    createDummy(Hero.TRACER, Team.2, 2, random.choice(getSpawnPoints(Team.2)), null)
-

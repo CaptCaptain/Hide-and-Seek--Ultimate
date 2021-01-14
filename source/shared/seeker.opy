@@ -57,14 +57,14 @@ rule "Seeker Assistance":
     @Team 2
     @Condition WS_SET_SEEKER_ASSIST == true
     @Condition eventPlayer.hasSpawned()
-    @Condition len([player for player in getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF) if player.isAlive()]) > 0
+    @Condition len([player for player in getPlayersInRadius(eventPlayer, 30, Team.1, LosCheck.OFF) if player.isAlive()]) > 0
 
     # Create hud text
     hudSubtext(eventPlayer, STR_SEEKER_ASSISTANCE, HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
     eventPlayer.Hud_Seeker_Assistance = getLastCreatedText()
 
     # Wait until there are no hiders in range
-    waitUntil(len(getPlayersInRadius(eventPlayer, 50, Team.1, LosCheck.OFF)) == 0, 9999)
+    waitUntil(len([player for player in getPlayersInRadius(eventPlayer, 30, Team.1, LosCheck.OFF) if player.isAlive()]) == 0, 9999)
 
     # Remove hud text
     destroyHudText(eventPlayer.Hud_Seeker_Assistance)

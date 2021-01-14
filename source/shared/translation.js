@@ -50,7 +50,7 @@ const translations = {
         "en-US": "Phase"
     },
     WEBLINK: {
-        "en-US": "For Latest Version, head to: https://workshop.codes/hide-and-seek-ult"
+        "en-US": "https://workshop.codes/hide-and-seek-ult"
     },
     VERSION: {
         "en-US": 'Current Version: {}\n',
@@ -223,6 +223,9 @@ const translations = {
     },
     RULESET_CHECK_CHANGE: {
         "en-US": 'FOR MORE INFORMATION ON RULESET:\nGO TO LOBBY > RIGHT CLICK MAP PICTURE > SCROLL DOWN TO WORKSHOP\n'
+    },
+    MATCH_VOICE_ENABLED: {
+        "en-US": 'MATCH VOICE CHAT IS ENABLED'
     }
 }
 result = 'globalvar practiceRangeTranslations = ' + '[' + practiceRangeTranslations.join() + ']';

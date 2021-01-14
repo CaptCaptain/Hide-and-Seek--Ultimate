@@ -202,6 +202,9 @@ rule "Global Huds":
     hudSubheader(getAllPlayers(), STR_RULESET_CHANGE_HOST, HudPosition.LEFT, 6, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
+    hudSubheader(getAllPlayers(), STR_MATCH_VOICE_ENABLED, HudPosition.LEFT, 6, Color.YELLOW, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    Hud_GameInfo.append(getLastCreatedText())
+
     hudSubheader(getAllPlayers(), STR_RULESET_CHECK_CHANGE, HudPosition.LEFT, 7, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
@@ -256,7 +259,7 @@ rule "Resurrect":
     # If the player dies to the environment or self-destructs.
     eventPlayer.resurrect()
     eventPlayer.teleport(eventPlayer.LastWalkablePosition if eventPlayer.LastWalkablePosition != null else nearestWalkablePosition(eventPlayer.getPosition()))
-    eventPlayer.setStatusEffect(null, Status.STUNNED, 2)
+    eventPlayer.setStatusEffect(null, Status.STUNNED, 1)
     if attacker() == victim(): eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, STR_BE_CAREFUL)
 
