@@ -9,6 +9,7 @@ rule "Kill Hider in Spawn Room":
     @Condition eventPlayer.JoinedLate == false
 
     do:
+        eventPlayer.ResurrectBlocked = true
         kill(eventPlayer, null)
         wait()
     while RULE_CONDITION
