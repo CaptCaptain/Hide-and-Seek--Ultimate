@@ -142,7 +142,6 @@ rule "End Game":
 
 rule "Add Bots":
     @Condition hostPlayer.isCommunicating(Comms.READY)
-    @Disabled
 
     createDummy(Hero.TRACER, Team.1, 0, random.choice(getSpawnPoints(Team.1)), null)
     createDummy(Hero.TRACER, Team.1, 1, random.choice(getSpawnPoints(Team.1)), null)

@@ -3,6 +3,9 @@
 globalvar Hud_Seeker_Blindness
 playervar Effect_Seeker_Blindness
 
+#!define fogCreate(distance) createEffect(eventPlayer, Effect.BAD_AURA, Color.BLACK, updateEveryTick(eventPlayer.getEyePosition() + eventPlayer.getFacingDirection() * (distance)), 1000, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)\
+eventPlayer.Effect_Seeker_Blindness.append(getLastCreatedEntity())
+
 rule "Lock Seeker in place hud":
     @Condition getCurrentGamemode() == Gamemode.TDM
     @Condition CurrentGameState == GAME_STATE.HIDING
@@ -29,10 +32,15 @@ rule "Lock Seeker in place until seeking phase":
     eventPlayer.setStatusEffect(null, Status.ROOTED, 9999)
 
     createEffect(eventPlayer, Effect.SPHERE, Color.BLACK, eventPlayer, 9999, EffectReeval.VISIBILITY)
-    eventPlayer.Effect_Seeker_Blindness = getLastCreatedEntity()
+    eventPlayer.Effect_Seeker_Blindness.append(getLastCreatedEntity())
+
+    fogCreate(5)
+    fogCreate(5 * -1)
 
     waitUntil(CurrentGameState == GAME_STATE.SEEKING, 9999)
 
-    destroyEffect(eventPlayer.Effect_Seeker_Blindness)
+    # Destroy all hud text and effects
+    for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Effect_Seeker_Blindness)):
+        destroyEffect(eventPlayer.Effect_Seeker_Blindness[eventPlayer.playerHudIndex])
     eventPlayer.Effect_Seeker_Blindness = null
     eventPlayer.clearStatusEffect(Status.ROOTED)

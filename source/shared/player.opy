@@ -130,7 +130,7 @@ rule "Global Huds":
     hudSubheader(getAllPlayers(), STR_VERSION, HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), "https://workshop.codes/hide-n-seek-ptr", HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_WEBLINK, HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), STR_GAME_NAME, HudPosition.RIGHT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
@@ -140,6 +140,9 @@ rule "Global Huds":
     Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), STR_RULESET_STYLE, HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    Hud_GameInfo.append(getLastCreatedText())
+
+    hudSubtext(getAllPlayers(), STR_RULESET_MAP, HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     hudSubtext(getAllPlayers(), STR_RULESET_FIRST_WINS, HudPosition.LEFT, 3, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)

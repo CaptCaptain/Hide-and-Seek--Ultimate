@@ -12,9 +12,15 @@ settings {
         "team2Slots": 3
     },
     "gamemodes": {
-        "tdm": {
+        "skirmish": {
             "disabledMaps": [
                 "workshopIsland", "workshopIslandNight", "workshopChamber", "workshopGreenScreen", "workshopExpanse", "workshopExpanseNight"
+            ]
+        },
+        "tdm": {
+            "enabledMaps": [
+                "castillo", "chateauGuillard", "kanezaka", "ecopointAntarctica", "ecopointAntarcticaWinter",
+                "necropolis", "petra", "blackForest", "blackForestWinter"
             ]
         },
         "general": {

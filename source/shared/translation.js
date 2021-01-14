@@ -147,6 +147,10 @@ const translations = {
         "en-US": '{} RULESET',
         format: 'abilityIconString(Hero.TORBJORN, Button.ABILITY_2)'
     },
+    RULESET_MAP: {
+        "en-US": 'MAP: {} [{}]',
+        format: 'getCurrentMap(), getCurrentGamemode()'
+    },
     RULESET_STYLE: {
         "en-US": 'STYLE: {}',
         format: 'StyleString'

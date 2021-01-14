@@ -189,6 +189,9 @@ rule "Slow Hider":
     # Destroy Sombra's Translocator
     if eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2():
         eventPlayer.forceButtonPress(Button.INTERACT)
+    # Knock Sombra out of stealth
+    if eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility1():
+        eventPlayer.cancelPrimaryAction()
     # Prevent Wrecking Ball from losing grapple
     if not eventPlayer.getCurrentHero() == Hero.HAMMOND and eventPlayer.isMoving():
         eventPlayer.cancelPrimaryAction()
