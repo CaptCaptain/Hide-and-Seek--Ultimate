@@ -31,6 +31,7 @@ rule "Lock Seeker in place until seeking phase":
     printLog("Locking {} in place".format(eventPlayer))
     eventPlayer.setStatusEffect(null, Status.ROOTED, 9999)
 
+    # Create fog
     fogCreate(3)
     fogCreate(3 + 1)
     fogCreate(3 * -1)
