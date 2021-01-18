@@ -259,7 +259,7 @@ rule "Resurrect":
     # If the player dies to the environment or self-destructs.
     eventPlayer.resurrect()
     eventPlayer.teleport(eventPlayer.LastWalkablePosition if eventPlayer.LastWalkablePosition != null else nearestWalkablePosition(eventPlayer.getPosition()))
-    eventPlayer.setStatusEffect(null, Status.STUNNED, 1)
+    eventPlayer.setStatusEffect(null, Status.ROOTED, 1)
     if attacker() == victim(): eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
     smallMessage(eventPlayer, STR_BE_CAREFUL)
 

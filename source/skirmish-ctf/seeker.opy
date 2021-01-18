@@ -3,7 +3,7 @@
 rule "Respawn Seeker if they leave Spawn Room":
     @Event eachPlayer
     @Team 2
-    @Condition getCurrentGamemode() == Gamemode.SKIRMISH
+    @Condition getCurrentGamemode() == Gamemode.SKIRMISH or getCurrentGamemode() == Gamemode.CTF
     @Condition CurrentGameState == GAME_STATE.HIDING
     @Condition not eventPlayer.isInSpawnRoom()
 

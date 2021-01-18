@@ -32,8 +32,11 @@ def PLAYSOUND_BUFF():
     for playerIndex in range(0, len(getAllPlayers())):
         playEffect(getAllPlayers()[playerIndex], DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, getAllPlayers()[playerIndex], 100)
 
-rule "Stop Skirmish Clock / Scoring":
+rule "Disable Current Gamemode":
     pauseMatchTime()
+    disableScoring()
+    disableAnnouncer()
+    disableGamemodeCompletion()
     disableScoring()
 
 rule "Waiting Phase":
@@ -139,3 +142,12 @@ rule "End Game":
 
     setMatchTime(0)
     unpauseMatchTime()
+
+rule "Skip":
+    @Condition getCurrentGamemode() != Gamemode.SKIRMISH
+
+    while isAssemblingHeroes() or isInSetup():
+        setMatchTime(0)
+        unpauseMatchTime()
+        pauseMatchTime()
+        wait(1)

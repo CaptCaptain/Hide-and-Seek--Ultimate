@@ -23,11 +23,17 @@ settings {
                 "necropolis", "petra", "blackForest", "blackForestWinter"
             ]
         },
+        "ctf": {
+            "enabledMaps": [
+                "ayutthaya", "busanDowntownLny", "busanSanctuaryLny"
+            ]
+        },
         "general": {
             "heroLimit": "off",
             "enableRandomHeroes": false,
             "spawnHealthPacks": "disabled",
-            "gamemodeStartTrigger": "immediately"
+            "gamemodeStartTrigger": "immediately",
+            "flagPickupTime": 5
         }
     },
     "heroes": {
@@ -136,11 +142,10 @@ rule "____________Shared Rules": @Delimiter
 #!include "hider.opy"
 #!include "seeker.opy"
 rule "____________Skirmish Rules": @Delimiter
-#!include "../skirmish/player.opy"
-#!include "../skirmish/hider.opy"
-#!include "../skirmish/seeker.opy"
+#!include "../skirmish-ctf/player.opy"
+#!include "../skirmish-ctf/hider.opy"
+#!include "../skirmish-ctf/seeker.opy"
 rule "____________TDM Rules": @Delimiter
-#!include "../tdm/game.opy"
 #!include "../tdm/player.opy"
 #!include "../tdm/hider.opy"
 #!include "../tdm/seeker.opy"

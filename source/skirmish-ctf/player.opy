@@ -23,12 +23,15 @@ rule "Title Hud":
 
 rule "Player Setup":
     @Event eachPlayer
-    @Condition getCurrentGamemode() == Gamemode.SKIRMISH
+    @Condition getCurrentGamemode() == Gamemode.SKIRMISH or getCurrentGamemode() == Gamemode.CTF
 
     # Teleport to Objective
     waitUntil(eventPlayer.hasSpawned(), 9999)
     eventPlayer.DvaMechPosition = eventPlayer.getPosition()
     RestrictAbilities()
+    if getCurrentGamemode() == Gamemode.CTF:
+        eventPlayer.disableGamemodeInWorldUi()
+        return
     if CurrentGameState == GAME_STATE.WAITING:
         eventPlayer.teleport(nearestWalkablePosition(getObjectivePosition(getCurrentObjective()) + vect(random.randint(-10, 10), 0, random.randint(-10, 10))))
         wait()
@@ -36,7 +39,7 @@ rule "Player Setup":
 
 rule "Disable Abilities In Spawn":
     @Event eachPlayer
-    @Condition getCurrentGamemode() == Gamemode.SKIRMISH
+    @Condition getCurrentGamemode() == Gamemode.SKIRMISH or getCurrentGamemode() == Gamemode.CTF
     @Condition eventPlayer.isInSpawnRoom()
 
     eventPlayer.setAbility1Enabled(false)
@@ -48,12 +51,21 @@ rule "Disable Abilities In Spawn":
 
     RestrictAbilities()
 
+rule "Prevent Flag Capture":
+    @Event eachPlayer
+    @Condition getCurrentGamemode() == Gamemode.CTF
+    @Condition distance(eventPlayer.getPosition(), [getFlagPosition(Team.2), getFlagPosition(Team.1)][[Team.1, Team.2].index(eventPlayer.getTeam())]) < 3
+
+    eventPlayer.applyImpulse(directionTowards([getFlagPosition(Team.2), getFlagPosition(Team.1)][[Team.1, Team.2].index(eventPlayer.getTeam())], eventPlayer.getPosition()), 10, Relativity.TO_WORLD, Impulse.CANCEL_CONTRARY_MOTION)
+    wait()
+    if RULE_CONDITION: goto RULE_START
+
 # Accessibility Rules
 rule "D.va: TP to Mech Position (Hider)":
     @Event eachPlayer
     @Team 1
     @Hero dva
-    @Condition getCurrentGamemode() == Gamemode.SKIRMISH
+    @Condition getCurrentGamemode() == Gamemode.SKIRMISH or getCurrentGamemode() == Gamemode.CTF
     @Condition CurrentGameState == GAME_STATE.HIDING
     @Condition eventPlayer.DvaHasTeleported == false
 
@@ -65,7 +77,7 @@ rule "D.va: TP to Mech Position (Seeker)":
     @Event eachPlayer
     @Team 2
     @Hero dva
-    @Condition getCurrentGamemode() == Gamemode.SKIRMISH
+    @Condition getCurrentGamemode() == Gamemode.SKIRMISH or getCurrentGamemode() == Gamemode.CTF
     @Condition CurrentGameState == GAME_STATE.HIDING
     @Condition not eventPlayer.isInSpawnRoom()
     
