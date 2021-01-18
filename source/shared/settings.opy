@@ -56,8 +56,8 @@ settings {
 }
 
 # Translations
-#!define TranslateToHostLanguage() __script__("translation.js")
-TranslateToHostLanguage()
+#!define GetTranslatedText() __script__("translation.js")
+GetTranslatedText()
 
 enum STYLE:
     DEFAULT,
