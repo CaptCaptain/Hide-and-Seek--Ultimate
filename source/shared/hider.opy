@@ -330,6 +330,43 @@ rule "Hider Laying Down":
         StartThirdPersonCamera()
     else:
         eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
+
+rule "Hider Attach to Ceiling":
+    @Event eachPlayer
+    @Team 1
+    @Condition WS_SET_ATTACH_CEILING == true
+    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
+    @Condition not eventPlayer.isInSpawnRoom()
+    @Condition eventPlayer.isCommunicatingEmote()
+    @Condition eventPlayer.isHoldingButton(Button.JUMP)
+
+    eventPlayer.CeilingCameraEnabled = true
+
+    if isInLoS(eventPlayer.getPosition(), eventPlayer.getPosition() + (Vector.UP * 30), BarrierLos.PASS_THROUGH_BARRIERS):
+        smallMessage(eventPlayer, STR_CEILING_TOO_HIGH)
+        return
+
+    eventPlayer.CameraState = CAMERA_STATE.CEILING
+    eventPlayer.PreviousPosition = eventPlayer.getPosition()
+    eventPlayer.startForcingPosition(raycast(eventPlayer.getEyePosition(), eventPlayer.getPosition() + (Vector.UP * 30) + vect(0.001, 0, 0), null, eventPlayer, false).getHitPosition() - vect(0, 0.5, 0), false)
+    eventPlayer.setStatusEffect(null, Status.KNOCKED_DOWN, 9999)
+    eventPlayer.disableEnvironmentCollision(true)
+    wait(1)
+    waitUntil(eventPlayer.CameraState == CAMERA_STATE.CEILING and (any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE, Button.PRIMARY_FIRE, Button.SECONDARY_FIRE, Button.ULTIMATE]]) or isInLoS(eventPlayer.getPosition(), eventPlayer.getPosition() + (Vector.UP * 30), BarrierLos.PASS_THROUGH_BARRIERS)), 9999)
+    eventPlayer.clearStatusEffect(Status.KNOCKED_DOWN)
+    eventPlayer.startForcingPosition(eventPlayer.PreviousPosition, false)
+    wait()
+    eventPlayer.stopForcingPosition()
+    if WS_SET_MODE != STYLE.GLITCH: eventPlayer.enableEnvironmentCollision()
+
+    eventPlayer.CeilingCameraEnabled = false
+
+    # Return to previous camera state
+    if eventPlayer.ThirdPersonCameraEnabled == true:
+        eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON
+        StartThirdPersonCamera()
+    else:
+        eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
     
 # Mercy V. Rein Specific Rules
 rule "Refresh Resurrect Cooldown":

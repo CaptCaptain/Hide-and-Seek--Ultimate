@@ -87,6 +87,15 @@ const translations = {
     LAYING_DOWN_STAND: {
         "en-US": 'Stand up'
     },
+    CEILING_ATTACHING: {
+        "en-US": 'Attach to Ceiling'
+    },
+    CEILING_DETACH: {
+        "en-US": 'Detach'
+    },
+    CEILING_TOO_HIGH: {
+        "en-US": 'Ceiling is too high or non-existant'
+    },
     REVEALING_HIDERS: {
         "en-US": 'Revealing the remaining hiders'
     },

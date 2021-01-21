@@ -93,7 +93,7 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "2.1.0"
+globalvar CURRENT_VERSION = "2.2.0"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
@@ -121,6 +121,7 @@ globalvar WS_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAME
 globalvar WS_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Accessibility Settings", "Seeker Assistance", false, 5)
 globalvar WS_SET_LAYING_DOWN = createWorkshopSetting(bool, "Accessibility Settings", "Allow Hiders to Lay Down", false, 5)
 globalvar WS_SET_USE_SLINGSHOT = createWorkshopSetting(bool, "Accessibility Settings", "Allow Slingshot Tool", false, 5)
+globalvar WS_SET_ATTACH_CEILING = createWorkshopSetting(bool, "Accessibility Settings", "Allow Hiders to Attach to Ceiling", false, 5)
 globalvar WS_SET_ADV_DVA_MECH_RAW = createWorkshopSetting(enum["Allow De-mech Only", "Allow Re-mech and De-mech", "Off"], "Accessibility Settings", "D.va Player Accessibility", 1, 2)
 globalvar WS_SET_ADV_DVA_MECH = [ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH, ACCESSIBILITY.DVA_MECH_ALLOW_BOTH, ACCESSIBILITY.DVA_MECH_DISABLED][WS_SET_ADV_DVA_MECH_RAW]
 globalvar WS_SET_ADV_INF_HAMMOND_GRAPPLE = createWorkshopSetting(bool, "Accessibility Settings", "Wrecking Ball Hider Accessibility: Infinite Grapple", false, 2)

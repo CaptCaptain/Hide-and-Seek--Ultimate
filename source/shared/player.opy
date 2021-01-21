@@ -4,7 +4,8 @@ enum CAMERA_STATE:
     FIRST_PERSON,
     LAYING_DOWN,
     THIRD_PERSON,
-    LAST_HIDER
+    LAST_HIDER,
+    CEILING
 
 globalvar globalHudIndex = 0
 playervar playerHudIndex = 0
@@ -27,6 +28,7 @@ playervar ResurrectBlocked
 playervar CameraState = CAMERA_STATE.THIRD_PERSON if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else CAMERA_STATE.FIRST_PERSON
 playervar ThirdPersonCameraEnabled = true if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_ON else false
 playervar LayingDownCameraEnabled = false
+playervar CeilingCameraEnabled = false
 playervar SlingshotPosition
 playervar SlingshotEnabled = false
 playervar SlingshotUsed = false
@@ -122,6 +124,10 @@ rule "Create Player Huds":
     # Laying down Instructions
     if WS_SET_LAYING_DOWN == true and eventPlayer.getTeam() == Team.1:
         hudSubheader(eventPlayer, "[{} + {}]: {} / [{}]: {}".format(STR_LAYING_DOWN_EMOTE, buttonString(Button.CROUCH), STR_LAYING_DOWN_LAYING, buttonString(Button.JUMP), STR_LAYING_DOWN_STAND), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        eventPlayer.Hud_Player.append(getLastCreatedText())
+    # Attach to Ceiling Instructions
+    if WS_SET_ATTACH_CEILING == true and eventPlayer.getTeam() == Team.1:
+        hudSubheader(eventPlayer, "[{} + {}]: {} / [{}]: {}".format(STR_LAYING_DOWN_EMOTE, buttonString(Button.JUMP), STR_CEILING_ATTACHING, buttonString(Button.CROUCH), STR_CEILING_DETACH), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
 
 rule "Global Huds":
@@ -294,6 +300,8 @@ rule "Show Remaining Hiders":
     # Return to previous camera state
     if eventPlayer.LayingDownCameraEnabled == true:
         eventPlayer.CameraState = CAMERA_STATE.LAYING_DOWN
+    elif eventPlayer.CeilingCameraEnabled == true:
+        eventPlayer.CameraState = CAMERA_STATE.CEILING
     elif eventPlayer.ThirdPersonCameraEnabled == true:
         eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON
     else:
@@ -346,9 +354,18 @@ rule "Start Laying Down Camera":
     @Event eachPlayer
     @Condition eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN
 
-    # Smooth transition to third person camera
+    # Smooth transition to camera
     StartCamera()
     eventPlayer.startCamera(raycast(eventPlayer.getEyePosition(), eventPlayer.getPosition() + (Vector.UP * 10) + vect(0.001, 0, 0), null, eventPlayer, false).getHitPosition(), eventPlayer.getPosition(), 10)
+
+rule "Start Ceiling Camera":
+    @Event eachPlayer
+    @Condition eventPlayer.CameraState == CAMERA_STATE.CEILING
+
+    # Smooth transition to camera
+    StartCamera()
+    wait()
+    eventPlayer.startCamera(raycast(eventPlayer.getPosition(), eventPlayer.getPosition() + (Vector.DOWN * 30) + vect(0.001, 0, 0), null, eventPlayer, false).getHitPosition(), eventPlayer.getPosition(), 10)
 
 rule "Stop Camera":
     @Event eachPlayer
