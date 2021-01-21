@@ -26,7 +26,7 @@ const translations = {
         "en-US": "Results"
     },
     GAME_STATE_END: {
-        "en-US": "End Game"
+        "en-US": "Match Complete"
     },
     GAME_TITLE: {
         "en-US": "Hide & Seek"
