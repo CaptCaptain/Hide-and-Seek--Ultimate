@@ -354,10 +354,11 @@ rule "Hider Attach to Ceiling":
     wait(1)
     waitUntil(eventPlayer.CameraState == CAMERA_STATE.CEILING and (any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE, Button.PRIMARY_FIRE, Button.SECONDARY_FIRE, Button.ULTIMATE]]) or isInLoS(eventPlayer.getPosition(), eventPlayer.getPosition() + (Vector.UP * 30), BarrierLos.PASS_THROUGH_BARRIERS)), 9999)
     eventPlayer.clearStatusEffect(Status.KNOCKED_DOWN)
+    eventPlayer.stopForcingPosition()
+    if WS_SET_MODE != STYLE.GLITCH: eventPlayer.enableEnvironmentCollision()
     eventPlayer.startForcingPosition(eventPlayer.PreviousPosition, false)
     wait()
     eventPlayer.stopForcingPosition()
-    if WS_SET_MODE != STYLE.GLITCH: eventPlayer.enableEnvironmentCollision()
 
     eventPlayer.CeilingCameraEnabled = false
 
