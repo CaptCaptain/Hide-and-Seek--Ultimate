@@ -60,11 +60,9 @@ const translations = {
         "en-US": '{} Hide & Seek: Ultimate by CaptCaptain#11421',
         format: 'abilityIconString(random.choice(getAllHeroes()), Button.ULTIMATE)'
     },
-    SLINGSHOT_USAGE_TOGGLE: {
-        "en-US": 'Toggle Slingshot'
-    },
-    SLINGSHOT_USAGE_CONFIRM: {
-        "en-US": 'Confirm'
+    SLINGSHOT_USAGE: {
+        "en-US": '[{}]: Toggle slingshot / [{}]: {Confirm}',
+        format: 'buttonString(Button.INTERACT), buttonString(Button.PRIMARY_FIRE)'
     },
     SLINGSHOT_CANNOT_USE: {
         "en-US": 'CANNOT USE SLINGSHOT WHILE IN LOS OF SEEKERS'
@@ -76,22 +74,16 @@ const translations = {
         "en-US": 'SLINGSHOT CANNOT BE USED WHILE IN THE AIR'
     },
     THIRD_PERSON_CAMERA_USAGE: {
-        "en-US": 'Toggle third person camera'
+        "en-US": '[{}]: Toggle third person camera',
+        format: 'buttonString(Button.RELOAD)'
     },
-    LAYING_DOWN_EMOTE: {
-        "en-US": 'Emote'
+    LAYING_DOWN_USAGE: {
+        "en-US": '[Emote + {}]: Lay down / [{}]: Stand up',
+        format: 'buttonString(Button.CROUCH), buttonString(Button.JUMP)'
     },
-    LAYING_DOWN_LAYING: {
-        "en-US": 'Lay Down'
-    },
-    LAYING_DOWN_STAND: {
-        "en-US": 'Stand up'
-    },
-    CEILING_ATTACHING: {
-        "en-US": 'Attach to Ceiling'
-    },
-    CEILING_DETACH: {
-        "en-US": 'Detach'
+    CEILING_ATTACH_USAGE: {
+        "en-US": '[Emote + {}]: Attach to Ceiling / [{}]: Detach',
+        format: 'buttonString(Button.JUMP), buttonString(Button.CROUCH)'
     },
     CEILING_TOO_HIGH: {
         "en-US": 'Ceiling is too high or non-existant'
@@ -214,6 +206,10 @@ const translations = {
     RULESET_LAYING_DOWN: {
         "en-US": 'ALLOW HIDERS TO LAY DOWN: {}',
         format: 'WS_SET_LAYING_DOWN'
+    },
+    RULESET_CEILING_ATTACH: {
+        "en-US": 'ALLOW HIDERS TO ATTACH TO CEILING: {}',
+        format: 'WS_SET_ATTACH_CEILING'
     },
     RULESET_SHOW_HIDERS: {
         "en-US": 'SHOW REMAINING HIDERS AFTER THE ROUND: {}',

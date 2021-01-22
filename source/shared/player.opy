@@ -115,19 +115,19 @@ rule "Create Player Huds":
 
     # Slingshot Instructions
     if WS_SET_USE_SLINGSHOT == true:
-        hudSubheader(eventPlayer, "[{}]: {} / [{}]: {}".format(buttonString(Button.INTERACT), STR_SLINGSHOT_USAGE_TOGGLE, buttonString(Button.PRIMARY_FIRE), STR_SLINGSHOT_USAGE_CONFIRM), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, STR_SLINGSHOT_USAGE, HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
     # Camera Hud Instructions
     if WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE:
-        hudSubheader(eventPlayer, "[{}]: {}".format(buttonString(Button.RELOAD), STR_THIRD_PERSON_CAMERA_USAGE), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, STR_THIRD_PERSON_CAMERA_USAGE, HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
     # Laying down Instructions
     if WS_SET_LAYING_DOWN == true and eventPlayer.getTeam() == Team.1:
-        hudSubheader(eventPlayer, "[{} + {}]: {} / [{}]: {}".format(STR_LAYING_DOWN_EMOTE, buttonString(Button.CROUCH), STR_LAYING_DOWN_LAYING, buttonString(Button.JUMP), STR_LAYING_DOWN_STAND), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, STR_LAYING_DOWN_USAGE, HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
     # Attach to Ceiling Instructions
     if WS_SET_ATTACH_CEILING == true and eventPlayer.getTeam() == Team.1:
-        hudSubheader(eventPlayer, "[{} + {}]: {} / [{}]: {}".format(STR_LAYING_DOWN_EMOTE, buttonString(Button.JUMP), STR_CEILING_ATTACHING, buttonString(Button.CROUCH), STR_CEILING_DETACH), HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        hudSubheader(eventPlayer, STR_CEILING_ATTACH_USAGE, HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
 
 rule "Global Huds":
@@ -191,6 +191,10 @@ rule "Global Huds":
 
     if WS_SET_LAYING_DOWN:
         hudSubtext(getAllPlayers(), STR_RULESET_LAYING_DOWN, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        Hud_GameInfo.append(getLastCreatedText())
+    
+    if WS_SET_ATTACH_CEILING:
+        hudSubtext(getAllPlayers(), STR_RULESET_CEILING_ATTACH, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SHOW_HIDERS != SHOW_HIDERS.OFF:
