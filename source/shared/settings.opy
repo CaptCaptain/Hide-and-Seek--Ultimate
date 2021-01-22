@@ -142,7 +142,7 @@ rule "____________Shared Rules": @Delimiter
 #!include "player.opy"
 #!include "hider.opy"
 #!include "seeker.opy"
-rule "____________Skirmish Rules": @Delimiter
+rule "____________Skirmish / CTF Rules": @Delimiter
 #!include "../skirmish-ctf/player.opy"
 #!include "../skirmish-ctf/hider.opy"
 #!include "../skirmish-ctf/seeker.opy"

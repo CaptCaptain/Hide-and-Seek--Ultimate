@@ -369,7 +369,7 @@ rule "Start Ceiling Camera":
     # Smooth transition to camera
     StartCamera()
     wait()
-    eventPlayer.startCamera(raycast(eventPlayer.getPosition(), eventPlayer.getPosition() + (Vector.DOWN * 30) + vect(0.001, 0, 0), null, eventPlayer, false).getHitPosition(), eventPlayer.getPosition(), 10)
+    eventPlayer.startCamera(raycast(eventPlayer.getPosition(), worldVector(vect(0, -1, -3), eventPlayer, Transform.ROTATION_AND_TRANSLATION), null, eventPlayer, false).getHitPosition(), eventPlayer.getPosition() + (Vector.DOWN * 1), 10)
 
 rule "Stop Camera":
     @Event eachPlayer
@@ -392,6 +392,7 @@ rule "Toggle Third Person Camera":
 rule "Toggle Slingshot":
     @Event eachPlayer
     @Condition WS_SET_USE_SLINGSHOT == true
+    @Condition all([notDoing for notDoing in [not eventPlayer.isCommunicatingEmote(), not eventPlayer.hasStatusEffect(Status.KNOCKED_DOWN)]])
     @Condition eventPlayer.isHoldingButton(Button.INTERACT)
 
     wait()
