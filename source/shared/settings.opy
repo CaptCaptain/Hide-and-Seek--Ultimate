@@ -137,6 +137,11 @@ globalvar WS_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Set
 globalvar WS_SET_ADV_DEBUGSTATS_RAW = createWorkshopSetting(enum["HOST ONLY", "ALL PLAYERS", "NONE"], "Advanced Settings", "Show Debug Stats", 2, 6)
 globalvar WS_SET_ADV_DEBUGSTATS = [SHOW_DEBUG_STATS.HOST, SHOW_DEBUG_STATS.ALL, SHOW_DEBUG_STATS.NONE][WS_SET_ADV_DEBUGSTATS_RAW]
 
+# Credits
+globalvar WS_CREDIT_3P_CAMERA = createWorkshopSetting(enum["Mitsiee#9370 (Discord)"], "Credits", "Third Person Camera", 0, -1)
+globalvar WS_CREDIT_SUGGESTIONS = createWorkshopSetting(enum["Zesty#8502 (Discord)"], "Credits", "Suggestions", 0, -1)
+globalvar WS_CREDIT_TRANSLATION = false #createWorkshopSetting(enum["N/A"], "Credits", "Translations", 0, -1)
+
 rule "____________Shared Rules": @Delimiter
 #!include "game.opy"
 #!include "player.opy"
