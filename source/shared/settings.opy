@@ -134,7 +134,7 @@ globalvar WS_SET_ADV_WINS = [1, 2, 3][WS_SET_ADV_WINS_RAW]
 globalvar WS_SET_ADV_SCALE = createWorkshopSetting(float[0.1:1], "Advanced Settings", "Player Size Scalar", 1, 0)
 globalvar WS_SET_ADV_SEEK_ALLOWH = createWorkshopSetting(bool, "Advanced Settings", "Allow Restricted Seeker Heroes (Moira, Zenyatta, Sombra)", false, 4)
 globalvar WS_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
-globalvar WS_SET_ADV_DEBUG = createWorkshopSetting(bool, "Advanced Settings", "Debug Mode", false, 6)
+globalvar WS_SET_ADV_DEBUG = false #createWorkshopSetting(bool, "Advanced Settings", "Debug Mode", false, 6)
 
 # Credits
 globalvar WS_CREDIT_3P_CAMERA = createWorkshopSetting(enum["Mitsiee#9370 (Discord)"], "Credits", "Third Person Camera", 0, -1)
