@@ -142,6 +142,7 @@ rule "End Game":
 
     setMatchTime(0)
     unpauseMatchTime()
+    enableGamemodeCompletion()
 
 rule "Skip":
     @Condition getCurrentGamemode() != Gamemode.SKIRMISH
