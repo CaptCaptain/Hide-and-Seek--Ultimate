@@ -223,14 +223,14 @@ const translations = {
         "en-US": 'RESTRICT SEEKER HERO ROSTER: {}',
         format: 'not WS_SET_ADV_SEEK_ALLOWH'
     },
+    RULESET_MATCH_VOICE_ENABLED: {
+        "en-US": 'MATCH VOICE CHAT: ENABLED'
+    },
     RULESET_CHANGE_HOST: {
         "en-US": 'TO CUSTOMIZE RULESET (HOST ONLY):\nGO TO LOBBY > SETTINGS > WORKSHOP SETTINGS'
     },
     RULESET_CHECK_CHANGE: {
         "en-US": 'FOR MORE INFORMATION ON RULESET:\nGO TO LOBBY > RIGHT CLICK MAP PICTURE > SCROLL DOWN TO WORKSHOP\n'
-    },
-    MATCH_VOICE_ENABLED: {
-        "en-US": 'MATCH VOICE CHAT IS ENABLED'
     }
 }
 result = 'globalvar practiceRangeTranslations = ' + '[' + practiceRangeTranslations.join() + ']';

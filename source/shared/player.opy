@@ -133,13 +133,13 @@ rule "Create Player Huds":
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
-    hudSubheader(getAllPlayers(), STR_VERSION, HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_VERSION, HudPosition.RIGHT, -1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), STR_WEBLINK, HudPosition.RIGHT, 0, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_WEBLINK, HudPosition.RIGHT, -2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), STR_GAME_NAME, HudPosition.RIGHT, 0, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubtext(getAllPlayers(), STR_GAME_NAME, HudPosition.RIGHT, -3, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     hudHeader(getAllPlayers(), STR_RULESET_TITLE, HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
@@ -208,18 +208,18 @@ rule "Global Huds":
     if WS_SET_ADV_SEEK_ALLOWH == true:
         hudSubtext(getAllPlayers(), STR_RULESET_RESTRICT_SEEKER_HERO, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
-
-    hudSubheader(getAllPlayers(), STR_RULESET_CHANGE_HOST, HudPosition.LEFT, 6, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    
+    hudSubtext(getAllPlayers(), STR_RULESET_MATCH_VOICE_ENABLED, HudPosition.LEFT, 6, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), STR_MATCH_VOICE_ENABLED, HudPosition.LEFT, 6, Color.YELLOW, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_RULESET_CHANGE_HOST, HudPosition.LEFT, 7, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), STR_RULESET_CHECK_CHANGE, HudPosition.LEFT, 7, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(getAllPlayers(), STR_RULESET_CHECK_CHANGE, HudPosition.LEFT, 8, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_ADV_WINS > 1:
-        hudText(getAllPlayers(), STR_TEAM_SCORE_TITLE, "", STR_TEAM_SCORE, HudPosition.LEFT, 8, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudText(getAllPlayers(), STR_TEAM_SCORE_TITLE, "", STR_TEAM_SCORE, HudPosition.LEFT, 9, Color.TEAM_1, Color.WHITE, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
 rule "Remove Global Huds":
@@ -492,8 +492,8 @@ rule "Symmetra TP Detection: Stop Tracking Previous Position":
     printLog("Symmetra Teleporter Detection Stopped for {}".format(eventPlayer))
 
 rule "Show Debug Stats":
-    @Condition WS_SET_ADV_DEBUGSTATS != SHOW_DEBUG_STATS.NONE
+    @Condition WS_SET_ADV_DEBUG == true
 
-    hudSubtext(hostPlayer if WS_SET_ADV_DEBUGSTATS == SHOW_DEBUG_STATS.HOST else getAllPlayers(), "DEBUG STATS".format(getServerLoad(), getAverageServerLoad(), getPeakServerLoad()), HudPosition.LEFT, -2, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-    hudSubheader(hostPlayer if WS_SET_ADV_DEBUGSTATS == SHOW_DEBUG_STATS.HOST else getAllPlayers(), "SERVER LOAD: {}\nSERVER LOAD AVERAGE: {}\nSERVER LOAD PEAK: {}\n".format(getServerLoad(), getAverageServerLoad(), getPeakServerLoad()), HudPosition.LEFT, -1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
-    hudSubheader(hostPlayer if WS_SET_ADV_DEBUGSTATS == SHOW_DEBUG_STATS.HOST else getAllPlayers(), "CURRENT TIME: {}".format(CurrentTime), HudPosition.LEFT, -1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubtext(hostPlayer, "DEBUG STATS".format(getServerLoad(), getAverageServerLoad(), getPeakServerLoad()), HudPosition.LEFT, -2, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(hostPlayer, "SERVER LOAD: {}\nSERVER LOAD AVERAGE: {}\nSERVER LOAD PEAK: {}\n".format(getServerLoad(), getAverageServerLoad(), getPeakServerLoad()), HudPosition.LEFT, -1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+    hudSubheader(hostPlayer, "CURRENT TIME: {}".format(CurrentTime), HudPosition.LEFT, -1, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
