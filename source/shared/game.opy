@@ -41,7 +41,7 @@ rule "Disable Current Gamemode":
 
 rule "Waiting Phase":
     @Condition CurrentGameState == GAME_STATE.WAITING
-    @Condition len([player for player in getPlayers(Team.1) if player.hasSpawned() and not player.isInSpawnRoom()]) > 0 and len([player for player in getPlayers(Team.2) if player.hasSpawned() and not player.isInSpawnRoom()]) > 0
+    @Condition len([player for player in getPlayers(Team.1) if player.hasSpawned()]) > 0 and len([player for player in getPlayers(Team.2) if player.hasSpawned()]) > 0
 
     printLog("Game Phase: Waiting")
 
@@ -137,6 +137,8 @@ rule "End Game":
     @Condition CurrentGameState == GAME_STATE.END
 
     printLog("Game Phase: End")
+
+    enableAnnouncer()
 
     wait(WS_SET_END)
 
