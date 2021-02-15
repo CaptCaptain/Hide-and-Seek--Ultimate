@@ -142,7 +142,7 @@ rule "End Game":
 
     wait(WS_SET_END)
 
-    setMatchTime(0)
+    restartMatch()
     unpauseMatchTime()
     enableGamemodeCompletion()
 
