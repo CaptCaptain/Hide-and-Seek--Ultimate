@@ -159,10 +159,10 @@ rule "Debug: Spawn Bots":
     @Condition WS_SET_ADV_DEBUG == true
     @Condition hostPlayer.isCommunicating(Comms.READY)    
 
-    while getNumberOfPlayers(Team.1) < 9:
+    while getNumberOfPlayers(Team.1) < getNumberOfSlots(Team.1):
         createDummy(Hero.TRACER, Team.1, -1, nearestWalkablePosition(getSpawnPoints(Team.1)), null)
         wait(0.25)
-    while getNumberOfPlayers(Team.2) < 3:
+    while getNumberOfPlayers(Team.2) < getNumberOfSlots(Team.2):
         createDummy(Hero.TRACER, Team.2, -1, nearestWalkablePosition(getSpawnPoints(Team.2)), null)
         wait(0.25)
     wait(9999)

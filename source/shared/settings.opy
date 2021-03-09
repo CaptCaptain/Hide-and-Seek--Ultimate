@@ -19,8 +19,7 @@ settings {
         },
         "tdm": {
             "enabledMaps": [
-                "castillo", "chateauGuillard", "kanezaka", "ecopointAntarctica", "ecopointAntarcticaWinter",
-                "necropolis", "petra", "blackForest", "blackForestWinter"
+                "chateauGuillard", "kanezaka", "ecopointAntarctica", "ecopointAntarcticaWinter", "petra"
             ]
         },
         "ctf": {
@@ -93,7 +92,7 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "2.2.1"
+globalvar CURRENT_VERSION = "2.3.0"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
@@ -105,7 +104,7 @@ globalvar WS_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Nocli
 globalvar WS_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.TINY, STYLE.MERCY_REIN][WS_SET_MODE_RAW]
 globalvar WS_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
 globalvar WS_SET_REQUIRED_HIDERS = [3, 2, 1][WS_SET_REQUIRED_RATIO]
-globalvar WS_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 1, 1)
+globalvar WS_SET_WAITING_MAXTIME_RAW = createWorkshopSetting(enum["IMMEDIATELY", "Wait For Players (Timeout)", "Wait For Players (No Timeout)"], "Ruleset", "Game Mode Start", 0, 1)
 globalvar WS_SET_WAITING_MAXTIME = [0, 5, 9999][WS_SET_WAITING_MAXTIME_RAW]
 globalvar WS_SET_SLOWHIDER = createWorkshopSetting(bool, "Ruleset", "Slow Hider When In Line Of Sight Of Seeker", true, 4)
 globalvar WS_SET_SEEKER_OUTLINES_RAW = createWorkshopSetting(enum["Default", "Occluded", "Always"], "Ruleset", "Seeker Outlines", 0, 4)
@@ -118,7 +117,7 @@ globalvar WS_SET_END = [25.9, 8, 9999][WS_SET_END_RAW]
 # Accessibility Settings
 globalvar WS_SET_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Accessibility Settings", "Camera Mode", 0, 6)
 globalvar WS_SET_3RD_CAM = [ACCESSIBILITY.3RD_CAMERA_OFF, ACCESSIBILITY.3RD_CAMERA_ON, ACCESSIBILITY.3RD_CAMERA_TOGGLE][WS_SET_3RD_CAM_RAW]
-globalvar WS_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Accessibility Settings", "Seeker Assistance", false, 5)
+globalvar WS_SET_SEEKER_ASSIST = createWorkshopSetting(bool, "Accessibility Settings", "Seeker Assistance", true, 5)
 globalvar WS_SET_LAYING_DOWN = createWorkshopSetting(bool, "Accessibility Settings", "Allow Hiders to Lay Down", false, 5)
 globalvar WS_SET_USE_SLINGSHOT = createWorkshopSetting(bool, "Accessibility Settings", "Allow Slingshot Tool", false, 5)
 globalvar WS_SET_ATTACH_CEILING = createWorkshopSetting(bool, "Accessibility Settings", "Allow Hiders to Attach to Ceiling", false, 5)
@@ -133,8 +132,8 @@ globalvar WS_SET_ADV_WINS_RAW = createWorkshopSetting(enum["1 win", "2 wins", "3
 globalvar WS_SET_ADV_WINS = [1, 2, 3][WS_SET_ADV_WINS_RAW]
 globalvar WS_SET_ADV_SCALE = createWorkshopSetting(float[0.1:1], "Advanced Settings", "Player Size Scalar", 1, 0)
 globalvar WS_SET_ADV_SEEK_ALLOWH = createWorkshopSetting(bool, "Advanced Settings", "Allow Restricted Seeker Heroes (Moira, Zenyatta, Sombra)", false, 4)
-globalvar WS_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1, 1)
-globalvar WS_SET_ADV_DEBUG = false #createWorkshopSetting(bool, "Advanced Settings", "Debug Mode", false, 6)
+globalvar WS_SET_ADV_BASESPEED = createWorkshopSetting(float[1:5], "Advanced Settings", "Player Speed Scalar", 1.5, 1)
+globalvar WS_SET_ADV_DEBUG = createWorkshopSetting(bool, "Advanced Settings", "Debug Mode", false, 6)
 
 # Credits
 globalvar WS_CREDIT_3P_CAMERA = createWorkshopSetting(enum["Mitsiee#9370 (Discord)"], "Credits", "Third Person Camera", 0, -1)
