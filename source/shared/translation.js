@@ -98,6 +98,14 @@ const translations = {
         "en-US": '{0} THERE ARE HIDERS IN THIS AREA {0}',
         format: 'iconString(Icon.WARNING)'
     },
+    SEEKER_ASSISTANCE_USAGE: {
+        "en-US": '[{}]: Activate Hider Detection Pulse (4s CD)',
+        format: 'buttonString(Button.CROUCH)'
+    },
+    SEEKER_ASSISTANCE_NONE: {
+        "en-US": '{0} THERE ARE NO HIDERS IN THIS AREA {0}',
+        format: 'iconString(Icon.NO)'
+    },
     BE_CAREFUL: {
         "en-US": 'BE CAREFUL!'
     },

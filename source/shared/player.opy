@@ -129,7 +129,11 @@ rule "Create Player Huds":
     if WS_SET_ATTACH_CEILING == true and eventPlayer.getTeam() == Team.1:
         hudSubheader(eventPlayer, STR_CEILING_ATTACH_USAGE, HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
-
+    # Seeker Assistance Instructions
+    if WS_SET_SEEKER_ASSIST == ACCESSIBILITY.SEEKER_ASSIST_ON and eventPlayer.getTeam() == Team.2:
+        hudSubheader(eventPlayer, STR_SEEKER_ASSISTANCE_USAGE, HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        eventPlayer.Hud_Player.append(getLastCreatedText())
+        
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
 
@@ -295,9 +299,7 @@ rule "Show Remaining Hiders":
     eventPlayer.startCamera(evalOnce(eventPlayer.getPosition() + (Vector.UP * 100) + Vector.BACKWARD), evalOnce(eventPlayer.getPosition()), 5)
     wait(1)
     for eventPlayer.playerIndex in range(0, len(getLivingPlayers(Team.1))):
-        eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition(), getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition() + (Vector.UP * 5) + vect(0.001, 0, 0), null, getLivingPlayers(Team.1)[eventPlayer.playerIndex], false).getHitPosition(), getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition(), 10)
-        wait(2)
-        eventPlayer.startCamera(evalOnce(getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition() + (Vector.UP * 100) + Vector.BACKWARD), evalOnce(getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition()), 5)
+        eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition(), getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition() + (Vector.UP * 5) + vect(0.001, 0, 0), null, getLivingPlayers(Team.1)[eventPlayer.playerIndex], false).getHitPosition(), getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition(), 50)
         wait(1)
     eventPlayer.enableHeroHud()
 

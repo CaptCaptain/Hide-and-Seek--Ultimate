@@ -2,6 +2,8 @@
 
 playervar Hud_Seeker_Name
 playervar Hud_Seeker_Assistance
+playervar SphereDetectionRadius = 0
+playervar SpherePosition
 
 rule "Seeker Setup":
     @Event eachPlayer
@@ -57,15 +59,35 @@ rule "Seeker Assistance":
     @Team 2
     @Condition WS_SET_SEEKER_ASSIST == true
     @Condition eventPlayer.hasSpawned()
-    @Condition len([player for player in getPlayersInRadius(eventPlayer, 30, Team.1, LosCheck.OFF) if player.isAlive()]) > 0
+    @Condition eventPlayer.isCrouching()
 
-    # Create hud text
-    hudSubtext(eventPlayer, STR_SEEKER_ASSISTANCE, HudPosition.TOP, 2, Color.ROSE, HudReeval.VISIBILITY_SORT_ORDER_STRING_AND_COLOR)
-    eventPlayer.Hud_Seeker_Assistance = getLastCreatedText()
+    eventPlayer.SpherePosition = eventPlayer.getPosition()
 
-    # Wait until there are no hiders in range
-    waitUntil(len([player for player in getPlayersInRadius(eventPlayer, 30, Team.1, LosCheck.OFF) if player.isAlive()]) == 0, 9999)
+    createEffect(eventPlayer, Effect.SPHERE, Color.TEAM_2, eventPlayer.SpherePosition, eventPlayer.SphereDetectionRadius, EffectReeval.VISIBILITY_POSITION_AND_RADIUS)
+    eventPlayer.Hud_Seeker_Assistance = getLastCreatedEntity()
 
-    # Remove hud text
-    destroyHudText(eventPlayer.Hud_Seeker_Assistance)
+    # Play effect
+    playEffect(eventPlayer, DynamicEffect.RING_EXPLOSION_SOUND, Color.TEAM_2, eventPlayer, 100)
+
+    chase(eventPlayer.SphereDetectionRadius, 40, duration=0.5, ChaseReeval.DESTINATION_AND_DURATION)
+
+    wait(0.5)
+
+    chase(eventPlayer.SphereDetectionRadius, 0, duration=0.5, ChaseReeval.DESTINATION_AND_DURATION)
+
+    wait(0.5)
+
+    if len([player for player in getPlayersInRadius(eventPlayer.SpherePosition, 40, Team.1, LosCheck.OFF) if player.isAlive()]) > 0:
+        smallMessage(eventPlayer, STR_SEEKER_ASSISTANCE)
+        playEffect(eventPlayer, DynamicEffect.BUFF_IMPACT_SOUND, Color.TEAM_2, eventPlayer, 100)
+    else:
+        smallMessage(eventPlayer, STR_SEEKER_ASSISTANCE_NONE)
+        playEffect(eventPlayer, DynamicEffect.DEBUFF_IMPACT_SOUND, Color.TEAM_2, eventPlayer, 100)
+    
+    stopChasingVariable(eventPlayer.SphereDetectionRadius)
+    eventPlayer.SphereDetectionRadius = 0
+    
+    destroyEffect(eventPlayer.Hud_Seeker_Assistance)
     eventPlayer.Hud_Seeker_Assistance = null
+    
+    wait(4)
