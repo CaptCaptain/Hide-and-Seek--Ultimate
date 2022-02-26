@@ -160,7 +160,7 @@ rule "Debug: Spawn Bots":
     @Condition hostPlayer.isCommunicating(Comms.READY)    
 
     while getNumberOfPlayers(Team.1) < getNumberOfSlots(Team.1):
-        createDummy(Hero.TRACER, Team.1, -1, nearestWalkablePosition(getSpawnPoints(Team.1)), null)
+        createDummy(Hero.TRACER, Team.1, -1, nearestWalkablePosition(null), null)
         wait(0.25)
     while getNumberOfPlayers(Team.2) < getNumberOfSlots(Team.2):
         createDummy(Hero.TRACER, Team.2, -1, nearestWalkablePosition(getSpawnPoints(Team.2)), null)
