@@ -33,19 +33,18 @@ rule "Player Setup":
         eventPlayer.disableGamemodeInWorldUi()
         return
     if CurrentGameState == GAME_STATE.WAITING:
-        eventPlayer.teleport(nearestWalkablePosition(getObjectivePosition(getCurrentObjective()) + vect(random.randint(-10, 10), 0, random.randint(-10, 10))))
-        wait()
-        eventPlayer.setFacing(directionTowards(eventPlayer.getEyePosition(), getObjectivePosition(getCurrentObjective())) + vect(0, 0.5, 0), Relativity.TO_WORLD)
+        eventPlayer.teleport(getObjectivePosition(getCurrentObjective()))
 
 rule "Disable Abilities In Spawn":
     @Event eachPlayer
     @Condition getCurrentGamemode() == Gamemode.SKIRMISH or getCurrentGamemode() == Gamemode.CTF
     @Condition eventPlayer.isInSpawnRoom()
 
-    eventPlayer.setAbility1Enabled(false)
-    eventPlayer.setAbility2Enabled(false)
-    eventPlayer.setSecondaryFireEnabled(false)
-    eventPlayer.cancelPrimaryAction()
+    if eventPlayer.getTeam() == Team.1:
+        RestrictAbilitiesInSpawn()
+        eventPlayer.cancelPrimaryAction()
+    if eventPlayer.getTeam() == Team.2:
+        RestrictAbilities()
 
     waitUntil(not eventPlayer.isInSpawnRoom(), 9999)
 

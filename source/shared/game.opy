@@ -16,6 +16,8 @@ globalvar LastHiderHud
 playervar ShowHiders = false
 playervar JoinedLate
 
+#!define TimeAdded round(30 / getNumberOfLivingPlayers(Team.1))
+
 #!define HidersExist (len([player for player in getPlayers(Team.1) if player.hasSpawned() and player.isAlive() and not player.isInSpawnRoom() and not player.JoinedLate]) > 0)
 
 subroutine PLAYSOUND_DEBUFF
@@ -105,7 +107,7 @@ rule "Results":
     
     # Show hiders if workshop setting is enabled
     if (WS_SET_SHOW_HIDERS == SHOW_HIDERS.ALL_HIDERS and len(getLivingPlayers(Team.1)) >= 1) or (WS_SET_SHOW_HIDERS == SHOW_HIDERS.LAST_HIDER and len(getLivingPlayers(Team.1)) == 1):
-        smallMessage(getAllPlayers(), STR_REVEALING_HIDERS)
+        smallMessage(getAllPlayers(), fixedString(STR_REVEALING_HIDERS))
         getPlayers(Team.ALL).ShowHiders = true
         waitUntil(all([player.ShowHiders == false for player in getAllPlayers()]), 9999)
     
@@ -142,9 +144,19 @@ rule "End Game":
 
     wait(WS_SET_END)
 
-    restartMatch()
+    setMatchTime(0)
     unpauseMatchTime()
     enableGamemodeCompletion()
+
+    restartMatch()
+
+rule "Add Time When Seeker Scores a Kill":
+    @Event playerDealtFinalBlow
+    @Team 2
+    @Condition CurrentGameState == GAME_STATE.SEEKING
+
+    CurrentTime += TimeAdded
+    smallMessage(getAllPlayers(), fixedString("+{}s {}".format(TimeAdded, STR_SEEKER_TIME_GAINED)))
 
 rule "Skip":
     @Condition getCurrentGamemode() != Gamemode.SKIRMISH
@@ -156,9 +168,7 @@ rule "Skip":
         wait(1)
 
 rule "Debug: Spawn Bots":
-    @Condition WS_SET_ADV_DEBUG == true
-    @Condition hostPlayer.isCommunicating(Comms.READY)    
-
+    @Disabled
     while getNumberOfPlayers(Team.1) < getNumberOfSlots(Team.1):
         createDummy(Hero.TRACER, Team.1, -1, nearestWalkablePosition(null), null)
         wait(0.25)

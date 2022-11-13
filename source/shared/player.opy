@@ -5,11 +5,16 @@ enum CAMERA_STATE:
     LAYING_DOWN,
     THIRD_PERSON,
     LAST_HIDER,
-    CEILING
+    CEILING,
+    SPECTATE
 
 globalvar globalHudIndex = 0
 playervar playerHudIndex = 0
 playervar playerIndex = 0
+
+globalvar selectedTip = [[],[]]
+globalvar usedHiderTips = []
+globalvar usedSeekerTips = []
 
 globalvar Hud_GameInfo
 globalvar Hud_GameTitle
@@ -34,6 +39,11 @@ playervar SlingshotEnabled = false
 playervar SlingshotUsed = false
 playervar Hud_Slingshot = []
 playervar PreviousPosition
+playervar SpectatePlayerSlot
+playervar SpectateCameraEnabled = false
+
+#!define GetSpectateablePlayers [player for player in getAllPlayers() if player.hasSpawned()].exclude(eventPlayer)
+#!define SpectatePlayer GetSpectateablePlayers[eventPlayer.SpectatePlayerSlot]
 
 #!define GetSlingshotPosition() updateEveryTick(raycast(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + Vector.UP, raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 15), null, eventPlayer, false).getHitPosition() + (Vector.DOWN * 100), null, eventPlayer, false).getHitPosition())
 
@@ -47,11 +57,13 @@ subroutine StartThirdPersonCamera
 subroutine StartCamera
 subroutine SlingshotCooldown
 subroutine RestrictAbilities
+subroutine RestrictAbilitiesInSpawn
+subroutine StartSpectateCamera
 
 def SlingshotCooldown():
     eventPlayer.SlingshotUsed = true
-    waitUntil(eventPlayer.isOnGround(), 9999)
-    wait(8 if CurrentGameState == GAME_STATE.SEEKING else 0)
+    waitUntil(eventPlayer.isOnGround() or eventPlayer.getTeam() == Team.2, 9999)
+    wait(8 if CurrentGameState == GAME_STATE.SEEKING and eventPlayer.getTeam() == Team.1 else 1)
     eventPlayer.SlingshotUsed = false
 
 def StartCamera():
@@ -60,6 +72,9 @@ def StartCamera():
 
 def StartThirdPersonCamera():
     eventPlayer.startCamera(updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + worldVector(vect(1 * -1, 0, 0), eventPlayer, Transform.ROTATION) + eventPlayer.getFacingDirection() * -2.5, getAllPlayers(), eventPlayer, false).getHitPosition()), updateEveryTick(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + eventPlayer.getFacingDirection() * 200, getAllPlayers(), eventPlayer, false).getHitPosition()), 60)
+
+def StartSpectateCamera():
+    eventPlayer.startCamera(updateEveryTick(raycast(SpectatePlayer.getEyePosition(), SpectatePlayer.getEyePosition() + worldVector(vect(1 * -1, 0, 0), SpectatePlayer, Transform.ROTATION) + SpectatePlayer.getFacingDirection() * -2.5, getAllPlayers(), SpectatePlayer, false).getHitPosition()), updateEveryTick(raycast(SpectatePlayer.getEyePosition(), SpectatePlayer.getEyePosition() + SpectatePlayer.getFacingDirection() * 200, getAllPlayers(), SpectatePlayer, false).getHitPosition()), 60)
 
 def RestrictAbilities():
     eventPlayer.setAbility1Enabled(true)
@@ -78,9 +93,6 @@ def RestrictAbilities():
             break
         case Team.2:
             switch eventPlayer.getCurrentHero():
-                case Hero.ORISA:
-                    eventPlayer.setSecondaryFireEnabled(false)
-                    break
                 case Hero.HANZO:
                     eventPlayer.setAbility1Enabled(false)
                     break
@@ -94,6 +106,32 @@ def RestrictAbilities():
                     eventPlayer.setAbility2Enabled(false)
                     break
                 case Hero.JUNKRAT:
+                    eventPlayer.setAbility2Enabled(false)
+                    break
+                case Hero.MOIRA:
+                    eventPlayer.setAbility2Enabled(false)
+                    break
+                case Hero.SOMBRA:
+                    eventPlayer.setSecondaryFireEnabled(false)
+                    break
+                case Hero.ZENYATTA:
+                    eventPlayer.setAbility2Enabled(false)
+                    break
+                case Hero.JUNKER_QUEEN:
+                    eventPlayer.setSecondaryFireEnabled(false)
+                    break
+            break
+    skip_evaluation:
+
+def RestrictAbilitiesInSpawn():
+    eventPlayer.setAbility1Enabled(true)
+    eventPlayer.setAbility2Enabled(true)
+    eventPlayer.setSecondaryFireEnabled(true)
+    if WS_SET_MODE == STYLE.MERCY_REIN: goto skip_evaluation
+    switch eventPlayer.getTeam():
+        case Team.1:
+            switch eventPlayer.getCurrentHero():
+                case Hero.MEI:
                     eventPlayer.setAbility2Enabled(false)
                     break
             break
@@ -133,6 +171,10 @@ rule "Create Player Huds":
     if WS_SET_SEEKER_ASSIST == ACCESSIBILITY.SEEKER_ASSIST_ON and eventPlayer.getTeam() == Team.2:
         hudSubheader(eventPlayer, STR_SEEKER_ASSISTANCE_USAGE, HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
         eventPlayer.Hud_Player.append(getLastCreatedText())
+    # Spectate Camera
+    if eventPlayer.getTeam() == Team.1:
+        hudSubheader(eventPlayer, STR_SPECTATE_CAMERA_USAGE, HudPosition.TOP, 0, Color.WHITE, HudReeval.VISIBILITY_AND_STRING, SpecVisibility.DEFAULT)
+        eventPlayer.Hud_Player.append(getLastCreatedText())
         
 rule "Global Huds":
     @Condition CurrentGameState == GAME_STATE.HIDING
@@ -146,80 +188,80 @@ rule "Global Huds":
     hudSubtext(getAllPlayers(), STR_GAME_NAME, HudPosition.RIGHT, -3, Color.SKY_BLUE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudHeader(getAllPlayers(), STR_RULESET_TITLE, HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudHeader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_TITLE, HudPosition.LEFT, 1, Color.ROSE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), STR_RULESET_STYLE, HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_STYLE, HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), STR_RULESET_MAP, HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_MAP, HudPosition.LEFT, 2, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), STR_RULESET_FIRST_WINS, HudPosition.LEFT, 3, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_FIRST_WINS, HudPosition.LEFT, 3, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), STR_RULESET_SEEK_TIME, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_SEEK_TIME, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), STR_RULESET_HIDING_TIME, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_HIDING_TIME, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), STR_RULESET_PLAYER_SIZE, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_PLAYER_SIZE, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubtext(getAllPlayers(), STR_RULESET_PLAYER_SPEED, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_PLAYER_SPEED, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SEEKER_OUTLINES != ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT:
-        hudSubtext(getAllPlayers(), STR_RULESET_SEEKER_OUTLINES, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_SEEKER_OUTLINES, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
         
-    hudSubtext(getAllPlayers(), STR_RULESET_HIDER_OUTLINES, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_HIDER_OUTLINES, HudPosition.LEFT, 4, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SEEKER_ASSIST:
-        hudSubtext(getAllPlayers(), STR_RULESET_SEEKER_ASSIST, HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_SEEKER_ASSIST, HudPosition.LEFT, 4.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_ADV_TANKSCALING != ACCESSIBILITY.TANKS_NOSCALE:
-        hudSubtext(getAllPlayers(), STR_RULESET_TANK_SCALING, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_TANK_SCALING, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_USE_SLINGSHOT:
-        hudSubtext(getAllPlayers(), STR_RULESET_SLINGSHOT, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_SLINGSHOT, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_SLOWHIDER == true:
-        hudSubtext(getAllPlayers(), STR_RULESET_SLOW_HIDERS, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_SLOW_HIDERS, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_LAYING_DOWN:
-        hudSubtext(getAllPlayers(), STR_RULESET_LAYING_DOWN, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_LAYING_DOWN, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_ATTACH_CEILING:
-        hudSubtext(getAllPlayers(), STR_RULESET_CEILING_ATTACH, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_CEILING_ATTACH, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_SHOW_HIDERS != SHOW_HIDERS.OFF:
-        hudSubtext(getAllPlayers(), STR_RULESET_SHOW_HIDERS, HudPosition.LEFT, 5.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_SHOW_HIDERS, HudPosition.LEFT, 5.1, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_ADV_INF_HAMMOND_GRAPPLE == true:
-        hudSubtext(getAllPlayers(), STR_RULESET_WB_INF_GRAPPLE, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_WB_INF_GRAPPLE, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
     if WS_SET_ADV_SEEK_ALLOWH == true:
-        hudSubtext(getAllPlayers(), STR_RULESET_RESTRICT_SEEKER_HERO, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+        hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_RESTRICT_SEEKER_HERO, HudPosition.LEFT, 5, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
         Hud_GameInfo.append(getLastCreatedText())
     
-    hudSubtext(getAllPlayers(), STR_RULESET_MATCH_VOICE_ENABLED, HudPosition.LEFT, 6, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_MATCH_VOICE_ENABLED, HudPosition.LEFT, 6, Color.WHITE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), STR_RULESET_CHANGE_HOST, HudPosition.LEFT, 7, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_CHANGE_HOST, HudPosition.LEFT, 7, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
-    hudSubheader(getAllPlayers(), STR_RULESET_CHECK_CHANGE, HudPosition.LEFT, 8, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
+    hudSubheader(localPlayer if localPlayer.isInSpawnRoom() else null, STR_RULESET_CHECK_CHANGE, HudPosition.LEFT, 8, Color.TURQUOISE, HudReeval.VISIBILITY_AND_SORT_ORDER, SpecVisibility.DEFAULT)
     Hud_GameInfo.append(getLastCreatedText())
 
     if WS_SET_ADV_WINS > 1:
@@ -244,6 +286,15 @@ rule "Player Setup":
     # Glitch Mode
     if WS_SET_MODE == STYLE.GLITCH:
         eventPlayer.disableEnvironmentCollision(false)
+
+    waitUntil(eventPlayer.hasSpawned() and eventPlayer.isAlive(), 9999)
+
+    if eventPlayer.JoinedLate:
+        return
+
+    wait(1)
+
+    smallMessage(eventPlayer, fixedString(STR_TIP_CONTROLS))
 
 rule "Player Scaling":
     @Event eachPlayer
@@ -272,16 +323,19 @@ rule "Resurrect":
 
     # If the player dies to the environment or self-destructs.
     eventPlayer.resurrect()
+    eventPlayer.stopForcingPosition()
     eventPlayer.teleport(eventPlayer.LastWalkablePosition if eventPlayer.LastWalkablePosition != null else nearestWalkablePosition(eventPlayer.getPosition()))
+    if nearestWalkablePosition(eventPlayer.getPosition()) == null and eventPlayer.LastWalkablePosition == null:
+        eventPlayer.respawn()
     eventPlayer.setStatusEffect(null, Status.ROOTED, 1)
     if attacker() == victim(): eventPlayer.setStatusEffect(null, Status.INVINCIBLE, 1)
-    smallMessage(eventPlayer, STR_BE_CAREFUL)
+    smallMessage(eventPlayer, fixedString(STR_BE_CAREFUL))
 
 rule "Set Last Walkable Position":
     @Event eachPlayer
     @Condition eventPlayer.isMoving() and eventPlayer.isOnGround()
 
-    eventPlayer.LastWalkablePosition = nearestWalkablePosition(eventPlayer.getPosition())
+    eventPlayer.LastWalkablePosition = nearestWalkablePosition(eventPlayer.getPosition()) if nearestWalkablePosition(eventPlayer.getPosition()) != null else eventPlayer.getPosition()
 
     waitUntil(eventPlayer.isOnGround(), 9999)
 
@@ -300,7 +354,7 @@ rule "Show Remaining Hiders":
     wait(1)
     for eventPlayer.playerIndex in range(0, len(getLivingPlayers(Team.1))):
         eventPlayer.startCamera(raycast(getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition(), getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition() + (Vector.UP * 5) + vect(0.001, 0, 0), null, getLivingPlayers(Team.1)[eventPlayer.playerIndex], false).getHitPosition(), getLivingPlayers(Team.1)[eventPlayer.playerIndex].getPosition(), 50)
-        wait(1)
+        wait(2.5)
     eventPlayer.enableHeroHud()
 
     # Return to previous camera state
@@ -333,6 +387,7 @@ rule "D.va: Enable De-mech":
     @Event eachPlayer
     @Hero dva
     @Condition eventPlayer.hasSpawned()
+    @Condition eventPlayer.isInSpawnRoom()
     @Condition eventPlayer.isHoldingButton(Button.ULTIMATE)
 
     if not eventPlayer.isInAlternateForm() and (WS_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_DEMECH or WS_SET_ADV_DVA_MECH == ACCESSIBILITY.DVA_MECH_ALLOW_BOTH):
@@ -382,6 +437,12 @@ rule "Stop Camera":
     wait(0.08)
     eventPlayer.stopCamera()
 
+rule "Start Spectate Camera":
+    @Event eachPlayer
+    @Condition eventPlayer.CameraState == CAMERA_STATE.SPECTATE
+
+    StartSpectateCamera()
+
 rule "Toggle Third Person Camera":
     @Event eachPlayer
     @Condition WS_SET_3RD_CAM == ACCESSIBILITY.3RD_CAMERA_TOGGLE
@@ -397,10 +458,8 @@ rule "Toggle Slingshot":
     @Condition all([notDoing for notDoing in [not eventPlayer.isCommunicatingEmote(), not eventPlayer.hasStatusEffect(Status.KNOCKED_DOWN)]])
     @Condition eventPlayer.isHoldingButton(Button.INTERACT)
 
-    wait()
-
     if WS_SET_SLOWHIDER and any([isInLoS(eventPlayer, player, BarrierLos.PASS_THROUGH_BARRIERS) for player in getPlayers(Team.2)]) and eventPlayer.getTeam() == Team.1:
-        smallMessage(eventPlayer, STR_SLINGSHOT_CANNOT_USE)
+        smallMessage(eventPlayer, fixedString(STR_SLINGSHOT_CANNOT_USE))
         return
     # Using interact with abilities take priority over slingshot toggle
     elif any([interactButtonOccupied == true for interactButtonOccupied in [eventPlayer.getCurrentHero() == Hero.SOMBRA and eventPlayer.isUsingAbility2(), eventPlayer.getCurrentHero() == Hero.TORBJORN and eventPlayer.isUsingAbility1(), distance(eventPlayer.getPosition(), eventPlayer.PreviousPosition) > 1 and any([player.isUsingAbility2() for player in getPlayersOnHero(Hero.SYMMETRA, eventPlayer.getTeam())])]]):
@@ -410,7 +469,7 @@ rule "Toggle Slingshot":
 
 rule "Disable Slingshot":
     @Event eachPlayer
-    @Condition eventPlayer.isCommunicatingEmote()
+    @Condition eventPlayer.isCommunicatingEmote() or eventPlayer.hasStatusEffect(Status.KNOCKED_DOWN)
 
     eventPlayer.SlingshotEnabled = false
 
@@ -452,10 +511,7 @@ rule "Confirm Slingshot":
     if eventPlayer.hasStatusEffect(Status.ROOTED): return
 
     if eventPlayer.SlingshotUsed:
-        smallMessage(eventPlayer, STR_SLINGSHOT_ON_COOLDOWN)
-        return
-    elif eventPlayer.isInAir():
-        smallMessage(eventPlayer, STR_SLINGSHOT_CANT_IN_AIR)
+        smallMessage(eventPlayer, fixedString(STR_SLINGSHOT_ON_COOLDOWN))
         return
 
     playEffect(getPlayers(getOppositeTeam(eventPlayer.getTeam())), DynamicEffect.BUFF_EXPLOSION_SOUND, Color.WHITE, eventPlayer, 30)

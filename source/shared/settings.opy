@@ -1,5 +1,6 @@
 settings {
     "main": {
+        #<FGB1B2FFFF>, <FGAAC4FFFF>, D0XT4
         "modeName": "Hide & Seek: Ultimate",
         "description": 'The classic Hide & Seek game has returned as a new and improved workshop gamemode! A new additional level of customization is offered to hosts through Workshop Settings; make everyone small, change the time for each phase, or even how the game plays with different game styles\n[Created by CaptCaptain#11421] [For the latest code, visit: https://workshop.codes/hide-and-seek-ult]'
     },
@@ -9,23 +10,24 @@ settings {
         "mapRotation": "afterGame",
         "returnToLobby": "never",
         "teamBalancing": "afterGame",
-        "team1Slots": 9,
-        "team2Slots": 3
+        "team1Slots": 8,
+        "team2Slots": 4,
+        "allowPlayersInQueue": true,
     },
     "gamemodes": {
         "skirmish": {
             "disabledMaps": [
-                "workshopIsland", "workshopIslandNight", "workshopChamber", "workshopGreenScreen", "workshopExpanse", "workshopExpanseNight"
+                "workshopIsland", "workshopChamber", "workshopGreenScreen", "workshopExpanse", "workshopIslandNight", "workshopExpanseNight"
             ]
         },
         "tdm": {
-            "enabledMaps": [
-                "chateauGuillard", "kanezaka", "petra"
+            "disabledMaps": [
+                "workshopIsland", "workshopChamber", "workshopGreenScreen", "workshopExpanse", "workshopIslandNight", "workshopExpanseNight"
             ]
         },
         "ctf": {
-            "enabledMaps": [
-                "ayutthaya", "busanDowntownLny", "busanSanctuaryLny"
+            "disabledMaps": [
+                "workshopIsland", "workshopChamber", "workshopGreenScreen", "workshopExpanse", "workshopIslandNight", "workshopExpanseNight"
             ]
         },
         "general": {
@@ -41,7 +43,7 @@ settings {
             "general": {
                 "enableUlt": false,
                 "combatUltGen%": 0,
-                "passiveUltGen%": 0
+                "passiveUltGen%": 0,
             },
             "dva": {
                 "enableSpawningWithUlt": true
@@ -54,6 +56,8 @@ settings {
         }
     }
 }
+
+#!define fixedString(str) "{0}{1}".format("    ", str)
 
 # Translations
 #!define GetTranslatedText() __script__("translation.js")
@@ -93,14 +97,14 @@ enum SHOW_DEBUG_STATS:
     HOST,
     NONE
 
-globalvar CURRENT_VERSION = "2.3.0"
+globalvar CURRENT_VERSION = "2.4.0"
 
 # Default settings
 globalvar WS_SET_USEOUTLINE = createWorkshopSetting(bool, "Ruleset", "Hider Outlines", false, 4)
 globalvar WS_SET_HIDETIME_RAW = createWorkshopSetting(enum["1:30", "1:00", "0:45"], "Ruleset", "Time Limit: Hiding", 2, 2)
 globalvar WS_SET_HIDETIME = [90, 60, 45][WS_SET_HIDETIME_RAW]
-globalvar WS_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30", "4:00", "3:30", "3:00", "2:30", "2:00", "1:00"], "Ruleset", "Time Limit: Seeking", 3, 2)
-globalvar WS_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 120, 60][WS_SET_SEEKTIME_RAW]
+globalvar WS_SET_SEEKTIME_RAW = createWorkshopSetting(enum["5:00", "4:30", "4:00", "3:30", "3:00", "2:30", "2:00", "1:30", "1:00"], "Ruleset", "Time Limit: Seeking", 5, 2)
+globalvar WS_SET_SEEKTIME = [300, 270, 240, 210, 180, 150, 120, 90, 60][WS_SET_SEEKTIME_RAW]
 globalvar WS_SET_MODE_RAW = createWorkshopSetting(enum["Default", "Glitch (Noclip)", "TINY", "Mercy V. Reinhardt"], "Ruleset", "Style", 0, 0)
 globalvar WS_SET_MODE = [STYLE.DEFAULT, STYLE.GLITCH, STYLE.TINY, STYLE.MERCY_REIN][WS_SET_MODE_RAW]
 globalvar WS_SET_REQUIRED_RATIO = createWorkshopSetting(enum["1:3", "1:2", "1:1"], "Ruleset", "Required Seeker to Hider Ratio", 0, 3)
@@ -113,7 +117,7 @@ globalvar WS_SET_SEEKER_OUTLINES = [ACCESSIBILITY.SEEKER_OUTLINES_DEFAULT, ACCES
 globalvar WS_SET_SHOW_HIDERS_RAW = createWorkshopSetting(enum["Last Hider Only", "On", "Off"], "Ruleset", "Show Remaining Hiders When Round Ends", 1, 5)
 globalvar WS_SET_SHOW_HIDERS = [SHOW_HIDERS.LAST_HIDER, SHOW_HIDERS.ALL_HIDERS, SHOW_HIDERS.OFF][WS_SET_SHOW_HIDERS_RAW]
 globalvar WS_SET_END_RAW = createWorkshopSetting(enum["SKIP END GAME SCREEN", "SKIP POTG", "DO NOTHING"], "Ruleset", "WHEN MATCH IS COMPLETE", 1, 7)
-globalvar WS_SET_END = [25.9, 8, 9999][WS_SET_END_RAW]
+globalvar WS_SET_END = [25.9, 7.9, 9999][WS_SET_END_RAW]
 
 # Accessibility Settings
 globalvar WS_SET_3RD_CAM_RAW = createWorkshopSetting(enum["First Person", "Third Person", "Toggle"], "Accessibility Settings", "Camera Mode", 0, 6)

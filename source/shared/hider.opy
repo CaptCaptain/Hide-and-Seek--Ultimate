@@ -134,7 +134,10 @@ rule "Refresh Ability 2 for Hiders":
     @Condition eventPlayer.isOnGround()
     @Condition not eventPlayer.isUsingAbility2()
 
-    refreshAbility(Button.ABILITY_2)
+    if eventPlayer.getCurrentHero() == Hero.MEI and eventPlayer.getAbilityCooldown(Button.ABILITY_2) > 0:
+        eventPlayer.setAbilityCooldown(Button.ABILITY_2, 1)
+    else:
+        refreshAbility(Button.ABILITY_2)
 
 rule "Refresh Secondary Fire for Hiders":
     @Event eachPlayer
@@ -225,7 +228,8 @@ rule "Kill Hiders Who Joined Late":
     @Team 1
     @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.JoinedLate == true
-    @Condition eventPlayer.hasSpawned()
+    
+    eventPlayer.startForcingHero(random.choice(getAllHeroes()))
 
     eventPlayer.disableHeroHUD()
 
@@ -236,20 +240,21 @@ rule "Kill Hiders Who Joined Late":
     createInWorldText(eventPlayer, STR_JOINED_LATE_2, updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.1, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
     eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
 
-    createInWorldText(eventPlayer, STR_JOINED_LATE_3, updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.2, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_AND_POSITION, Color.TURQUOISE, SpecVisibility.NEVER)
+    createInWorldText(eventPlayer, STR_JOINED_LATE_3, updateEveryTick(eventPlayer.getEyePosition() + evalOnce(vect(0, -0.2, 0)) + (eventPlayer.getFacingDirection() * 1)), 2, Clip.NONE, WorldTextReeval.VISIBILITY_POSITION_AND_STRING, Color.TURQUOISE, SpecVisibility.NEVER)
     eventPlayer.Huds_JoinedLate.append(getLastCreatedText())
 
     eventPlayer.setStatusEffect(null, Status.ROOTED, 5)
 
-    wait(5)
+    # Set JoinedLate to false so the spawn room kill rule can run
+    eventPlayer.JoinedLate = false
+    eventPlayer.enableHeroHud()
+
+    waitUntil(eventPlayer.isHoldingButton(Button.JUMP), 9999)
 
     # Destroy all hud text
     for eventPlayer.playerHudIndex in range(0, len(eventPlayer.Huds_JoinedLate)):
         destroyInWorldText(eventPlayer.Huds_JoinedLate[eventPlayer.playerHudIndex])
     eventPlayer.Huds_JoinedLate = null
-    # Set JoinedLate to false so the spawn room kill rule can run
-    eventPlayer.JoinedLate = false
-    eventPlayer.enableHeroHud()
 
 rule "Sombra Invisibility Tracker":
     @Event eachPlayer
@@ -286,7 +291,9 @@ rule "Sombra: Destroy Translocator":
     eventPlayer.Hud_SombraTrans = getLastCreatedText()
 
     waitUntil(eventPlayer.getAbilityCooldown(Button.ABILITY_2) == 0 or not eventPlayer.isUsingAbility2() or not isInLoS(eventPlayer.getEyePosition(), evalOnce(raycast(eventPlayer.getEyePosition(), eventPlayer.getEyePosition() + (eventPlayer.getFacingDirection() * 25), null, eventPlayer, false).getHitPosition()), BarrierLos.PASS_THROUGH_BARRIERS), 6)
-    eventPlayer.forceButtonPress(Button.INTERACT)
+
+    if eventPlayer.isUsingAbility2():
+        eventPlayer.forceButtonPress(Button.INTERACT)
 
     # Destroy all hud text and effects
     destroyHudText(eventPlayer.Hud_SombraTrans)
@@ -311,18 +318,28 @@ rule "Hider Laying Down":
     @Condition WS_SET_LAYING_DOWN == true
     @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON
     @Condition not eventPlayer.isInSpawnRoom()
-    @Condition eventPlayer.isCommunicatingEmote()
+    @Condition not eventPlayer.hasStatusEffect(Status.KNOCKED_DOWN)
     @Condition eventPlayer.isHoldingButton(Button.CROUCH)
 
+    waitUntil(not eventPlayer.isHoldingButton(Button.CROUCH), 9999)
+    waitUntil(eventPlayer.isHoldingButton(Button.CROUCH), 0.125)
+    if not eventPlayer.isHoldingButton(Button.CROUCH):
+        return
+
     eventPlayer.LayingDownCameraEnabled = true
+
+    if eventPlayer.isInAir():
+        eventPlayer.startForcingPosition(evalOnce(raycast(eventPlayer.getEyePosition(), eventPlayer.getPosition() + (Vector.DOWN * 30) + vect(0.001, 0, 0), null, eventPlayer, false).getHitPosition()), false)
 
     eventPlayer.CameraState = CAMERA_STATE.LAYING_DOWN
     eventPlayer.setStatusEffect(null, Status.KNOCKED_DOWN, 9999)
     wait(1)
-    waitUntil(eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN and any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE, Button.PRIMARY_FIRE, Button.SECONDARY_FIRE, Button.ULTIMATE]]), 9999)
+    waitUntil(eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN and any([eventPlayer.isHoldingButton(button) for button in [Button.JUMP, Button.ABILITY_1, Button.ABILITY_2, Button.CROUCH, Button.INTERACT, Button.MELEE]]), 9999)
     eventPlayer.clearStatusEffect(Status.KNOCKED_DOWN)
 
     eventPlayer.LayingDownCameraEnabled = false
+
+    eventPlayer.stopForcingPosition()
 
     # Return to previous camera state
     if eventPlayer.ThirdPersonCameraEnabled == true:
@@ -343,7 +360,7 @@ rule "Hider Attach to Ceiling":
     eventPlayer.CeilingCameraEnabled = true
 
     if isInLoS(eventPlayer.getPosition(), eventPlayer.getPosition() + (Vector.UP * 30), BarrierLos.PASS_THROUGH_BARRIERS):
-        smallMessage(eventPlayer, STR_CEILING_TOO_HIGH)
+        smallMessage(eventPlayer, fixedString(STR_CEILING_TOO_HIGH))
         return
 
     eventPlayer.CameraState = CAMERA_STATE.CEILING
@@ -368,7 +385,72 @@ rule "Hider Attach to Ceiling":
         StartThirdPersonCamera()
     else:
         eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
-    
+
+rule "Toggle Spectate Camera":
+    @Event eachPlayer
+    @Team 1
+    @Condition not eventPlayer.isInSpawnRoom()
+    @Condition eventPlayer.CameraState == CAMERA_STATE.FIRST_PERSON or eventPlayer.CameraState == CAMERA_STATE.THIRD_PERSON or eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN or eventPlayer.CameraState == CAMERA_STATE.SPECTATE
+    @Condition eventPlayer.isHoldingButton(Button.ULTIMATE)
+
+    eventPlayer.SpectateCameraEnabled = not eventPlayer.SpectateCameraEnabled
+    if eventPlayer.SpectateCameraEnabled:
+        eventPlayer.CameraState = CAMERA_STATE.SPECTATE
+        
+        if not eventPlayer.LayingDownCameraEnabled or eventPlayer.CameraState == CAMERA_STATE.LAYING_DOWN:
+            eventPlayer.setStatusEffect(null, Status.ROOTED, 9999)
+    else:
+        if eventPlayer.LayingDownCameraEnabled:
+            eventPlayer.CameraState = CAMERA_STATE.LAYING_DOWN
+        elif eventPlayer.ThirdPersonCameraEnabled == true:
+            eventPlayer.CameraState = CAMERA_STATE.THIRD_PERSON
+            StartThirdPersonCamera()
+            eventPlayer.clearStatusEffect(Status.ROOTED)
+        else:
+            eventPlayer.CameraState = CAMERA_STATE.FIRST_PERSON
+            eventPlayer.clearStatusEffect(Status.ROOTED)
+
+rule "Select Players (Left)":
+    @Event eachPlayer
+    @Team 1
+    @Condition eventPlayer.CameraState == CAMERA_STATE.SPECTATE
+    @Condition eventPlayer.isHoldingButton(Button.PRIMARY_FIRE)
+
+    eventPlayer.SpectatePlayerSlot = max(0, eventPlayer.SpectatePlayerSlot - 1)
+
+rule "Select Players (Right)":
+    @Event eachPlayer
+    @Team 1
+    @Condition eventPlayer.CameraState == CAMERA_STATE.SPECTATE
+    @Condition eventPlayer.isHoldingButton(Button.SECONDARY_FIRE)
+
+    eventPlayer.SpectatePlayerSlot = min(len(GetSpectateablePlayers), eventPlayer.SpectatePlayerSlot + 1)
+
+    if not SpectatePlayer:
+        eventPlayer.SpectatePlayerSlot = min(len(GetSpectateablePlayers), eventPlayer.SpectatePlayerSlot - 1)
+
+rule "D.va: Lose Ult Outside Spawn":
+    @Event eachPlayer
+    @Hero dva
+    @Team 1
+    @Condition not eventPlayer.isInSpawnRoom()
+
+    eventPlayer.setUltCharge(0)
+
+rule "Hider Tips":
+    waitUntil(CurrentGameState == GAME_STATE.HIDING, 9999)
+    wait(5)
+    while CurrentGameState == GAME_STATE.HIDING:
+        selectedTip[1] = STR_TIPS_SEEKER
+
+        if selectedTip[1] in usedHiderTips:
+            wait(0.125)
+            continue
+            
+        usedHiderTips.append(selectedTip[1])
+        smallMessage(getPlayers(Team.1), fixedString(STR_TIPS_HIDER))
+        wait(WS_SET_HIDETIME / 3)
+
 # Mercy V. Rein Specific Rules
 rule "Refresh Resurrect Cooldown":
     @Event eachPlayer
@@ -378,5 +460,5 @@ rule "Refresh Resurrect Cooldown":
     @Condition CurrentGameState == GAME_STATE.SEEKING
     @Condition eventPlayer.isUsingAbility2()
 
-    waitUntil(eventPlayer.isUsingAbility2(), 9999)
+    waitUntil(not eventPlayer.isUsingAbility2(), 9999)
     eventPlayer.setAbilityCooldown(Button.ABILITY_2, 0)

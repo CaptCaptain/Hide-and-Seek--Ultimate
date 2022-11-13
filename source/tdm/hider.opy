@@ -8,4 +8,8 @@ rule "Kill Hider":
 
     waitUntil(eventPlayer.JoinedLate == true, 9999)
     waitUntil(eventPlayer.JoinedLate == false, 9999)
-    kill(eventPlayer, null)
+
+    while eventPlayer.isAlive():
+        eventPlayer.ResurrectBlocked = true
+        kill(eventPlayer, null)
+        wait()
